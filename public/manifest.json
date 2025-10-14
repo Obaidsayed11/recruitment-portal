@@ -1,0 +1,27 @@
+{
+  "name": "Foodland",
+  "short_name": "Foodland",
+  "theme_color": "#F2EB18",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon/foodland-logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon/foodland-logo.png",
+      "type": "image/png",
+      "sizes": "256x256"
+    },
+    {
+      "src": "/icon/foodland-logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
