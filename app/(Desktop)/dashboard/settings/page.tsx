@@ -44,18 +44,18 @@ const tabButtons = [
   ];
 
   return (
-  <div>
+  <>
     
-  <h2 className="text-lg font-semibold text-text flex justify-start text-center">Settings</h2>
+  <DynamicBreadcrumb links={[{ label: "Settings" }]} />
 
-    <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2 p-6  rounded-xl h-[calc(100vh-105px)] mt-18 ">
+    <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2  rounded-xl h-[calc(100vh-105px)]">
     {/* <Card className="col-span-1 lg:col-span-2 p-6 shadow-sm border border-gray-200 rounded-xl h-[calc(100vh-105px)] mt-18"> */}
       {/* Tabs Section */}
       <div className="flex flex-col w-full">
-        <Tabs
-          tabButtons={tabButtons}
-          className="flex justify-start w-full  flex-wrap gap-6 mb-6 "
-        />
+         <Tabs
+            tabButtons={tabButtons}
+            className="flex justify-start w-full flex-wrap gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6"
+          />
         {/* Tab Content */}
         {/* <div className="w-full  text-center bg-gray-50 p-8 rounded-lg border border-gray-100 shadow-inner mt-8"> */}
         <div className="w-full  text-center  flex justify-start rounded-lg">
@@ -66,7 +66,7 @@ const tabButtons = [
       </div>
     {/* </Card> */}
   </div>
-</div>
+</>
 
   )
 }

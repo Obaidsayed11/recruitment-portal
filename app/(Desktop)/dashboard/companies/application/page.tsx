@@ -50,6 +50,7 @@ const CompanyApplication = () => {
 
   // --- Core Hooks ---
   const { data: session } = useSession();
+  console.log(session,"swessio")
   const searchParams = useSearchParams();
 
   // --- State Declarations ---
@@ -180,8 +181,8 @@ const CompanyApplication = () => {
     {/* <DynamicBreadcrumb links={[{ label: "Applications" }]} /> */}
 
      <section
-      className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[80vw]"
+       className="bg-white sm:rounded-xl 
+      p-3 sm:p-5 flex flex-col w-[82.5vw] h-[calc(100vh-169px)]"
     >
       {/* --- Header Section --- */}
       <div
@@ -221,7 +222,7 @@ const CompanyApplication = () => {
 
       {/* --- Scrollable Table Section --- */}
       <div
-         className="overflow-auto max-h-[100vh] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+         className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
         {/* Header */}
         {/* --- Table Header --- */}
         <Header
@@ -232,7 +233,7 @@ const CompanyApplication = () => {
             min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
             grid-cols-[30px_repeat(16,minmax(120px,1fr))]
             gap-12 
-            whitespace-nowrap gap-4"
+            whitespace-nowrap gap-4 "
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={

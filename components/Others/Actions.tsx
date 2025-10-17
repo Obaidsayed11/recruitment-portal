@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BiTrash, BiEditAlt } from "react-icons/bi";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,8 +11,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
+  
 } from "@/components/ui/alert-dialog";
+import { ActionsProps } from "@/types/interface";
 import { usePathname } from "next/navigation";
+import EditUser from "../Modals/EditModals/EditUser";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
@@ -19,17 +23,20 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const renderModal = () => {
     if (!pathname) return null;
 
-    if (pathname.includes("admin/manager")) {
-      return <UpdateManager id={id} onUpdate={onUpdate} data={data} />;
-    } else if (pathname.includes(`/admin/supervisors`)) {
-      return <UpdateSupervisors id={id} onUpdate={onUpdate} data={data} />;
-    } else if (pathname.includes("/admin/dark-stores")) {
-      return <UpdateDarkStore id={id} onUpdate={onUpdate} data={data} />;
-    } else if (pathname.includes("/admin/plants")) {
-      return <UpdatePlants id={id} onUpdate={onUpdate} data={data} />;
-    } else if (pathname.includes("/admin/driverssdf")) {
-      return <UpdateDrivers id={id} onUpdate={onUpdate} data={data} />;
-    }
+    // if (pathname.includes("admin/manager")) {
+    //   return <UpdateManager id={id} onUpdate={onUpdate} data={data} />;
+    // } else if (pathname.includes(`/admin/supervisors`)) {
+    //   return <UpdateSupervisors id={id} onUpdate={onUpdate} data={data} />;
+    // } else if (pathname.includes("/admin/dark-stores")) {
+    //   return <UpdateDarkStore id={id} onUpdate={onUpdate} data={data} />;
+    // } else if (pathname.includes("/admin/plants")) {
+    //   return <UpdatePlants id={id} onUpdate={onUpdate} data={data} />;
+    // } else if (pathname.includes("/admin/driverssdf")) {
+    //   return <UpdateDrivers id={id} onUpdate={onUpdate} data={data} />;
+    // }
+    if (pathname.includes("/dashboard/users")) {
+      return <EditUser id={id} onUpdate={onUpdate} data={data} /> }
+      console.log(data,"data on Action")
     return null;
   };
 

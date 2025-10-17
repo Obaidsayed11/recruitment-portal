@@ -176,9 +176,9 @@ const SettingGroups = () => {
   <>
     {/* <DynamicBreadcrumb links={[{ label: "Groups" }]} /> */}
 
-    <section
+     <section
       className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[80vw]"
+      p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
     >
       {/* Top Operations Bar */}
       <div

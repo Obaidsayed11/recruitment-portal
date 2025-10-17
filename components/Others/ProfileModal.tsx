@@ -14,9 +14,10 @@ export const ProfileIcon: React.FC = () => {
   const fetchUserData = useCallback(async () => {
     try {
       const role = session?.user.role.toLowerCase();
-      const url = `/auth/profile`;
+      const url = `auth/profile`;
       const response = await apiClient.get(url);
       setUserData(response.data);
+      console.log(response.data.existingUser,"profile")
     } catch (error: any) {
       console.error(error.response.message);
     }
@@ -43,7 +44,7 @@ export const ProfileIcon: React.FC = () => {
   return (
     <>
       <div className="flex relative cursor-pointer border px-2 bg-white items-center select-none gap-2 py-2 rounded-md transition-all ease-linear my-2">
-        {userData.user.photo ? (
+        {/* {userData.user.photo ? (
           <Image
             className="rounded-full object-cover border bg-secondary w-[35px] h-[35px]"
             height={50}
@@ -51,7 +52,8 @@ export const ProfileIcon: React.FC = () => {
             alt={userData.user.fullName}
             src={`${BASE_URL}${userData.user.photo || "/"}`}
           />
-        ) : (
+        ) :  */}
+        {userData.user && (
           <div className="w-[35px] h-[35px] rounded-full bg-gray-400 flex items-center overflow-hidden justify-center text-white font-bold text-lg">
             {userData.user.fullName?.charAt(0).toUpperCase() || "NA"}
           </div>

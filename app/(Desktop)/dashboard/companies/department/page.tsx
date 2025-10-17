@@ -165,7 +165,7 @@ const CompanyDepartment = () => {
       {/* <DynamicBreadcrumb links={[{ label: "Departments" }]} /> */}
       <section
         className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[140vw]"
+      p-3 sm:p-5 flex flex-col w-[140vw] h-[calc(100vh-169px)]"
       >
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center 
@@ -198,7 +198,7 @@ const CompanyDepartment = () => {
           />
           <AddDepartment onAdd={handleAddDepartments} />
         </div>
-        <div className="overflow-auto max-h-[100vh] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           {/* Header */}
           <Header
             checkBox={true}

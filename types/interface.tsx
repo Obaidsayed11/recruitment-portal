@@ -12,6 +12,16 @@ export interface AdminProfileData {
   };
 }
 
+export interface ActionsProps {
+  id: string;
+  data: any;
+  isDelete?: boolean;
+  hidden?: any;
+  permissions?: any[];
+  onUpdate: (data: any) => void;
+  onDelete: (data: any) => void;
+}
+
 export interface AdminProfileProps {
   userData: AdminProfileData | null;
   refreshData: () => void;
@@ -69,7 +79,7 @@ export interface AddProps {
 }
 
 export interface UpdateProps {
-  id: number | undefined;
+  id: number | undefined | string;
   onUpdate: (data: any) => void;
 }
 
@@ -132,27 +142,37 @@ export interface CardProps {
 }
  
 
+// export interface UserProps {
+//   id: string;
+//   photo?: string;
+//   fullName: string;
+//   email: string;
+//   phone: string;
+//   password: string;
+//   refreshToken: string | null;
+//   otp: string | null;
+//   otpExpiry: string | null;
+//   dob: string | null;
+//   gender: "MALE" | "FEMALE" | "OTHER" | "NONE";
+//   device: "ANDROID" | "IOS" | "WEB" | "UNKNOWN";
+//   macAddress: string | null;
+//   androidToken: string | null;
+//   iosToken: string | null;
+//   webToken: string | null;
+//   isActive: boolean;
+//   createdAt: string; // ISO date string
+//   updatedAt: string; // ISO date string
+//   role: "DISPATCHER" | "ADMIN" | "CUSTOMER" | "MANAGER" | "AGENT" | string;
+// }
+
+
 export interface UserProps {
-  id: string;
-  photo?: string;
+  id: string
   fullName: string;
   email: string;
   phone: string;
-  password: string;
-  refreshToken: string | null;
-  otp: string | null;
-  otpExpiry: string | null;
-  dob: string | null;
-  gender: "MALE" | "FEMALE" | "OTHER" | "NONE";
-  device: "ANDROID" | "IOS" | "WEB" | "UNKNOWN";
-  macAddress: string | null;
-  androidToken: string | null;
-  iosToken: string | null;
-  webToken: string | null;
-  isActive: boolean;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  role: "DISPATCHER" | "ADMIN" | "CUSTOMER" | "MANAGER" | "AGENT" | string;
+  role: any;
+  companyId?: string
 }
 
 export interface CategoryProps {
@@ -229,11 +249,11 @@ export interface DriverProps {
   id: string;
 }
 
-export interface UserListProps {
-  users: UserProps[];
-  currentPage: string;
-  totalPages: string;
-}
+// export interface UserListProps {
+//   users: UserProps[];
+//   currentPage: string;
+//   totalPages: string;
+// }
 
 export interface OutletListProps {
   outlets: OutletProps[];
@@ -261,9 +281,9 @@ export interface DriverListProps {
   drivers: DriverProps[];
 }
 
-export interface UserCardProps extends CardProps {
-  data: UserProps;
-}
+// export interface UserCardProps extends CardProps {
+//   data: UserProps;
+// }
 
 export interface OutletCardProps extends CardProps {
   data: OutletProps;

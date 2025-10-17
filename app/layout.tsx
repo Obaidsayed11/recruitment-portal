@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"; // Changed to Poppins
 import Provider from "./Provider";
 import { TabProvider } from "@/context/TabsContext";
+import { PermissionProvider } from "@/components/PermissionContact";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -25,8 +26,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.className} antialiased`}>
         <Provider>
+          <PermissionProvider>
           <Toaster position="bottom-right" closeButton richColors />
           <TabProvider>{children}</TabProvider>
+          </PermissionProvider>
         </Provider>
       </body>
     </html>

@@ -4,36 +4,37 @@ import { jwtDecode } from "jwt-decode";
 import apiClient from "@/lib/axiosInterceptor";
 
 interface Credentials {
-  phone: string;
-  otp: string;
-  verificationId: string;
+  email: string;
+  password: string;
 }
 
-async function refreshAccessToken(token: any) {
+interface MyToken {
+  id: string;
+  fullName: string;
+  role: string;
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpires: number;
+  error?: string;
+}
+
+async function refreshAccessToken(token: MyToken) {
   try {
-    console.log("Refreshing access token...");
     const response = await apiClient.post("/auth/refresh-token", {
       refreshToken: token.refreshToken,
     });
+    const newAccessToken = response.data.accessToken;
+    const newRefreshToken = response.data.refreshToken;
 
-    if (!response.data.accessToken) {
-      throw new Error("Failed to refresh token");
-    }
+    const decodedToken = jwtDecode<{ exp?: number }>(newAccessToken);
 
-    const decodedToken = jwtDecode<{ exp?: number }>(response.data.accessToken);
-    if (!decodedToken.exp) {
-      throw new Error("No Expiry in decoded token");
-    }
-
-    console.log("New access token received:", response.data.accessToken);
     return {
       ...token,
-      accessToken: response.data.accessToken,
-      refreshToken: response.data.refreshToken || token.refreshToken,
-      accessTokenExpires: decodedToken.exp * 1000,
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken || token.refreshToken,
+      accessTokenExpires: decodedToken.exp! * 1000,
     };
   } catch (error) {
-    console.error("Failed to refresh access token:", error);
     return {
       ...token,
       error: "RefreshAccessTokenError",
@@ -46,37 +47,24 @@ export default NextAuth({
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        phone: { label: "Phone", type: "text" },
-        otp: { label: "OTP", type: "text" },
-        verificationId: { label: "Verification ID", type: "text" },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "text" },
       },
-
       async authorize(credentials) {
-        const { phone, otp, verificationId } = credentials as Credentials;
+        const { email, password } = credentials as Credentials;
 
-        try {
-          const response = await apiClient.post("/auth/login/otp/verify", {
-            phone,
-            otp,
-            verificationId,
-          });
+        const response = await apiClient.post("/auth/login", { email, password });
+        const user = response.data.user;
 
-          console.log("API Response:", response.data);
-          const user = response.data.user;
+        if (!user) return null;
 
-          if (!user) throw new Error("Invalid Phone, OTP, or verificationId");
-
-          return {
-            id: user.id,
-            fullName: user.fullName,
-            role: user.role,
-            accessToken: user.token,
-            refreshToken: user.refreshToken,
-          };
-        } catch (error) {
-          console.error("Login error:", error);
-          throw new Error("Login failed. Please try again.");
-        }
+        return {
+          id: user.id,
+          fullName: user.fullName,
+          accessToken: user.token,
+          refreshToken: user.refreshToken,
+          role: user.role,
+        } as any;
       },
     }),
   ],
@@ -84,38 +72,38 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.fullName = user.fullName;
-        token.role = user.role;
-        token.accessTokenExpires = Date.now() + 60 * 60 * 1000;
+        // ✅ Persist all important fields in JWT
+        return {
+          id: user.id,
+          fullName: user.fullName,
+          role: user.role,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          accessTokenExpires: Date.now() + 60 * 60 * 1000,
+        };
       }
 
-      if (Date.now() < token.accessTokenExpires) {
+      if (token.accessTokenExpires && Date.now() < token.accessTokenExpires) {
         return token;
       }
 
-      return refreshAccessToken(token);
+      return refreshAccessToken(token as MyToken);
     },
 
     async session({ session, token }) {
+      // ✅ Map the JWT token to session.user
       session.user = {
-        id: token.id,
-        fullName: token.fullName,
-        role: token.role,
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
+        id: (token as MyToken).id,
+        fullName: (token as MyToken).fullName,
+        role: (token as MyToken).role,
+        accessToken: (token as MyToken).accessToken,
+        refreshToken: (token as MyToken).refreshToken,
       };
       return session;
     },
   },
+
   session: { strategy: "jwt" },
-
-  pages: {
-    signIn: "/signin",
-    signOut: "/signin",
-    error: "/error",
-  },
-
+  pages: { signIn: "/signin" },
   debug: true,
 });

@@ -176,7 +176,7 @@ const SettingGroups = () => {
 
       <section
       className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[80vw]"
+      p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
     >
       {/* Top Operations Bar */}
        <div
@@ -209,14 +209,14 @@ const SettingGroups = () => {
           serverSearchPlaceholder="Search all Groups..."
         />
 
-        <div className="w-full sm:w-auto">
+        {/* <div className="w-full sm:w-auto">? */}
           <AddGroup onAdd={handleAddgroups} />
-        </div>
+        {/* </div> */}
       </div>
 
       {/* Scrollable User List */}
         <div
-       className="overflow-auto max-h-[100vh] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+       className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
         {/* Header */}
         <Header
           checkBox={true}

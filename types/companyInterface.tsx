@@ -1,3 +1,42 @@
+// interfaces for companiesm
+
+export interface CompanyProps {
+  id: string;
+  name: string;
+  websiteUrl?: string;
+  careerPageUrl?: string;
+  description?: string;
+  fileUrl?: string;
+}
+
+export interface CompanyListProps {
+  companies: CompanyProps[];
+    totalPages: string;
+  page: string;
+}
+
+export interface CompanyCardProps {
+  data: CompanyProps;
+  isSelected: boolean;
+  onCardSelect: (id: string, selected: boolean) => void;
+  onDelete: (id: string) => void;
+  onUpdate: (company: CompanyProps) => void;
+}
+
+export interface AddProps {
+  onAdd: (company: CompanyProps) => void;
+}
+
+export interface UpdateCompanyProps {
+  onUpdate: (company: CompanyProps) => void;
+  data: CompanyProps;
+  id: string;
+}
+
+
+
+
+
 // this is for every card that is used for actions like edit and delete
 export interface CardProps {
   onCardSelect: (id: string, isChecked: boolean) => void;

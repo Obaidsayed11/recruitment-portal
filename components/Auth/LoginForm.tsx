@@ -17,28 +17,34 @@ import apiClient from "@/lib/axiosInterceptor";
 import useFcmToken from "@/hooks/useFCMToken";
 import Logo from "../Navbar/Logo";
 import Button from "../Others/Button";
+import { signIn } from "next-auth/react";
+
 
 const formSchema = z.object({
-  phone: z
-    .string()
-    .regex(/^[6-9]\d{dispatch9}$/, "Invalid Indian phone number")
-    .min(10)
-    .max(10),
-});
+  email: z.string().email("Invalid email address"),
+    password: z.string()
+    .min(5)
+    .max(15),
+},
+{
+      message: "Enter a valid email address password",
+    });
+
 
 export type ActionType = { type: "SUBMIT" } | { type: "BACK" };
 type FormInputs = z.infer<typeof formSchema>;
 
-type DispatchType = {
-  dispatch: React.Dispatch<ActionType>;
-  setIsLoggedIn: (status: boolean) => void;
-};
+// type DispatchType = {
+//   dispatch: React.Dispatch<ActionType>;
+//   // setIsLoggedIn: (status: boolean) => void;
+// };
 
-function LoginForm({ setIsLoggedIn }: DispatchType) {
+function LoginForm() {
   const router = useRouter();
   const form = useForm<FormInputs>({
     resolver: zodResolver(formSchema),
   });
+  
 
   const { fcmToken } = useFcmToken();
   const [token, setToken] = useState<string>("");
@@ -52,33 +58,43 @@ function LoginForm({ setIsLoggedIn }: DispatchType) {
   }, [fcmToken]);
 
   const onSubmit = async (data: FormInputs) => {
-    if (isLoading) return; // Prevent multiple API calls
+    if (isLoading) return;
 
     setIsLoading(true);
     setError("");
 
     try {
-      const response = await apiClient.post("/auth/login/otp", {
-        phone: data.phone,
-        device: "WEB",
-        token: token,
+      console.log("Attempting NextAuth signIn...");
+      
+      // 🚨 CRITICAL FIX: Use signIn() instead of manual apiClient.post()
+      const result = await signIn("credentials", {
+        // 1. Credentials required by your authorize function
+        email: data.email,
+        password: data.password,
+        token,
+        
+        // 2. Do not redirect on success, let the client-side handle it after checking the result
+        redirect: false, 
       });
 
-      console.log(response.data);
+      console.log("SignIn Result:", result);
 
-      if (response.status === 200 && response.data.verificationId) {
-        // setIsLoggedIn(true);
-        router.push(
-          `/otp?phone=${data.phone}&verificationId=${response.data.verificationId}`
-        );
+      if (result?.error) {
+        // NextAuth will handle errors from your authorize function
+        setError(result.error);
+      } else if (result?.ok) {
+        // If login is successful, NextAuth has set the cookie.
+        // The middleware will handle the final redirect to /admin/dashboard or /dashboard.
+        console.log("Login successful! Redirecting via router.push");
+        router.push("/dashboard"); 
       } else {
-        setError("Invalid response from server. Please try again.");
-        // clearQueryParams(); // Clear params if response is invalid
+         // Should not typically happen if redirect: false
+         setError("Login process failed to complete.");
       }
+
     } catch (error: any) {
-      setError("Something went wrong! Please try again.");
+      setError("An unexpected error occurred during login.");
       console.error(error);
-      // clearQueryParams(); // Clear params on error
     } finally {
       setIsLoading(false);
     }
@@ -106,19 +122,38 @@ function LoginForm({ setIsLoggedIn }: DispatchType) {
         <form className="grid gap-3" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="phone"
+            name="email"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
                   <Input
                     {...field}
-                    type="tel"
-                    placeholder="Enter phone number"
+                    type="email"
+                    placeholder="Enter Your Email"
+                    // maxLength={10}
+                  />
+                </FormControl>
+                <FormMessage>
+                  {form.formState.errors.email?.message}
+                </FormMessage>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="Enter Your Pasword"
                     maxLength={10}
                   />
                 </FormControl>
                 <FormMessage>
-                  {form.formState.errors.phone?.message}
+                  {form.formState.errors.email?.message}
                 </FormMessage>
               </FormItem>
             )}

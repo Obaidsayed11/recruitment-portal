@@ -1,4 +1,3 @@
-
 "use client";
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
@@ -26,53 +25,42 @@ import { useTabContext } from '@/context/TabsContext';
 import CompanyApplication from './application/page';
 import CompanyDepartment from './department/page';
 
-
-
 const Company = () => {
-
-  const { activeTab,setActiveTab } = useTabContext();
-  useEffect(()=> {
-setActiveTab("Job description")
-  },[setActiveTab])
+  const { activeTab, setActiveTab } = useTabContext();
+  
+  useEffect(() => {
+    setActiveTab("Job description")
+  }, [setActiveTab])
+  
   console.log(activeTab)
 
-const tabButtons = [
-    { label: "Job description", value:"Job description"},
-     { label: "Application", value:"Application"},
-      { label: "Department", value:"Department"}
+  const tabButtons = [
+    { label: "Job description", value: "Job description" },
+    { label: "Application", value: "Application" },
+    { label: "Department", value: "Department" }
   ];
 
   return (
-  <div>
+    <>
+      <DynamicBreadcrumb links={[{ label: "Companies" }]} />
 
+      <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-110px)]">
+        <div className="flex flex-col w-full">
+          <Tabs
+            tabButtons={tabButtons}
+            className="flex justify-start w-full flex-wrap gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6"
+          />
 
-    
-  <h2 className="text-lg font-semibold text-text flex justify-start text-center">Company</h2>
-
-  <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2 p-6  rounded-xl h-[calc(100vh-105px)] mt-18 ">
-    
-   
-      <div className="flex flex-col w-full">
-        
-        
-        <Tabs
-          tabButtons={tabButtons}
-          className="flex justify-start w-full  flex-wrap gap-6 mb-6 "
-        />
-
-        {/* Tab Content */}
-        {/* <div className="w-full  text-center bg-gray-50 p-8 rounded-lg border border-gray-100 shadow-inner mt-8"> */}
-           <div className="w-full  text-center  flex justify-start rounded-lg">
-          {activeTab === "Job description" && <JobDescription />}
-          {activeTab === "Application" && <CompanyApplication />}
-          {activeTab === "Department" && <CompanyDepartment />}
+          {/* Tab Content */}
+          <div className="w-full text-center flex justify-start rounded-lg">
+            {activeTab === "Job description" && <JobDescription />}
+            {activeTab === "Application" && <CompanyApplication />}
+            {activeTab === "Department" && <CompanyDepartment />}
+          </div>
         </div>
       </div>
-    {/* </Card> */}
-  </div>
-</div>
-
+    </>
   )
 }
 
-export default Company
+export default Company;

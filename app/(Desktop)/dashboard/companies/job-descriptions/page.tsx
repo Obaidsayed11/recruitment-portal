@@ -106,6 +106,7 @@ const JobDescription = () => {
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
   useEffect(() => {
+    
     // Stop if the session isn't ready or if we're on a later page and know there's no more data.
     if (!session || (page > 1 && !hasMore)) {
       return;
@@ -117,13 +118,14 @@ const JobDescription = () => {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
+      
 
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<JobDescriptionListProps>(
-            `/admin/users/search?${params.toString()}`
+            `/api/company/jobs/${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
@@ -157,7 +159,7 @@ const JobDescription = () => {
 
     fetchData();
     // This dependency array is now correct. It runs when the page or query changes, but will not loop on its own state updates.
-  }, [page, debouncedSearchQuery, selectedRole, session]);
+  }, []);
   // --- Event Handlers ---
   const handleSelectAll = (isChecked: boolean) =>
     setSelectedCards(isChecked ? allCards : []);
@@ -185,12 +187,12 @@ const JobDescription = () => {
 
     <section
       className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[80vw]"
+      p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
     >
       {/* Top Operations Bar */}
       <div
         className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5"
+        justify-between gap-3 sm:gap-4 pb-5 "
       >
         <Operations
           filterProps={{
@@ -225,23 +227,23 @@ const JobDescription = () => {
 
       {/* Scrollable User List */}
       <div
-        className="overflow-auto max-h-[100vh] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+        className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
         {/* Header */}
         <Header
-          checkBox={true}
-           className1="
-            grid sticky top-0 z-10 border
-            
-            min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(16,minmax(120px,1fr))]
-            gap-12 
-            whitespace-nowrap gap-4"
-          headersall={headersOptions}
-          handleSelectAll={handleSelectAll}
-          isAllSelected={
-            allCards.length > 0 && selectedCards.length === allCards.length
-          }
-        />
+  checkBox={true}
+  className1="
+    w-full grid sticky top-0 border
+    grid-cols-[30px_repeat(16,100px)]
+    lg:grid-cols-[30px_repeat(16,110px)]
+    xl:grid-cols-[30px_1fr_1fr_1.2fr_1fr_1fr_1.5fr_1fr_1fr_1fr_1.2fr_1fr_1fr_1fr_1fr_1fr_0.8fr]
+    gap-8 whitespace-nowrap
+    "
+  headersall={headersOptions}
+  handleSelectAll={handleSelectAll}
+  isAllSelected={
+    allCards.length > 0 && selectedCards.length === allCards.length
+  }
+/>
 
         {/* User List */}
         <div className="divide-y divide-gray-100">

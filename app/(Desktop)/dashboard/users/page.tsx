@@ -11,7 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import apiClient from "@/lib/axiosInterceptor";
-import { UserListProps, UserProps } from "@/types/interface";
+import { UserListProps, UserProps } from "@/types/usertypes";
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Operations from "@/components/Others/Operations";
 import Skeleton2 from "@/components/Others/Skeleton2";
@@ -25,14 +25,15 @@ const headersOptions = [
   { value: "Role" },
   { value: "Phone" },
   { value: "Email" },
-  { value: "Created At" },
-  { value: "Updated At" },
+  // { value: "Created At" },
+  // { value: "Updated At" },
   { value: "Actions" },
 ];
 
 const UserRoute = () => {
   // --- Core Hooks ---
   const { data: session } = useSession();
+  console.log(session,"wduio")
   const searchParams = useSearchParams();
 
   // --- State Declarations ---
@@ -83,77 +84,106 @@ const UserRoute = () => {
 
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
-  useEffect(() => {
-    // Stop if the session isn't ready or if we're on a later page and know there's no more data.
-    if (!session || (page > 1 && !hasMore)) {
-      return;
-    }
+useEffect(() => {
+  if (!session || (page > 1 && !hasMore)) {
+    return;
+  }
+  
 
     const fetchData = async () => {
       setLoading(true);
+      console.log("Starting fetch for page:", page);
+      
       try {
-        // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
+        params.append("limit", "10");
 
-        let response;
+        let url: string;
         if (debouncedSearchQuery) {
-          // --- Paginated Server Search Logic ---
           params.append("query", debouncedSearchQuery);
-          response = await apiClient.get<UserListProps>(
-            `/admin/users/search?${params.toString()}`
-          );
+          url = `/user/search?${params.toString()}`;
         } else {
-          // --- Paginated Role Filter Logic ---
           if (selectedRole && selectedRole !== "All") {
             params.append("role", selectedRole);
           }
-          response = await apiClient.get<UserListProps>(
-            `/admin/users?${params.toString()}`
-          );
+          url = `/user`;
         }
-        console.log(response);
-        const newUsers = response.data.users || [];
 
-        // If it's the first page, we are starting a new list.
-        // For all subsequent pages, we append to the existing list.
+        console.log("Fetching URL:", url);
+        console.log("With params:", Object.fromEntries(params));
+
+        const response = await apiClient.get<UserListProps>(url);
+        console.log(response.data.users,"response")
+        // console.log(response.data.users[Role],"response")
+
+        console.log("API Response:", response.data);
+        const newUsers = response.data.users.map((user: any) => ({
+      ...user,
+      role: user.Role?.code || "N/A", // convert Role.code → role
+    }));
+        console.log("New users count:", newUsers.length);
+
         if (page === 1) {
           setAllUsers(newUsers);
         } else {
           setAllUsers((prev) => [...prev, ...newUsers]);
         }
 
-        // Update pagination status based on the API response.
-        setHasMore(response.data.currentPage < response.data.totalPages);
+        // Handle pagination - note your API returns "tatalPages" (typo)
+        const currentPage = response.data.page || page;
+        const totalPages = response.data.totalPages || response.data.totalPages || 1;
+        
+        console.log("Pagination info:", { currentPage, totalPages, hasMore: currentPage < totalPages });
+        setHasMore(currentPage < totalPages);
       } catch (error: any) {
-        // The catch block will now correctly handle 404 errors from requesting a page that doesn't exist.
-        setHasMore(false); // Stop trying to fetch more if an error occurs.
+      
+        console.error("Error fetching users:", error);
+        toast.error("Failed to fetch users");
+        setHasMore(false);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-    // This dependency array is now correct. It runs when the page or query changes, but will not loop on its own state updates.
   }, [page, debouncedSearchQuery, selectedRole, session]);
+
   // --- Event Handlers ---
   const handleSelectAll = (isChecked: boolean) =>
     setSelectedCards(isChecked ? allCards : []);
+    
   const handleCardSelect = (cardId: string, isChecked: boolean) =>
     setSelectedCards((prev) =>
       isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
     );
+    
   const handleDelete = (id: string) =>
     setAllUsers((prev) => prev.filter((data) => data.id !== id));
+    
   const handleAdd = (newData: UserProps) => {
     if (newData) setAllUsers((prev) => [newData, ...prev]);
   };
-  const handleUpdate = (updatedData: UserProps) => {
-    if (updatedData)
-      setAllUsers((prev) =>
-        prev.map((data) => (data.id === updatedData.id ? updatedData : data))
-      );
-  };
+  
+ const handleUpdate = (updatedData: UserProps) => {
+  if (!updatedData) return;
+
+  setAllUsers((prev) => {
+    const exists = prev.some((data) => data.id === updatedData.id);
+
+    if (exists) {
+      // Replace existing user
+      return prev.map((data) => (data.id === updatedData.id ? updatedData : data));
+    } else {
+      // Append new user if not found
+      return [updatedData, ...prev];
+    }
+  });
+};
+
+
+  
+  
   const handleDeleteSelected = async () => {
     /* ... */
   };
@@ -162,7 +192,7 @@ const UserRoute = () => {
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Users" }]} />
-      <section className="bg-white border border-[#E8E8E8] sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
+      <section className="bg-white  sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
         <div className="flex flex-col sm:flex-row items-start sm:items-center 
         justify-between gap-3 sm:gap-4 pb-5">
           <Operations
@@ -195,7 +225,7 @@ const UserRoute = () => {
         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[20px_1.5fr_1fr_1fr_2fr_1fr_1fr_1fr] border gap-5"
+            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={

@@ -11,6 +11,7 @@ apiClient.interceptors.request.use(
     
     const session = await getSession();
     if (session?.user.accessToken && session.user.refreshToken) {
+      console.log(session?.user.accessToken,"session client")
       config.headers.Authorization = `Bearer ${session.user.accessToken}`;
       config.headers["x-refresh-token"] = `${session.user.refreshToken}`;
     }

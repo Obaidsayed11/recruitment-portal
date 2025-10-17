@@ -203,14 +203,14 @@ const SettingPermission = () => {
   <>
     {/* <DynamicBreadcrumb links={[{ label: "Permission" }]} /> */}
 
-   <section
+    <section
       className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[80vw]"
+      p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
     >
       {/* Top Operations Bar */}
    <div
         className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5"
+        justify-between gap-3 sm:gap-4 pb-5 "
       >
         <Operations
           filterProps={{
@@ -244,8 +244,8 @@ const SettingPermission = () => {
       </div>
 
       {/* Scrollable User List */}
-      <div
-        className="overflow-auto max-h-[100vh] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+       <div
+        className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
         {/* Header */}
         <Header
           checkBox={true}

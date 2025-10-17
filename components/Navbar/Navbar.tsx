@@ -15,7 +15,9 @@ const roleRoutes: Record<string, string> = {
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const role = session?.user.role;
-  const basePath = role ? roleRoutes[role] : "/";
+  // const basePath = role ? roleRoutes[role] : "/";
+  const basePath = role && roleRoutes[role] ? roleRoutes[role] : "/";
+
 
   return (
     <nav className="grid gap-3 content-start relative h-screen p-3 my-auto bg-[#FAFAFA] ">
