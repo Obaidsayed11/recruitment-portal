@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import apiClient from "@/lib/axiosInterceptor";
@@ -17,13 +17,14 @@ const headersOptions = [
   { value: "Name" },
   { value: "Website" },
   { value: "Career Page" },
+  { value: "Logo" },
   { value: "Description" },
   { value: "Actions" },
 ];
 
 const CompanyRoute = () => {
   const { data: session } = useSession();
-  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [allCompanies, setAllCompanies] = useState<CompanyProps[]>([]);
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
@@ -52,14 +53,12 @@ const CompanyRoute = () => {
     [loading, hasMore]
   );
 
-  // Reset on search/filter change
   useEffect(() => {
     setAllCompanies([]);
     setPage(1);
     setHasMore(true);
   }, [debouncedSearchQuery]);
 
-  // Fetch companies
   useEffect(() => {
     if (!session || (page > 1 && !hasMore)) return;
 
@@ -77,9 +76,9 @@ const CompanyRoute = () => {
 
         if (page === 1) setAllCompanies(newCompanies);
         else setAllCompanies((prev) => [...prev, ...newCompanies]);
-const currentPage = response.data.page || page;
-        const totalPages = response.data.totalPages || response.data.totalPages || 1;
-        console.log("Pagination info:", { currentPage, totalPages, hasMore: currentPage < totalPages });
+        
+        const currentPage = response.data.page || page;
+        const totalPages = response.data.totalPages || 1;
         setHasMore(currentPage < totalPages);
       } catch (error: any) {
         console.error(error);
@@ -116,13 +115,18 @@ const currentPage = response.data.page || page;
     );
   };
 
+  // NEW: Handle company click to navigate to detail page
+  const handleCompanyClick = (companyId: string) => {
+    router.push(`/dashboard/AdminCompanies/${companyId}`);
+  };
+
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Companies" }]} />
       <section className="bg-white sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-5">
           <Operations
-           filterProps={{
+            filterProps={{
               filter: true,
               filters: [
                 {
@@ -147,7 +151,7 @@ const currentPage = response.data.page || page;
         <div className="overflow-auto h-[calc(100vh-210px)]">
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[20px_1.5fr_1fr_1fr_2fr_1fr]"
+            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[40px_1.5fr_1fr_1fr_1fr_2fr_1fr]"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={allCards.length > 0 && selectedCards.length === allCards.length}
@@ -167,6 +171,7 @@ const currentPage = response.data.page || page;
                     onCardSelect={handleCardSelect}
                     onDelete={handleDelete}
                     onUpdate={handleUpdate}
+                    onClick={() => handleCompanyClick(company.id)}
                   />
                 </div>
               );

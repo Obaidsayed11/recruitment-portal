@@ -9,6 +9,7 @@ import Actions from "../Others/Actions";
 const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
   ({ data, isSelected, onCardSelect, onDelete, onUpdate }, ref) => {
     const router = useRouter();
+   
 
     const handleCheckboxChange = (
       event: React.ChangeEvent<HTMLInputElement>
@@ -32,8 +33,8 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
       <div
         ref={ref}
         className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap
-        grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px_100px_150px_150px]
-        xl:grid-cols-[20px_1fr_1fr_1.5fr_1fr_1fr_1fr_2fr_2fr_2fr_1fr_1fr_1fr_1fr_1fr_1fr]
+        grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px]
+        xl:grid-cols-[20px_1fr_1fr_1.5fr_1fr_1.5fr_2fr_2fr_2fr_2fr_1fr_1fr_1fr]
         gap-5 transition-all ease-linear border items-center ${
           isSelected
             ? "bg-secondary hover:bg-secondary border-border rounded-xl"
@@ -47,25 +48,19 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
         />
 
         {/* Job ID */}
-        <span className="text-subtext line-clamp-1">
+        {/* <span className="text-subtext line-clamp-1">
           {data.id|| "NA"}
-        </span>
+        </span> */}
 
         {/* Company ID */}
-        <span className="text-subtext line-clamp-1">
-          {data.company_id || "NA"}
-        </span>
+        {/* <span className="text-subtext line-clamp-1">
+          {data.companyId|| "NA"}
+        </span> */}
 
         {/* Job Title */}
         <span className="text-subtext font-medium line-clamp-1">
-          {data.job_title || "NA"}
+          {data.title || "NA"}
         </span>
-
-        {/* Department */}
-        <span className="text-subtext line-clamp-1">
-          {data.department || "NA"}
-        </span>
-
         {/* Location */}
         <span className="text-subtext line-clamp-1">
           {data.location || "NA"}
@@ -73,17 +68,23 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
 
         {/* Experience Required */}
         <span className="text-subtext line-clamp-1">
-          {data.experience_required || "NA"}
+          {data.experience || "NA"}
         </span>
-
         {/* Salary Range */}
         <span className="text-subtext line-clamp-1">
-          {data.salary_range || "NA"}
+          {data.salaryRange || "NA"}
         </span>
+
+        {/* Department */}
+        <span className="text-subtext line-clamp-1">
+          {data.department || "NA"}
+        </span>
+
+
 
         {/* Employment Type */}
         <span className="text-subtext line-clamp-1">
-          {data.employment_type || "NA"}
+          {data.employmentType || "NA"}
         </span>
 
         {/* Description */}
@@ -102,29 +103,40 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
         </span>
 
         {/* Created By */}
-        <span className="text-subtext line-clamp-1">
+        {/* <span className="text-subtext line-clamp-1">
           {data.created_by || "NA"}
-        </span>
+        </span> */}
 
         {/* Published */}
-        <span className="text-subtext line-clamp-1">
-          {data.published ? "Yes" : "No"}
+         <span className="text-subtext">
+          {data.published !== undefined ? (
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                data.published
+                  ? "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {data.published ? "Yes" : "No"}
+            </span>
+          ) : (
+            "NA"
+          )}
         </span>
-
         {/* Status */}
         <span className="text-subtext line-clamp-1">
           {data.status || "NA"}
         </span>
 
         {/* Created At */}
-        <span className="text-subtext text-sm line-clamp-1">
-          {data.created_at ? data.created_at.split("T")[0] : "NA"}
-        </span>
+        {/* <span className="text-subtext text-sm line-clamp-1">
+          {data.createdAt ? data.createdAt.split("T")[0] : "NA"}
+        </span> */}
 
         {/* Updated At */}
-        <span className="text-subtext text-sm line-clamp-1">
-          {data.updated_at ? data.updated_at.split("T")[0] : "NA"}
-        </span>
+        {/* <span className="text-subtext text-sm line-clamp-1">
+          {data.updatedAt ? data.updatedAt.split("T")[0] : "NA"}
+        </span> */}
 
         {/* Actions */}
         <Actions

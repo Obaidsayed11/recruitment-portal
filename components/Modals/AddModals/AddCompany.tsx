@@ -25,7 +25,7 @@ type AddCompanyFormValues = z.infer<typeof companySchema>;
 
 const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
   const [isClicked, setIsClicked] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFirstDialogOpen, setIsFirstDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const methods = useForm<AddCompanyFormValues>({
@@ -44,8 +44,15 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      if (file.size > 500 * 1024) {
+              toast.error("Image size exceeds 500KB limit.");
+      
+       event.target.value = ""; // Clear the i
+     
+      return
+      }
       setSelectedFile(file);
-      setValue("file", file);
+       setValue("file", file);
     }
   };
 
@@ -66,7 +73,7 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
       if (response.status === 201) {
         toast.success(response.data.message);
         onAdd(response.data.company);
-        setIsDialogOpen(false);
+        setIsFirstDialogOpen(false);
         reset();
         setSelectedFile(null);
       } else {
@@ -81,9 +88,11 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
 
   return (
     <DialogModal
-      open={isDialogOpen}
-      onOpenChange={setIsDialogOpen}
-      title="Add Company"
+      open={isFirstDialogOpen}
+      onOpenChange={setIsFirstDialogOpen}
+      className="bg-secondary absolute top-5 right-5"
+      title={"Add Company"}
+      name={"Add Company"}
       icon={<Plus />}
     >
       <FormProvider {...methods}>

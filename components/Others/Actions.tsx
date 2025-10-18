@@ -16,6 +16,8 @@ import {
 import { ActionsProps } from "@/types/interface";
 import { usePathname } from "next/navigation";
 import EditUser from "../Modals/EditModals/EditUser";
+import EditCompany from "../Modals/EditModals/EditCompany";
+import EditJobDescription from "../Modals/EditModals/EditJobDescription";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
@@ -36,6 +38,12 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     // }
     if (pathname.includes("/dashboard/users")) {
       return <EditUser id={id} onUpdate={onUpdate} data={data} /> }
+      console.log(data,"data on Action")
+      if (pathname.includes("/dashboard/AdminCompanies")) {
+      return <EditCompany id={id} onUpdate={onUpdate} data={data} /> }
+      console.log(data,"data on Action")
+       if (pathname.includes("/dashboard/companies")) {
+      return <EditJobDescription id={id} onUpdate={onUpdate} data={data} /> }
       console.log(data,"data on Action")
     return null;
   };

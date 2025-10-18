@@ -6,7 +6,7 @@ export interface CompanyProps {
   websiteUrl?: string;
   careerPageUrl?: string;
   description?: string;
-  fileUrl?: string;
+  logoUrl?: string;
 }
 
 export interface CompanyListProps {
@@ -15,14 +15,16 @@ export interface CompanyListProps {
   page: string;
 }
 
+// In @/types/companyInterface.ts
+
 export interface CompanyCardProps {
   data: CompanyProps;
   isSelected: boolean;
-  onCardSelect: (id: string, selected: boolean) => void;
+  onCardSelect: (id: string, checked: boolean) => void;
   onDelete: (id: string) => void;
-  onUpdate: (company: CompanyProps) => void;
+  onUpdate: (updatedData: CompanyProps) => void;
+  onClick?: () => void; // Add this line
 }
-
 export interface AddProps {
   onAdd: (company: CompanyProps) => void;
 }
@@ -46,30 +48,32 @@ export interface CardProps {
 }
 
 
-export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP";
-export type PublishedType = "YES" | "NO";
-export type StatusType = "ACTIVE" | "INACTIVE" | "DRAFT";
+export type EmploymentType = "FULL_TIME" | "CONTRACT" | "INTERNSHIP";
+export type PublishedType = true | false;
+export type StatusType = "ACTIVE" | "CLOSED" | "DRAFT";
+
 
 // Add Job Form Values
 export interface AddJobDescriptionFormValues {
   companyId: string;
-  jobTitle: string;
+  title: string;
   department: string;
   location: string;
-  experienceRequired?: string;
+  experience?: string;
   salaryRange?: string;
   employmentType: EmploymentType;
   description?: string;
   responsibilities?: string;
   requirements?: string;
-  published?: boolean;
-  status?: string;
+  // published?: boolean;
+  // status?: string;
 }
 
 // Update Job Form Values
 export interface EditJobDescriptionFormValues {
-  companyId: string;
-  jobTitle: string;
+  // companyId: string;
+  id: string
+  title: string;
   department?: string;
   location?: string;
   experienceRequired?: string;
@@ -87,27 +91,29 @@ export interface EditJobDescriptionFormValues {
 // Job Description Data (from API)
 export interface JobDescriptionProps {
   id: string;
-  company_id: string;
-  job_title: string;
+  companyId: string;
+  title: string;
   department?: string;
   location?: string;
-  experience_required?: string;
-  salary_range?: string;
-  employment_type?: EmploymentType;
+  experience?: string;
+  salaryRange?: string;
+  employmentType?: EmploymentType;
   description?: string;
   responsibilities?: string;
   requirements?: string;
-  created_by?: string;
-  published?: boolean;
+  published: boolean;
   status?: StatusType;
-  image_url?: string;
-  created_at?: string;
-  updated_at?: string;
+  // image_url?: string;
+ CreatedBy?: {
+    id: string | any;
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // 
 export interface JobDescriptionListProps {
-  description: JobDescriptionProps[];
+  jobs: JobDescriptionProps[];
   currentPage: string;
   totalPages: string;
 }

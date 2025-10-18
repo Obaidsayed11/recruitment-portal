@@ -15,6 +15,7 @@ interface MyToken {
   accessToken: string;
   refreshToken: string;
   accessTokenExpires: number;
+  companyId: string | null
   error?: string;
 }
 
@@ -64,6 +65,7 @@ export default NextAuth({
           accessToken: user.token,
           refreshToken: user.refreshToken,
           role: user.role,
+          companyId: user.companyId
         } as any;
       },
     }),
@@ -79,6 +81,7 @@ export default NextAuth({
           role: user.role,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
+          companyId: user.companyId,
           accessTokenExpires: Date.now() + 60 * 60 * 1000,
         };
       }
@@ -98,6 +101,7 @@ export default NextAuth({
         role: (token as MyToken).role,
         accessToken: (token as MyToken).accessToken,
         refreshToken: (token as MyToken).refreshToken,
+        companyId: (token as MyToken).companyId
       };
       return session;
     },
