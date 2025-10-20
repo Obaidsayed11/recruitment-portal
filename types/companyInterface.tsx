@@ -78,7 +78,7 @@ export interface EditJobDescriptionFormValues {
   location?: string;
   experienceRequired?: string;
   salaryRange?: string;
-  employmentType?: EmploymentType;
+  employmentType?: EmploymentType | any;
   description?: string;
   responsibilities?: string;
   requirements?: string;
@@ -93,7 +93,11 @@ export interface JobDescriptionProps {
   id: string;
   companyId: string;
   title: string;
-  department?: string;
+  Department: {
+                name: string
+                id:string
+            },
+          
   location?: string;
   experience?: string;
   salaryRange?: string;
@@ -157,59 +161,77 @@ export type ApplicationSource =
   | "WALKIN"
   | "OTHER";
 
+// Experience object for previous roles
+export interface Experience {
+  company: string;
+  role: string;
+  years: number;
+}
+
+// Main Add Application form interface
 export interface AddApplicationFormValues {
-  jobId: string;
-  companyId: string;
-  candidateName: string;
-  email: string;
-  phone: string;
+  jobId: string;                // Required
+  companyId: string;            // Required
+  candidateName: string;        // Required
+  email: string;                // Required
+  phone: string;                // Required
+  skills?: string[];            // Optional (array of strings)
+  experience?: Experience[];    // Optional (array of objects)
   currentCTC?: string;
   expectedCTC?: string;
   noticePeriod?: string;
-  resume?: File | null;
-  source?: ApplicationSource;
-  status?: ApplicationStatus;
+  source?: string;
+  resume: File | null;          // Required file
 }
 
-
-// Edit Application Form Values
-
+// Edit Application form (all fields optional)
 export interface EditApplicationFormValues {
   jobId?: string;
   companyId?: string;
   candidateName?: string;
   email?: string;
   phone?: string;
+  skills?: string[];
+  experience?: Experience[];
   currentCTC?: string;
   expectedCTC?: string;
   noticePeriod?: string;
+  source?: string;
+  status?: string;
   resume?: File | null;
-  source?: ApplicationSource;
-  status?: ApplicationStatus;
   updated_at?: string;
 }
 
-// Application Data (from API)
-
+// Application data returned from the API
 export interface ApplicationProps {
   id: string;
-  job_id: string;
-  company_id: string;
-  candidate_name: string;
+  jobId: string;
+  companyId: string;
+  candidateName: string;
   email: string;
   phone: string;
-  current_ctc?: string;
-  expected_ctc?: string;
-  notice_period?: string;
-  status?: ApplicationStatus;
-  source?: ApplicationSource;
-  created_at?: string;
-  updated_at?: string;
+  resumeUrl?: string;
+  experience?: Experience[];
+  skills?: string[];
+  currentCTC?: string;
+  expectedCTC?: string;
+  noticePeriod?: string;
+  status?: string;
+  source?: string;
+  createdAt?: string;
+  updatedAt: string;
+  Notes?: {
+    userId: string;
+    note?: string;
+  };
+  History?: {
+    oldStatus: string;
+    newStatus: string;
+    changeById: string;
+  }[];
 }
 
-
-// Application List Props
-
+// Application list response from the backend
 export interface ApplicationListProps {
   applications: ApplicationProps[];
   currentPage: string;
@@ -242,48 +264,38 @@ export interface UpdateApplicationProps {
 
 // Department Status
 // Department Status
-export type DepartmentStatus = "ACTIVE" | "INACTIVE";
+
+
+export interface DepartmentProps {
+  id: string;
+  name: string;
+  companyId: string;
+ description:string
+}
 
 
 // Add Department Form Values
 export interface AddDepartmentFormValues {
-  departmentName: string;
-  companyId: string;
-  headOfDepartment?: string;
-  email?: string;
-  phone?: string;
-  status?: DepartmentStatus;
+   onAdd: (data: DepartmentProps) => void;
 }
 
 // Edit Department Form Values
 export interface EditDepartmentFormValues {
-  departmentName?: string;
-  companyId?: string;
-  headOfDepartment?: string;
-  email?: string;
-  phone?: string;
-  status?: DepartmentStatus;
-  updated_at?: string;
+ 
+  
+  name?: string;
+  description?: string;
 }
 
 // Department Data (from API)
-export interface DepartmentProps {
-  id: string;
-  department_name: string;
-  company_id: string;
-  head_of_department?: string;
-  email?: string;
-  phone?: string;
-  status?: DepartmentStatus;
-  created_at?: string;
-  updated_at?: string;
-}
+
 
 // Department List Props
 export interface DepartmentListProps {
   departments: DepartmentProps[];
   currentPage: string;
   totalPages: string;
+  
 }
 
 // Card Props (for DepartmentCard component)
@@ -294,6 +306,13 @@ export interface DepartmentCardProps extends CardProps {
 // Props for Modals
 export interface AddDepartmentModalProps {
   onAdd: (data: DepartmentProps) => void;
+   companyId: string;
+}
+export interface EditDepartmentProps {
+  id: string | number;
+  data: EditDepartmentFormValues;
+  onUpdate: (updated: any) => void;
+  
 }
 
 export interface UpdateDepartmentProps {

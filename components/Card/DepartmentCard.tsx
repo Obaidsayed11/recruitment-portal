@@ -14,7 +14,8 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
 
     const handleDelete = async () => {
       try {
-        const response = await apiClient.delete(`/admin/department/${data.id}`);
+        const response = await apiClient.delete(`/department/${data.id}`);
+        console.log(response.data,"uqdqguedf")
         toast.success(response.data.message);
         onDelete(data.id);
       } catch (error: any) {
@@ -39,30 +40,15 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
 
         {/* Full Name */}
         <span className="text-subtext font-medium line-clamp-1">
-          {data.department_name || "NA"}
+          {data.name|| "NA"}
         </span>
 
         {/* Role / Head of Department */}
         <span className="text-subtext line-clamp-1">
-          {data.head_of_department || "NA"}
+          {data.description || "NA"}
         </span>
 
-        {/* Phone */}
-        <span className="text-subtext line-clamp-1">{data.phone || "NA"}</span>
-
-        {/* Email */}
-        <span className="text-subtext line-clamp-1">{data.email || "NA"}</span>
-
-        {/* Created At */}
-        <span className="text-subtext text-sm line-clamp-1">
-          {data.created_at ? data.created_at.split("T")[0] : "NA"}
-        </span>
-
-        {/* Updated At */}
-        <span className="text-subtext text-sm line-clamp-1">
-          {data.updated_at ? data.updated_at.split("T")[0] : "NA"}
-        </span>
-
+        
         {/* Actions */}
         <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
       </div>

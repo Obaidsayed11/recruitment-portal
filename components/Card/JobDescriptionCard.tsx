@@ -77,7 +77,7 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
 
         {/* Department */}
         <span className="text-subtext line-clamp-1">
-          {data.department || "NA"}
+          {data.Department.name || "NA"}
         </span>
 
 

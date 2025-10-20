@@ -11,14 +11,17 @@ import DialogModal from "@/components/Others/DialogModal";
 import InputField from "@/components/Form_Fields/InputField";
 import SelectField from "@/components/Form_Fields/SelectField";
 import Button from "@/components/Others/Button";
+import { useParams } from "next/navigation";
+import { description } from "@/components/Charts/DeliveryTimeChart";
+import { useDepartments } from "@/context/DepartmentContext";
 
-const rolesOptions = ["WAREHOUSE", "DRIVER", "OUTLET", "DISPATCHER"] as const;
+
 
 const addDepartmentSchema = z.object({
-  fullName: z.string().min(1, "Full Name is required."),
-  role: z.enum(rolesOptions),
-  phone: z.string().min(10, "Phone number must be at least 10 digits."),
-  email: z.string().email("Invalid email."),
+  name: z.string(),
+  // role: z.enum(rolesOptions),
+  description: z.string()
+
 });
 
 type AddDepartmentFormValues = z.infer<typeof addDepartmentSchema>;
@@ -26,19 +29,35 @@ type AddDepartmentFormValues = z.infer<typeof addDepartmentSchema>;
 const AddDepartment: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+   const { departments } = useDepartments();
+    const [selectedDept, setSelectedDept] = useState("");
+   const params = useParams() as { companyId: string };
+const companyId = params.companyId;
+
+const deptOptions = departments.map((d) => ({
+    label: d.name,
+    value: d.id,
+  }));
 
   const methods = useForm<AddDepartmentFormValues>({
     resolver: zodResolver(addDepartmentSchema),
+    defaultValues: {
+      name: "",
+description: ""
+    }
   });
 
   const { handleSubmit, reset } = methods;
 
   const onSubmit: SubmitHandler<AddDepartmentFormValues> = async (data) => {
     try {
+
       setIsClicked(true);
-      const response = await apiClient.post("/departments", data);
+
+      const response = await apiClient.post(`/department?companyId=${companyId}`, data);
+      console.log(response.data)
       toast.success(response.data.message || "Department added successfully!");
-      onAdd(response.data);
+      onAdd(response.data.department);
       setIsOpen(false);
       reset();
       setIsClicked(false);
@@ -60,10 +79,10 @@ const AddDepartment: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
-          <InputField label="Full Name" name="fullName" placeholder="Enter Full Name" />
-          <SelectField label="Role" name="role" placeholder="Select Role" options={rolesOptions.map(v => ({ label: v, value: v }))} />
-          <InputField label="Phone" name="phone" placeholder="Enter Phone" />
-          <InputField label="Email" name="email" placeholder="Enter Email" />
+          <InputField label="Enter Department Name" name="name" placeholder="Enter Department Name" />
+          {/* <SelectField label="Role" name="role" placeholder="Select Role" options={rolesOptions.map(v => ({ label: v, value: v }))} /> */}
+          <InputField label="Enter Description" name="description" placeholder="Enter Description" />
+          
           <Button type="submit" className="sm:col-span-2" disabled={isClicked}>
             {isClicked ? "Adding..." : "Add Department"}
           </Button>

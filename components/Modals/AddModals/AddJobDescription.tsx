@@ -13,7 +13,7 @@ import SelectField from "@/components/Form_Fields/SelectField";
 import Button from "@/components/Others/Button";
 import { AddJobModalProps } from "@/types/companyInterface";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 const employmentOptions = ["FULL_TIME", "Contract", "Internship"] as const;
 
@@ -35,10 +35,11 @@ const addJobSchema = z.object({
 type AddJobDescriptionFormValues = z.infer<typeof addJobSchema>;
 
 const AddJobDescription: React.FC<AddJobModalProps> = ({ onAdd }) => {
+   const params = useParams() as { companyId: string };
+const companyId = params.companyId;
 
-   type Props = {
-    companyId?: string | null;
-  };
+
+  
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -58,8 +59,7 @@ const AddJobDescription: React.FC<AddJobModalProps> = ({ onAdd }) => {
   });
   const { data: session } = useSession();
     const searchParams = useSearchParams();
-    console.log(searchParams,"searfch")
-    // console.log(session,"sesdsion")
+    console.log(session,"sesdsion")
     // let companyId = session?.user?.companyId ? session?.user?.companyId : ""
   
  
@@ -71,7 +71,7 @@ const AddJobDescription: React.FC<AddJobModalProps> = ({ onAdd }) => {
     setIsClicked(true);
      
     const payload = { ...data,companyId};
-    const response = await apiClient.post(`/company/job/${companyId}`, payload);
+    const response = await apiClient.post(`/job?companyId=${companyId}`, payload);
     console.log(response.data,"afh")
     toast.success(response.data.message || "Job added successfully!");
     onAdd(response.data);
@@ -89,7 +89,7 @@ const AddJobDescription: React.FC<AddJobModalProps> = ({ onAdd }) => {
       onOpenChange={setIsOpen}
       title={"Add Job Description"}
       className="bg-secondary absolute top-5 right-5"
-      name={"Add User"}
+      name={"Add Job Description"}
       icon={<Plus />}
     >
       <FormProvider {...methods}>

@@ -2,16 +2,28 @@
 import { useTabContext } from "@/context/TabsContext";
 import React, { useEffect } from "react";
 
-interface TabsProps {
-  tabButtons: {
-    label: string;
-    value: string;
-  }[];
-   className?: string;
+interface TabButton {
+  label: string;
+  value: string;
 }
 
-const Tabs: React.FC<TabsProps> = ({ tabButtons , className}) => {
-  const { activeTab, setActiveTab } = useTabContext();
+interface TabsProps {
+  tabButtons: TabButton[];
+  activeTab?: string;
+  onTabChange?: (value: string) => void;
+  className?: string;
+}
+
+const Tabs: React.FC<TabsProps> = ({ 
+  tabButtons, 
+  activeTab: controlledActiveTab,
+  onTabChange,
+  className 
+}) => {
+  const { activeTab: contextActiveTab, setActiveTab } = useTabContext();
+
+  // Use controlled activeTab if provided, otherwise use context
+  const activeTab = controlledActiveTab !== undefined ? controlledActiveTab : contextActiveTab;
 
   // Set first tab as default if not already set
   useEffect(() => {
@@ -20,13 +32,23 @@ const Tabs: React.FC<TabsProps> = ({ tabButtons , className}) => {
     }
   }, [tabButtons, activeTab, setActiveTab]);
 
+  const handleTabClick = (value: string) => {
+    // Update context
+    setActiveTab(value);
+    
+    // If onTabChange callback is provided, call it (this updates URL)
+    if (onTabChange) {
+      onTabChange(value);
+    }
+  };
+
   return (
-     <div className={`max-w-full overflow-x-auto noScrollBar ${className || ""}`}>
+    <div className={`max-w-full overflow-x-auto noScrollBar ${className || ""}`}>
       <div className="flex w-max">
         {tabButtons.map((button) => (
           <button
             key={button.value}
-            onClick={() => setActiveTab(button.value)}
+            onClick={() => handleTabClick(button.value)}
             type="button"
             className={`${
               activeTab === button.value

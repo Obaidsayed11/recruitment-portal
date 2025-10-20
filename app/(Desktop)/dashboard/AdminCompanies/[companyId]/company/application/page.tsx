@@ -16,33 +16,47 @@ import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Operations from "@/components/Others/Operations";
 import Skeleton2 from "@/components/Others/Skeleton2";
 import Header from "@/components/Others/Header";
-import AddUser from "@/components/Modals/AddModals/AddUser";
 import UserCard from "@/components/Card/UserCard";
 import { AxiosResponse } from "axios";
 import AddApplication from "@/components/Modals/AddModals/AddApplication";
-import AddDepartment from "@/components/Modals/AddModals/AddDepartment";
-import DepartmentCard from "@/components/Card/DepartmentCard";
-import { DepartmentListProps, DepartmentProps } from "@/types/companyInterface";
+import { ApplicationListProps, ApplicationProps } from "@/types/companyInterface";
+import ApplicationCard from "@/components/Card/ApplicationCard";
 
 const headersOptions = [
-  { value: "Full Name" },
-  { value: "Role" },
-  { value: "Phone" },
+ 
+  { value: "Candidate Name" },
   { value: "Email" },
-  { value: "Created At" },
-  { value: "Updated At" },
-  { value: "Actions" },
+  { value: "Phone" },
+  { value: "resumeUrl" },
+  { value: "experience" },
+  { value: "skills" },
+  { value: "currentCTC" },
+  { value: "expectedCTC" },
+  { value: "noticePeriod" },
+  { value: "status" },
+  { value: "source" },
+  { value: "Notes" },
+  { value: "History" },
+  
+
 ];
+
 type Props = {
   companyId: string;
 };
-const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
+
+const CompanyApplication: React.FC<Props> = ({ companyId }) => {
+
+  
+
   // --- Core Hooks ---
   const { data: session } = useSession();
+  console.log(session,"swessio")
   const searchParams = useSearchParams();
 
   // --- State Declarations ---
-  const [departments, setDepartments] = useState<DepartmentProps[]>([]);
+  // const [applications, setApplications] = useState<UserProps[]>([]);
+  const [applications, setApplications] = useState<ApplicationProps[]>([]);
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -55,10 +69,7 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
   const selectedRole = searchParams?.get("role") || "";
 
   // --- Memoized Values ---
-  const allCards = useMemo(
-    () => departments.map((data) => data.id),
-    [departments]
-  );
+  const allCards = useMemo(() => applications.map((data) => data.id), [applications]);
 
   // --- Refs and Callbacks for Infinite Scroll ---
   const observer = useRef<IntersectionObserver | null>(null);
@@ -76,12 +87,16 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
     [loading, hasMore]
   );
 
+
+
+  
+
   // --- Effects ---
 
   // --- 1. Effect to RESET state on a new query (search or filter change) ---
   // This runs ONLY when the filter or debounced search term changes.
   useEffect(() => {
-    setDepartments([]);
+    setApplications([]);
     setPage(1);
     setHasMore(true);
   }, [debouncedSearchQuery, selectedRole]);
@@ -100,32 +115,33 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
+      params.append("limit","10")
 
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
           params.append("query", debouncedSearchQuery);
-          response = await apiClient.get<DepartmentListProps>(
+          response = await apiClient.get<ApplicationListProps>(
             `/admin/users/search?${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
-          if (selectedRole && selectedRole !== "All") {
-            params.append("role", selectedRole);
-          }
-          response = await apiClient.get<DepartmentListProps>(
-          `/departments/${companyId}?${params.toString()}`
+          // if (selectedRole && selectedRole !== "All") {
+          //   params.append("role", selectedRole);
+          // }
+           response = await apiClient.get<ApplicationListProps>(
+          `/application?companyId=${companyId}?${params.toString()}`
           );
         }
         console.log(response);
-        const newDepartment = response.data.departments || [];
+        const newApplications = response.data.applications || [];
 
         // If it's the first page, we are starting a new list.
         // For all subsequent pages, we append to the existing list.
         if (page === 1) {
-          setDepartments(newDepartment);
+          setApplications(newApplications);
         } else {
-          setDepartments((prev) => [...prev, ...newDepartment]);
+          setApplications((prev) => [...prev, ...newApplications]);
         }
 
         // Update pagination status based on the API response.
@@ -140,7 +156,7 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
 
     fetchData();
     // This dependency array is now correct. It runs when the page or query changes, but will not loop on its own state updates.
-  }, [page, debouncedSearchQuery, selectedRole, session]);
+  }, [page, debouncedSearchQuery, selectedRole, session, companyId]);
   // --- Event Handlers ---
   const handleSelectAll = (isChecked: boolean) =>
     setSelectedCards(isChecked ? allCards : []);
@@ -149,13 +165,13 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
       isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
     );
   const handleDelete = (id: string) =>
-    setDepartments((prev) => prev.filter((data) => data.id !== id));
-  const handleAddDepartments = (newData: DepartmentProps) => {
-    if (newData) setDepartments((prev) => [newData, ...prev]);
-  };
-  const handleUpdate = (updatedData: DepartmentProps) => {
+    setApplications((prev) => prev.filter((data) => data.id !== id));
+ const handleAddApplication = (newApplication: ApplicationProps) => {
+  if (newApplication) setApplications(prev => [newApplication, ...prev]);
+};
+  const handleUpdate = (updatedData: ApplicationProps) => {
     if (updatedData)
-      setDepartments((prev) =>
+      setApplications((prev) =>
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
   };
@@ -163,78 +179,89 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
     /* ... */
   };
   return (
-    <>
-      {/* <DynamicBreadcrumb links={[{ label: "Departments" }]} /> */}
-      <section
-        className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[140vw] h-[calc(100vh-169px)]"
-      >
-        <div
-          className="flex flex-col sm:flex-row items-start sm:items-center 
+  <>
+    {/* <DynamicBreadcrumb links={[{ label: "Applications" }]} /> */}
+
+     <section
+       className="bg-white sm:rounded-xl 
+      p-3 sm:p-5 flex flex-col w-[82.5vw] h-[calc(100vh-169px)]"
+    >
+      {/* --- Header Section --- */}
+      <div
+        className="flex flex-col sm:flex-row items-start sm:items-center 
         justify-between gap-3 sm:gap-4 pb-5"
-        >
-          <Operations
-            filterProps={{
-              filter: true,
-              filters: [
-                {
-                  queryKey: "role",
-                  options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
-                },
-              ],
-            }}
-            checkBox
-            isAllSelected={
-              allCards.length > 0 && selectedCards.length === allCards.length
-            }
-            selectedCount={selectedCards.length}
-            handleSelectAll={handleSelectAll}
-            onDeleteSelected={handleDeleteSelected}
-            searchQuery={searchQuery}
-            handleSearchQueryChange={(e) => setSearchQuery(e.target.value)}
-            serverSearchQuery={serverSearchQuery}
-            handleServerSearchQueryChange={(e) =>
-              setServerSearchQuery(e.target.value)
-            }
-            serverSearchPlaceholder="Search all Departments..."
-          />
-          <AddDepartment onAdd={handleAddDepartments} />
-        </div>
-        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
-          {/* Header */}
-          <Header
-            checkBox={true}
-            className1="
+      >
+        <Operations
+          filterProps={{
+            filter: true,
+            filters: [
+              {
+                queryKey: "role",
+                options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
+              },
+            ],
+          }}
+          checkBox
+          isAllSelected={
+            allCards.length > 0 && selectedCards.length === allCards.length
+          }
+          selectedCount={selectedCards.length}
+          handleSelectAll={handleSelectAll}
+          onDeleteSelected={handleDeleteSelected}
+          searchQuery={searchQuery}
+          handleSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+          serverSearchQuery={serverSearchQuery}
+          handleServerSearchQueryChange={(e) =>
+            setServerSearchQuery(e.target.value)
+          }
+          serverSearchPlaceholder="Search all Application..."
+        />
+
+        {/* <div className="w-full sm:w-auto"> */}
+          <AddApplication onAdd={handleAddApplication} />
+        {/* </div> */}
+      </div>
+
+      {/* --- Scrollable Table Section --- */}
+      <div
+         className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+        {/* Header */}
+        {/* --- Table Header --- */}
+        <Header
+          checkBox={true}
+          className1="
             grid sticky top-0 z-10 border
             
             min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(7,minmax(120px,1fr))]
+            grid-cols-[30px_repeat(16,minmax(120px,1fr))]
             gap-12 
-            whitespace-nowrap gap-4"
-            headersall={headersOptions}
-            handleSelectAll={handleSelectAll}
-            isAllSelected={
-              allCards.length > 0 && selectedCards.length === allCards.length
-            }
-          />
+            whitespace-nowrap gap-4 "
+          headersall={headersOptions}
+          handleSelectAll={handleSelectAll}
+          isAllSelected={
+            allCards.length > 0 && selectedCards.length === allCards.length
+          }
+        />
 
+        {/* --- Table Body --- */}
+        <div className="divide-y divide-gray-100">
           {loading && page === 1 ? (
             <Skeleton2 />
-          ) : departments.length === 0 ? (
+          ) : applications.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
-              No Departments found.
+              No Applications found.
             </div>
           ) : (
-            departments.map((user, index) => {
-              const isLastElement = departments.length === index + 1;
-              // Attach observer only when not using the client-side filter
+            applications.map((application, index) => {
+              const isLastElement = applications.length === index + 1;
               const ref =
                 isLastElement && searchQuery === "" ? lastUserElementRef : null;
+
               return (
-                <div ref={ref} key={user.id}>
-                  <DepartmentCard
-                    data={user}
-                    isSelected={selectedCards.includes(user.id)}
+                <div ref={ref} key={application.id}>
+                  <ApplicationCard
+                    data={application}
+                    isSelected={selectedCards.includes(application.id)}
                     onCardSelect={handleCardSelect}
                     onDelete={handleDelete}
                     onUpdate={handleUpdate}
@@ -243,16 +270,20 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
               );
             })
           )}
+
           {loading && page > 1 && <Skeleton2 />}
-          {!hasMore && !loading && departments.length > 0 && (
+
+          {!hasMore && !loading && applications.length > 0 && (
             <p className="text-center text-gray-500 py-4">
               You have reached the end of the list.
             </p>
           )}
         </div>
-      </section>
-    </>
-  );
-};
+      </div>
+    </section>
+  </>
+);
 
-export default CompanyDepartment;
+}
+
+export default CompanyApplication

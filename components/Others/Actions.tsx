@@ -11,19 +11,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  
 } from "@/components/ui/alert-dialog";
 import { ActionsProps } from "@/types/interface";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import EditUser from "../Modals/EditModals/EditUser";
 import EditCompany from "../Modals/EditModals/EditCompany";
 import EditJobDescription from "../Modals/EditModals/EditJobDescription";
+import EditApplication from "../Modals/EditModals/EditApplication";
+import EditDepartment from "../Modals/EditModals/EditDepartment";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
 
+  const searchParams = useSearchParams();
+
+ const tabParam = searchParams?.get("tab");
+
   const renderModal = () => {
     if (!pathname) return null;
+      console.log("Actions - pathname:", pathname);
+    console.log("Actions - tabsParam:", tabParam);
+    console.log("Actions - data:", data);
+    // Add debugging for ERP Sync
 
     // if (pathname.includes("admin/manager")) {
     //   return <UpdateManager id={id} onUpdate={onUpdate} data={data} />;
@@ -37,16 +46,35 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     //   return <UpdateDrivers id={id} onUpdate={onUpdate} data={data} />;
     // }
     if (pathname.includes("/dashboard/users")) {
-      return <EditUser id={id} onUpdate={onUpdate} data={data} /> }
-      console.log(data,"data on Action")
-      if (pathname.includes("/dashboard/AdminCompanies")) {
-      return <EditCompany id={id} onUpdate={onUpdate} data={data} /> }
-      console.log(data,"data on Action")
-       if (pathname.includes("/dashboard/companies")) {
-      return <EditJobDescription id={id} onUpdate={onUpdate} data={data} /> }
-      console.log(data,"data on Action")
+      return <EditUser id={id} onUpdate={onUpdate} data={data} />;
+    }
+    else if (
+      /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&
+      tabParam === "job-description"
+    ) {
+      return <EditJobDescription id={id} onUpdate={onUpdate} data={data} />;
+    } 
+    else if (
+      /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&
+      tabParam === "application"
+    ) {
+      return <EditApplication id={id} onUpdate={onUpdate} data={data} />;
+    } 
+    else if (
+      /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&
+      tabParam === "department"
+    ) {
+      return <EditDepartment id={id} onUpdate={onUpdate} data={data} />;
+    }
+    
+    // Match: /dashboard/AdminCompanies (company list page, no ID)
+    else if (pathname === "/dashboard/AdminCompanies") {
+      return <EditCompany id={id} onUpdate={onUpdate} data={data} />;
+    }
+
     return null;
   };
+
 
   return (
     <>

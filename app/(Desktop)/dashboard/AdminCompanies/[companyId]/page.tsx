@@ -1,30 +1,45 @@
 "use client";
 import { useSession } from 'next-auth/react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { toast } from "sonner";
 import apiClient from "@/lib/axiosInterceptor";
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import { Card } from '@/components/ui/card';
 import Tabs from '@/components/Others/Tabs';
-import JobDescription from '../company/job-descriptions/page';
+import JobDescription from './company/job-descriptions/page';
 import { useTabContext } from '@/context/TabsContext';
-import CompanyApplication from '../company/application/page';
-import CompanyDepartment from '../company/department/page';
+import CompanyApplication from './company/application/page';
+import CompanyDepartment from './company/department/page';
 import { CompanyProps } from '@/types/companyInterface';
 
 const CompanyDetailPage = () => {
   const { activeTab, setActiveTab } = useTabContext();
- const params = useParams() as { companyId: string };
-const companyId = params.companyId;;
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams() as { companyId: string };
+  const companyId = params.companyId;
   const { data: session } = useSession();
+  
+  const tabs = ["job-description", "application", "department"];
   
   const [company, setCompany] = useState<CompanyProps | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Sync activeTab with URL and ensure valid tab is set
   useEffect(() => {
-    setActiveTab("Job description");
-  }, [setActiveTab]);
+    const currentTab = searchParams?.get("tab");
+    if (!currentTab || !tabs.includes(currentTab)) {
+      // If "tab" is missing or invalid, set it to "job-description" in URL
+      const params = new URLSearchParams(searchParams?.toString() || "");
+      params.set("tab", "job-description");
+      router.replace(`?${params.toString()}`, { scroll: false });
+      setActiveTab("job-description");
+    } else {
+      setActiveTab(currentTab);
+    }
+  }, [searchParams, router, setActiveTab]);
 
   // Fetch company details
   useEffect(() => {
@@ -46,10 +61,18 @@ const companyId = params.companyId;;
     fetchCompanyDetails();
   }, [companyId, session]);
 
+  // Handle tab change and update URL
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    params.set("tab", tab);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   const tabButtons = [
-    { label: "Job description", value: "Job description" },
-    { label: "Application", value: "Application" },
-    { label: "Department", value: "Department" }
+    { label: "Job description", value: "job-description" },
+    { label: "Application", value: "application" },
+    { label: "Department", value: "department" }
   ];
 
   if (loading) {
@@ -108,14 +131,16 @@ const companyId = params.companyId;;
           {/* Tabs */}
           <Tabs
             tabButtons={tabButtons}
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
             className="flex justify-start w-full flex-wrap gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6"
           />
 
           {/* Tab Content */}
           <div className="w-full text-center flex justify-start rounded-lg">
-            {activeTab === "Job description" && <JobDescription companyId={companyId as string} />}
-            {activeTab === "Application" && <CompanyApplication companyId={companyId as string} />}
-            {activeTab === "Department" && <CompanyDepartment companyId={companyId as string} />}
+            {activeTab === "job-description" && <JobDescription companyId={companyId} />}
+            {activeTab === "application" && <CompanyApplication companyId={companyId} />}
+            {activeTab === "department" && <CompanyDepartment companyId={companyId} />}
           </div>
         </div>
       </div>
