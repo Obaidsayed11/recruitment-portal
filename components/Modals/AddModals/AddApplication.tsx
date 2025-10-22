@@ -13,8 +13,8 @@
   import { FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { useParams, useSearchParams } from "next/navigation";
   const addApplicationSchema = z.object({
-    jobId: z.string(),
-    companyId: z.string(),
+    // jobId: z.string(),
+    // companyId: z.string(),
     candidateName: z.string().min(1, "Candidate Name is required."),
     email: z.string().email("Invalid email."),
     phone: z.string().min(10, "Phone must be at least 10 digits."),
@@ -38,50 +38,48 @@ import { useParams, useSearchParams } from "next/navigation";
     const [isClicked, setIsClicked] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
       const [selectedFile, setSelectedFile] = useState<File | null>(null);
-   const params = useParams() as { companyId: string };
+const params = useParams() as { companyId: string };
 const companyId = params.companyId;
+
     const methods = useForm<AddApplicationFormValues>({
       resolver: zodResolver(addApplicationSchema),
     });
 
     const { handleSubmit, reset, setValue } = methods;
 
-  const onSubmit: SubmitHandler<AddApplicationFormValues> = async (data) => {
+ const onSubmit: SubmitHandler<AddApplicationFormValues> = async (data) => {
   if (!selectedFile) {
-    console.log("submitt")
     toast.error("Please upload your resume.");
     return;
   }
 
   try {
     setIsClicked(true);
-
     const formData = new FormData();
+
     formData.append("candidateName", data.candidateName);
     formData.append("email", data.email);
     formData.append("phone", data.phone);
-    formData.append("jobId", data.jobId || ""); // add proper jobId
-    formData.append("companyId", data.companyId || ""); // add proper companyId
+    // formData.append("jobId", jobId); // ✅ from props
+    formData.append("companyId", companyId); // ✅ from params
     formData.append("resume", selectedFile);
 
-    // Skills (array)
     if (data.skills) {
       data.skills.split(",").forEach((skill) => {
         formData.append("skills[]", skill.trim());
       });
     }
 
-    // Experience (array of objects)
     if (data.experience) {
       try {
-        const expArray = JSON.parse(data.experience); // expects JSON string from input
+        const expArray = JSON.parse(data.experience);
         expArray.forEach((exp: any, index: number) => {
           formData.append(`experience[${index}][company]`, exp.company);
           formData.append(`experience[${index}][role]`, exp.role);
           formData.append(`experience[${index}][years]`, exp.years.toString());
         });
       } catch {
-        toast.error("Experience must be a valid JSON array");
+        toast.error("Experience must be valid JSON");
         setIsClicked(false);
         return;
       }
@@ -92,16 +90,17 @@ const companyId = params.companyId;
     });
 
     toast.success(response.data.message || "Application added successfully!");
-    onAdd(response.data.data); // pass the created application object
+    onAdd(response.data.data);
     setIsOpen(false);
     reset();
     setSelectedFile(null);
-    setIsClicked(false);
   } catch (error: any) {
     toast.error(error.response?.data?.message || error.message);
+  } finally {
     setIsClicked(false);
   }
 };
+
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
@@ -167,7 +166,7 @@ const companyId = params.companyId;
               placeholder="Current CTC"
             />
             <InputField
-              label="Current CTC"
+              label="Expected CTC"
               name="expectedCTC"
               placeholder="Current CTC"
             />

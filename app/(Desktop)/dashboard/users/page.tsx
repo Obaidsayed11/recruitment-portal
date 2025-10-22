@@ -19,6 +19,8 @@ import Header from "@/components/Others/Header";
 import AddUser from "@/components/Modals/AddModals/AddUser";
 import UserCard from "@/components/Card/UserCard";
 import { AxiosResponse } from "axios";
+import { useRouter } from "next/navigation";
+import Button from "@/components/Others/Button";
 
 const headersOptions = [
   { value: "Full Name" },
@@ -35,6 +37,8 @@ const UserRoute = () => {
   const { data: session } = useSession();
   console.log(session,"wduio")
   const searchParams = useSearchParams();
+  const router = useRouter();
+
 
   // --- State Declarations ---
   const [allUsers, setAllUsers] = useState<UserProps[]>([]);
@@ -51,6 +55,10 @@ const UserRoute = () => {
 
   // --- Memoized Values ---
   const allCards = useMemo(() => allUsers.map((data) => data.id), [allUsers]);
+
+  const handleCreateUser = () => {
+  router.push("/dashboard/users/create-user");
+};
 
   // --- Refs and Callbacks for Infinite Scroll ---
   const observer = useRef<IntersectionObserver | null>(null);
@@ -220,7 +228,12 @@ useEffect(() => {
             }
             serverSearchPlaceholder="Search all users..."
           />
-          <AddUser onAdd={handleAdd} />
+          <Button
+  onClick={handleCreateUser}
+  className="bg-primary text-white px-4 py-2 rounded-lg"
+>
+  + Create User
+</Button>
         </div>
         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header

@@ -19,6 +19,8 @@ import EditCompany from "../Modals/EditModals/EditCompany";
 import EditJobDescription from "../Modals/EditModals/EditJobDescription";
 import EditApplication from "../Modals/EditModals/EditApplication";
 import EditDepartment from "../Modals/EditModals/EditDepartment";
+import EditGroups from "../Modals/EditModals/EditGroups";
+import EditRoles from "../Modals/EditModals/EditRoles";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
@@ -71,6 +73,13 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     else if (pathname === "/dashboard/AdminCompanies") {
       return <EditCompany id={id} onUpdate={onUpdate} data={data} />;
     }
+     else if (pathname === "/dashboard/AdminSettings" && tabParam === "groups") {
+  return <EditGroups id={id} onUpdate={onUpdate} data={data} />;
+}
+else if (pathname === "/dashboard/AdminSettings" && tabParam === "roles") {
+  return <EditRoles id={id} onUpdate={onUpdate} data={data} />;
+}
+
 
     return null;
   };

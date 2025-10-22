@@ -137,7 +137,7 @@ const navigationData: Record<UserRole, NavigationSection[]> = {
         },
         {
           name: "Settings",
-          link: "/dashboard/settings",
+          link: "/dashboard/AdminSettings",
           icon: (isActive) => <SettingsSvg isActive={isActive} />,
         },
         {

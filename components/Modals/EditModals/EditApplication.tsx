@@ -2,7 +2,7 @@
 
 import apiClient from "@/lib/axiosInterceptor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, UploadCloud } from "lucide-react";
+import { Pencil, Plus, UploadCloud } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -144,13 +144,11 @@ const EditApplication: React.FC<UpdateApplicationProps> = ({ onUpdate, data, id 
 
 
   return (
-    <DialogModal
+  <DialogModal
       open={isModalOpen}
       onOpenChange={setIsModalOpen}
-      title={"Edit Application"}
-      className="bg-secondary absolute top-5 right-5"
-      name={"Edit Application"}
-      icon={<Plus />}
+      title="Edit Company"
+      icon={<Pencil />}
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 sm:grid-cols-2">

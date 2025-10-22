@@ -23,22 +23,22 @@ import { ApplicationListProps, ApplicationProps } from "@/types/companyInterface
 import ApplicationCard from "@/components/Card/ApplicationCard";
 
 const headersOptions = [
- 
   { value: "Candidate Name" },
   { value: "Email" },
   { value: "Phone" },
-  { value: "resumeUrl" },
-  { value: "experience" },
-  { value: "skills" },
-  { value: "currentCTC" },
-  { value: "expectedCTC" },
-  { value: "noticePeriod" },
-  { value: "status" },
-  { value: "source" },
-  { value: "Notes" },
-  { value: "History" },
-  
-
+  { value: "Resume" },          
+  { value: "Experience" },  
+  { value: "Skills" },      
+  { value: "Current CTC" },     
+  { value: "Expected CTC" },    
+  { value: "Notice Period" },   
+  { value: "Status" },         
+  { value: "Source" },          
+  { value: "Created At" },     
+  { value: "Updated At" },      
+  { value: "Notes" },           
+  { value: "Actions" }          
+  // REMOVED: "History" - not in API response
 ];
 
 type Props = {
@@ -130,7 +130,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
           //   params.append("role", selectedRole);
           // }
            response = await apiClient.get<ApplicationListProps>(
-          `/application?companyId=${companyId}?${params.toString()}`
+          `/application?companyId=${companyId}&${params.toString()}`
           );
         }
         console.log(response);
@@ -233,7 +233,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
             grid sticky top-0 z-10 border
             
             min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(16,minmax(120px,1fr))]
+            grid-cols-[30px_repeat(17,minmax(120px,1fr))]
             gap-12 
             whitespace-nowrap gap-4 "
           headersall={headersOptions}

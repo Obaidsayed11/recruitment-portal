@@ -13,7 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import apiClient from "@/lib/axiosInterceptor";
-import { UserListProps, UserProps } from "@/types/interface";
+
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Operations from "@/components/Others/Operations";
 import Skeleton2 from "@/components/Others/Skeleton2";
@@ -28,8 +28,6 @@ import AddGroup from "@/components/Modals/AddModals/AddGroups";
 
 const headersOptions = [
   {value: "Group Name"},
-  { value: "Created At" },
-  { value: "Updated At" },
   { value: "Action" },
 
   ];
@@ -108,13 +106,14 @@ const SettingGroups = () => {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
+        params.append("limit","10")
 
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<GroupListProps>(
-            `/admin/users/search?${params.toString()}`
+            `/groups?${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
@@ -122,7 +121,7 @@ const SettingGroups = () => {
             params.append("role", selectedRole);
           }
           response = await apiClient.get<GroupListProps>(
-            `/admin/users?${params.toString()}`
+            `/groups?${params.toString()}`
           );
         }
         console.log(response);
@@ -224,7 +223,7 @@ const SettingGroups = () => {
             grid sticky top-0 z-10 border
             
             min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(16,minmax(120px,1fr))]
+            grid-cols-[30px_repeat(2,minmax(120px,1fr))]
             gap-12 
             whitespace-nowrap gap-4"
           headersall={headersOptions}

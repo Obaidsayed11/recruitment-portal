@@ -3,7 +3,7 @@
 
 import apiClient from "@/lib/axiosInterceptor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,21 +16,21 @@ import { UpdateGroupProps } from "@/types/settingsinterface";
 
 // --- Schema ---
 const EditGroupSchema = z.object({
-    id: z.string().min(1,"id is required"),
-  group_name: z.string().min(1, "Group Name is required"),
+    // id: z.string().min(1,"id is required"),
+  name: z.string().min(1, "Group Name is required"),
 });
 
 type EditGroupFormValues = z.infer<typeof EditGroupSchema>;
 
 
-const EditGroup: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
+const EditGroups: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const methods = useForm<EditGroupFormValues>({
     resolver: zodResolver(EditGroupSchema),
     defaultValues: {
-      group_name: "",
+      name: "",
     },
   });
 
@@ -39,7 +39,7 @@ const EditGroup: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
   // Populate form when modal opens
   useEffect(() => {
     if (data && isModalOpen) {
-      setValue("group_name", data.group_name);
+      setValue("name", data.name);
     }
   }, [data, isModalOpen, setValue]);
 
@@ -47,8 +47,8 @@ const EditGroup: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
     try {
       setIsClicked(true);
       const payload = new FormData();
-      payload.append("id", formData.id)
-      payload.append("group_name", formData.group_name)
+      // payload.append("id", formData.id)
+      payload.append("name", formData.name)
 
       const response = await apiClient.put(`/groups/${id}`, formData);
 
@@ -75,16 +75,14 @@ const EditGroup: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
     <DialogModal
       open={isModalOpen}
       onOpenChange={setIsModalOpen}
-      title={"Edit Group"}
-      name={"Edit Group"}
-      icon={<Plus />}
-      
+      title="Edit Groups"
+      icon={<Pencil size={18} />}
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-1">
           <InputField
             label="Group Name"
-            name="group_name"
+            name="name"
             placeholder="Enter Group Name"
           />
 
@@ -101,4 +99,4 @@ const EditGroup: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
   );
 };
 
-export default EditGroup;
+export default EditGroups;

@@ -11,6 +11,10 @@ export interface AdminProfileData {
     photo: string;
   };
 }
+export interface Option {
+  value: string;
+  label: string;
+}
 
 export interface ActionsProps {
   id: string;
@@ -308,10 +312,10 @@ export interface DriverCardProps extends CardProps {
   data: DriverProps;
 }
 
-export interface Option {
-  value: number;
-  label: string;
-}
+// export interface Option {
+//   value: any;
+//   label: string;
+// }
 
 export interface InvoiceProps {
   id: string;

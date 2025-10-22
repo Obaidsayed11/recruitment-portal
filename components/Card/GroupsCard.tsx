@@ -30,16 +30,15 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
       <div
         ref={ref}
         className={`bg-background p-2 group w-max xl:w-full my-1 border grid items-center
-        grid-cols-[20px_1.5fr_1fr_1fr_1fr] gap-4 ${
+        grid-cols-[20px_1fr_1fr] gap-4 ${
           isSelected
             ? "bg-secondary rounded-xl border-border"
             : "hover:bg-secondary border border-white hover:rounded-xl"
         }`}
       >
         <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
-        <span className="text-subtext font-medium line-clamp-1">{data.group_name}</span>
-        <span className="text-subtext text-sm line-clamp-1">{data.created_at?.split("T")[0] || "NA"}</span>
-        <span className="text-subtext text-sm line-clamp-1">{data.updated_at?.split("T")[0] || "NA"}</span>
+        <span className="text-subtext font-medium line-clamp-1">{data.name}</span>
+   
         <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
       </div>
     );

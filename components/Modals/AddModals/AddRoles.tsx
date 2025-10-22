@@ -11,29 +11,35 @@ import { z } from "zod";
 import DialogModal from "@/components/Others/DialogModal";
 import InputField from "@/components/Form_Fields/InputField";
 import Button from "@/components/Others/Button";
+// import { AddRoleFormValues } from "@/types/settingsinterface";
 
 
 
-const addGroupSchema = z.object({
-  group_name: z.string().min(1, "Group Name is required."),
+const addRoleSchema = z.object({
+  // id: z.string().optional(), // add this line
+  name: z.string().min(1, "Name is required"),
+  code: z.string().min(1, "Code is required"),
+  roleType: z.string().min(1, "Role Type is required"),
+  description: z.string().optional(),
 });
 
-type AddGroupFormValues = z.infer<typeof addGroupSchema>
+type AddRoleFormValues = z.infer<typeof addRoleSchema>
 
 const AddRoles: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const methods = useForm<AddGroupFormValues>({
-    resolver: zodResolver(addGroupSchema),
-  });
+  const methods = useForm<AddRoleFormValues>({
+  resolver: zodResolver(addRoleSchema),
+});
+
 
   const { handleSubmit, reset } = methods;
 
-  const onSubmit: SubmitHandler<AddGroupFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<AddRoleFormValues> = async (data) => {
     try {
       setIsClicked(true);
-      const response = await apiClient.post("/groups", data);
+      const response = await apiClient.post("/roles/role", data);
       toast.success(response.data.message || "Group added successfully!");
       onAdd(response.data);
       setIsOpen(false);
@@ -55,8 +61,27 @@ const AddRoles: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
       className="bg-secondary absolute top-5 right-5"
     >
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-1">
-          <InputField label="Group Name" name="group_name" placeholder="Enter Group Name" />
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-1">
+        <InputField
+            label="Role Name"
+            name="name"
+            placeholder="Enter Group Name"
+          />
+ <InputField
+            label="Role code"
+            name="code"
+            placeholder="description"
+          />
+          <InputField
+            label="Role Description"
+            name="description"
+            placeholder="description"
+          />
+          <InputField
+            label="Role type"
+            name="roleType"
+            placeholder="description"
+          />
           <Button type="submit" disabled={isClicked}>
             {isClicked ? "Adding..." : "Add Group"}
           </Button>

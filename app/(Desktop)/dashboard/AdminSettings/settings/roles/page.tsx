@@ -13,7 +13,7 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import apiClient from "@/lib/axiosInterceptor";
-import { UserListProps, UserProps } from "@/types/interface";
+
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Operations from "@/components/Others/Operations";
 import Skeleton2 from "@/components/Others/Skeleton2";
@@ -23,21 +23,24 @@ import UserCard from "@/components/Card/UserCard";
 import { AxiosResponse } from "axios";
 // import AddJobgroups from "@/components/Modals/AddModals/AddJobgroups";
 import GroupCard from "@/components/Card/GroupsCard";
-import { GroupListProps, GroupProps } from "@/types/settingsinterface";
+import { GroupListProps, GroupProps, RoleListProps, RoleProps } from "@/types/settingsinterface";
 import AddGroup from "@/components/Modals/AddModals/AddGroups";
 import RolesCard from "@/components/Card/RolesCard";
 import AddRoles from "@/components/Modals/AddModals/AddRoles";
 
 const headersOptions = [
-  {value: "Group Name"},
-  { value: "Created At" },
-  { value: "Updated At" },
+  {value: "Role Name"},
+  {value: "Role Code"},
+  { value: "Description" },
+  {value: "Role Type"},
+  
+  
   { value: "Action" },
 
   ];
 
 
-const SettingGroups = () => {
+const SettingRoles = () => {
 
 
 
@@ -51,7 +54,7 @@ const SettingGroups = () => {
   const searchParams = useSearchParams();
 
   // --- State Declarations ---
-  const [groups, setGroups] = useState<GroupProps[]>([]);
+  const [roles, setRoles] = useState<RoleProps[]>([]);
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -64,7 +67,7 @@ const SettingGroups = () => {
   const selectedRole = searchParams?.get("role") || "";
 
   // --- Memoized Values ---
-  const allCards = useMemo(() => groups.map((data) => data.id), [groups]);
+  const allCards = useMemo(() => roles.map((data) => data.id), [roles]);
 
   // --- Refs and Callbacks for Infinite Scroll ---
   const observer = useRef<IntersectionObserver | null>(null);
@@ -91,7 +94,7 @@ const SettingGroups = () => {
   // --- 1. Effect to RESET state on a new query (search or filter change) ---
   // This runs ONLY when the filter or debounced search term changes.
   useEffect(() => {
-    setGroups([]);
+    setRoles([]);
     setPage(1);
     setHasMore(true);
   }, [debouncedSearchQuery, selectedRole]);
@@ -110,12 +113,13 @@ const SettingGroups = () => {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
+        params.append("limit","10")
 
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
           params.append("query", debouncedSearchQuery);
-          response = await apiClient.get<GroupListProps>(
+          response = await apiClient.get<RoleListProps>(
             `/admin/users/search?${params.toString()}`
           );
         } else {
@@ -123,19 +127,19 @@ const SettingGroups = () => {
           if (selectedRole && selectedRole !== "All") {
             params.append("role", selectedRole);
           }
-          response = await apiClient.get<GroupListProps>(
-            `/admin/users?${params.toString()}`
+          response = await apiClient.get<RoleListProps>(
+            `/roles?${params.toString()}`
           );
         }
         console.log(response);
-        const newGroups = response.data.groups || [];
+        const newRoles = response.data.roles || [];
 
         // If it's the first page, we are starting a new list.
         // For all subsequent pages, we append to the existing list.
         if (page === 1) {
-          setGroups(newGroups);
+          setRoles(newRoles);
         } else {
-          setGroups((prev) => [...prev, ...newGroups]);
+          setRoles((prev) => [...prev, ...newRoles]);
         }
 
         // Update pagination status based on the API response.
@@ -159,13 +163,13 @@ const SettingGroups = () => {
       isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
     );
   const handleDelete = (id: string) =>
-    setGroups((prev) => prev.filter((data) => data.id !== id));
-  const handleAddgroups = (newGroups: GroupProps) => {
-    if (newGroups) setGroups((prev) => [newGroups, ...prev]);
+    setRoles((prev) => prev.filter((data) => data.id !== id));
+  const handleAddRoles = (newRoles: RoleProps) => {
+    if (newRoles) setRoles((prev) => [newRoles, ...prev]);
   };
-  const handleUpdate = (updatedData: GroupProps) => {
+  const handleUpdate = (updatedData: RoleProps) => {
     if (updatedData)
-      setGroups((prev) =>
+      setRoles((prev) =>
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
   };
@@ -212,7 +216,7 @@ const SettingGroups = () => {
         />
 
         <div className="w-full sm:w-auto">
-          <AddRoles onAdd={handleAddgroups} />
+          <AddRoles onAdd={handleAddRoles} />
         </div>
       </div>
 
@@ -226,8 +230,8 @@ const SettingGroups = () => {
             grid sticky top-0 z-10 border
             
             min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(16,minmax(120px,1fr))]
-            gap-12 
+            grid-cols-[30px_repeat(5,minmax(120px,1fr))]
+            gap-30 
             whitespace-nowrap gap-4"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
@@ -240,33 +244,33 @@ const SettingGroups = () => {
         <div className="divide-y divide-gray-100">
           {loading && page === 1 ? (
             <Skeleton2 />
-          ) : groups.length === 0 ? (
+          ) : roles.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               No Groups found.
             </div>
           ) : (
-            groups.map((user, index) => {
-              const isLastElement = groups.length === index + 1;
-              const ref =
-                isLastElement && searchQuery === "" ? lastUserElementRef : null;
+           roles.map((role, index) => {
+  const isLastElement = roles.length === index + 1;
+  const ref = isLastElement && searchQuery === "" ? lastUserElementRef : null;
 
-              return (
-                <div ref={ref} key={user.id}>
-                  <RolesCard
-                    data={user}
-                    isSelected={selectedCards.includes(user.id)}
-                    onCardSelect={handleCardSelect}
-                    onDelete={handleDelete}
-                    onUpdate={handleUpdate}
-                  />
-                </div>
-              );
-            })
+  return (
+    <div ref={ref} key={role.id}>
+      <RolesCard
+        data={role}
+        isSelected={selectedCards.includes(role.id)}
+        onCardSelect={handleCardSelect}
+        onDelete={handleDelete}
+        onUpdate={handleUpdate}
+      />
+    </div>
+  );
+})
+
           )}
 
           {loading && page > 1 && <Skeleton2 />}
 
-          {!hasMore && !loading && groups.length > 0 && (
+          {!hasMore && !loading && roles.length > 0 && (
             <p className="text-center text-gray-500 py-4">
               You have reached the end of the list.
             </p>
@@ -279,4 +283,4 @@ const SettingGroups = () => {
 
 }
 
-export default SettingGroups
+export default SettingRoles
