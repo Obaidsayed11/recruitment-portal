@@ -13,7 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ActionsProps } from "@/types/interface";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import EditUser from "../Modals/EditModals/EditUser";
 import EditCompany from "../Modals/EditModals/EditCompany";
 import EditJobDescription from "../Modals/EditModals/EditJobDescription";
@@ -21,13 +21,32 @@ import EditApplication from "../Modals/EditModals/EditApplication";
 import EditDepartment from "../Modals/EditModals/EditDepartment";
 import EditGroups from "../Modals/EditModals/EditGroups";
 import EditRoles from "../Modals/EditModals/EditRoles";
+import { Pencil } from "lucide-react";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
+   const router = useRouter();
+  
 
   const searchParams = useSearchParams();
 
  const tabParam = searchParams?.get("tab");
+
+ // Handle edit button click for users - navigate instead of modal
+  const handleEditClick = () => {
+    console.log("Actions - pathname:", pathname);
+    console.log("Actions - tabsParam:", tabParam);
+    console.log("Actions - id:", id);
+    
+    // If we're on the users page, navigate to the edit page
+    if (pathname?.includes("/dashboard/users")) {
+      router.push(`/dashboard/users/update-user/${id}`);
+      return;
+    }
+    
+    // For other pages, the edit button will open the modal (handled by renderModal)
+  };
+
 
   const renderModal = () => {
     if (!pathname) return null;
@@ -48,7 +67,11 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     //   return <UpdateDrivers id={id} onUpdate={onUpdate} data={data} />;
     // }
     if (pathname.includes("/dashboard/users")) {
-      return <EditUser id={id} onUpdate={onUpdate} data={data} />;
+      return (
+        <button  onClick={handleEditClick}>
+        <Pencil size={18} />
+        </button>
+      );
     }
     else if (
       /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&

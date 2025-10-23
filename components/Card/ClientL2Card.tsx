@@ -25,6 +25,7 @@ const ClientL2Card: React.FC<ClientL2CardProps> = ({
   text,
   link,
   linkColor = "#3F40A8",
+  
 }) => {
   const CardContent = (
     <div className={`${className} flex py-5 h-[110px] px-[14px]`}>

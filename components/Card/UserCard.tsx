@@ -27,6 +27,11 @@ const UserCard = forwardRef<HTMLDivElement, UserCardProps>(
         toast.error(error.message);
       }
     };
+    const userId = data?.id
+
+    // const handleEditUser = () => {
+    //   router.push(`/dashboard/users/update-user${userId}`)
+    // }
 
     return (
       <div

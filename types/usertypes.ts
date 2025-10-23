@@ -39,3 +39,16 @@ export interface UserCardProps extends CardProps {
 export interface UpdateUserProps extends UpdateProps {
   data: UserProps;
 }
+
+// export interface TenantAssignment {
+//   id: string;
+//   userId: string;
+//   clientId: string;
+//   // Your API might return the full objects, which is great for display
+//   User?: {
+//     fullName: string;
+//   };
+//   Client?: {
+//     name: string;
+//   };
+// }

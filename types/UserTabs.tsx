@@ -44,3 +44,21 @@ export interface GroupProps {
     name: string;
   };
 }
+
+export interface TenantAssignment {
+
+      id: string,
+      companyId:string ,
+      userId:string ,
+      createdAt: string,
+      Company: {
+        id:string ,
+        name: string
+      },
+      User: {
+        id: string,
+        fullName:string 
+        email: string
+      }
+  
+}

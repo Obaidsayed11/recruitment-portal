@@ -47,6 +47,7 @@ const AssignPermissionsTab = () => {
     if (uidFromParams) {
       return uidFromParams;
     }
+    
 
     // Priority 3: If no ID is in the URL, check if the path is for user management
     // and fall back to localStorage (for the create-then-assign flow).
@@ -59,6 +60,8 @@ const AssignPermissionsTab = () => {
     // Default to null if no ID can be found
     return null;
   }, [params?.id, params?.uid, pathname, userIdData, searchParams]); // Add params.uid to the dependency array
+
+   console.log(userId,"userIdddddddddddddd")
 
   const methods = useForm<AssignPermissionsInput>({
     resolver: zodResolver(assignPermissionsSchema),
@@ -77,22 +80,33 @@ const AssignPermissionsTab = () => {
       try {
         const [allPermissionsRes, userPermissionsRes] = await Promise.all([
           apiClient.get(`/permissions`),
-          apiClient.get(`/user-permission/${userId}`),
+          apiClient.get(`/user-permissions/${userId}`),
         ]);
 
-        const allPermsData =
-          allPermissionsRes.data.permissions || allPermissionsRes.data || [];
+         // Extract all permissions from response
+        // Based on your swagger, the response is directly an array
+        const allPermsData: Permission[] = Array.isArray(allPermissionsRes.data) 
+          ? allPermissionsRes.data 
+          : allPermissionsRes.data.permissions || [];
 
-        const userPermsData = (userPermissionsRes.data.permissions ||
-          userPermissionsRes.data ||
-          []) as Permission[];
+        // Extract user's assigned permissions
+        const userPermsData: Permission[] = Array.isArray(userPermissionsRes.data)
+          ? userPermissionsRes.data
+          : userPermissionsRes.data.permissions || [];
+
+  console.log("All Permissions:", allPermsData);
+        console.log("User's Assigned Permissions:", userPermsData);
 
         setAllPermissions(allPermsData);
         console.log(allPermissions,"dguydgyi")
-        const initialSelectedIds = new Set(
-          userPermsData.map((p: Permission) => p.id)
-        );
+        // const initialSelectedIds = new Set(
+        //   userPermsData.map((p: Permission) => p.id)
+        // );
+        // setSelectedPermissions(initialSelectedIds);
+        const initialSelectedIds = new Set(userPermsData.map((p: Permission) => p.id));
         setSelectedPermissions(initialSelectedIds);
+
+
       } catch (err: any) {
         toast.error("Failed to load initial permission data.");
         setAllPermissions([]);
@@ -100,7 +114,7 @@ const AssignPermissionsTab = () => {
     };
     fetchInitialData();
   }, [userId]);
-
+// Update form value whenever selected permissions change
   useEffect(() => {
     setValue("permissionIds", Array.from(selectedPermissions));
     trigger("permissionIds");
@@ -111,7 +125,7 @@ const AssignPermissionsTab = () => {
     newSelected.delete(permissionId);
     setSelectedPermissions(newSelected);
   };
-
+  // Get the full permission objects for selected permissions
   const selectedPermissionObjects = useMemo<Permission[]>(() => {
     return allPermissions.filter((p) => selectedPermissions.has(p.id));
   }, [allPermissions, selectedPermissions]);
@@ -122,9 +136,12 @@ const AssignPermissionsTab = () => {
       return;
     }
     try {
+       // PUT request to update user permissions
       const response = await apiClient.put(
-        `/users/${userId}/permissions`,
-        data
+        `/user-permissions/${userId}`,
+        {
+          permissionIds: data.permissionIds
+        }
       );
       if (response.status === 200 || response.status === 201) {
         setUserIdData(true);

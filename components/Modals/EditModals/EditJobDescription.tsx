@@ -36,6 +36,9 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({ onUpdate, dat
   const [isClicked, setIsClicked] = useState(false);
   const [isFirstDialogOpen, setIsFirstDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+const [selectedDepartment, setSelectedDepartment] = useState<{ id: string; name: string } | null>(null);
+
 
   const methods = useForm<EditJobDescriptionFormValues>({
     resolver: zodResolver(EditJobSchema),
@@ -93,6 +96,26 @@ useEffect(() => {
     // }
   }
 }, [data, isFirstDialogOpen, setValue]);
+useEffect(() => {
+  if (!data?.companyId) return; // Only fetch if companyId exists
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await apiClient.get(`/department/filter?companyId=${data.companyId}`);
+      setDepartments(res.data.data || []);
+      // Optionally pre-select department from `data.department`:
+      if (data.department) {
+        const dept = res.data.data.find((d: any) => d.name === data.department);
+        if (dept) setSelectedDepartment(dept);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch departments");
+    }
+  };
+
+  fetchDepartments();
+}, [data?.companyId]);
+
 
 
   // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
