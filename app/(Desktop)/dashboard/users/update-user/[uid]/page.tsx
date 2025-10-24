@@ -3,7 +3,7 @@ import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import apiClient from "@/lib/axiosInterceptor";
 import { UserProps } from "@/types/usertypes";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -18,19 +18,18 @@ import Button from "@/components/Others/Button";
 import InputField from "@/components/Form_Fields/InputField";
 import SelectField from "@/components/Form_Fields/SelectField";
 import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
 import AssignPermissionsTab from "@/components/Tabs/UserTabs/PermissionsTab";
 import AssignGroupsTab from "@/components/Tabs/UserTabs/AssignGroupsTab";
 import DateInputField from "@/components/Form_Fields/DateField";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ManageTenantAssignments from "@/components/Tabs/UserTabs/TenantAssignmentTab";
 // import ManageTenantAssignments from "@/components/Tabs/TenantAssignmentTab";
 
-
-
 // Schema that properly handles optional email
-const UserCreateSchema = z.object({
+const UserUpdateSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z
     .string()
@@ -42,28 +41,59 @@ const UserCreateSchema = z.object({
       }
     ),
   phone: z.string().min(10, "Phone must be valid"),
-
 });
 interface UpdateUserRouteProps {
   userId?: string;
 }
 
-type AddUserFormValues = z.infer<typeof UserCreateSchema>;
+type AddUserFormValues = z.infer<typeof UserUpdateSchema>;
 
-const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({ userId: propUserId }) => {
-//   const [allRoles, setAllRoles] = useState<RoleProps[]>([]);
+const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
+  userId: propUserId,
+}) => {
+  //   const [allRoles, setAllRoles] = useState<RoleProps[]>([]);
   const [userData, setUserData] = useState<UserProps | null>(null);
-
+  const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
+  const [userIdData, setUserIdData] = useState(false);
+  const pathname = usePathname(); // 2. Get the current URL path
+  const searchParams = useSearchParams();
   const params = useParams();
-  const id = propUserId || (params?.uid as string);
+  const userId = useMemo(() => {
+    // Get both potential IDs from the URL parameters
+    const idFromParams = params?.id as string;
+    const uidFromParams = params?.uid as string;
+
+    // Priority 1: If an 'id' is in the URL, always use it.
+    if (idFromParams) {
+      return idFromParams;
+    }
+
+    // Priority 2: If no 'id', check for 'uid' in the URL.
+    if (uidFromParams) {
+      return uidFromParams;
+    }
+
+    // Priority 3: If no ID is in the URL, check if the path is for user management
+    // and fall back to localStorage (for the create-then-assign flow).
+    if (pathname?.endsWith("dashboard/users/create-user")) {
+      if (typeof window !== "undefined") {
+        return searchParams?.get("userId");
+      }
+    }
+
+    // Default to null if no ID can be found
+    return null;
+  }, [params?.id, params?.uid, pathname, userIdData, searchParams]); // Add params.uid to the dependency array;
+
+  console.log(userId, "uswdwedhhdhjhqwjlqjw");
 
   const methods = useForm<AddUserFormValues>({
-    resolver: zodResolver(UserCreateSchema),
+    resolver: zodResolver(UserUpdateSchema),
     defaultValues: {
       fullName: "",
       phone: "",
-      email: undefined, // Changed from "" to undefined
+      email: "", // Changed from "" to undefined
     },
   });
 
@@ -76,54 +106,86 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({ userId: propUserId })
 
   // Effect to fetch the user's current data
   useEffect(() => {
-    if (session) {
+    if (userId && !userData) {
       const fetchUserData = async () => {
         try {
-          const response = await apiClient.get(`/user/${id}`);
+          setIsLoading(true);
+          const response = await apiClient.get(`/user/${userId}`);
+          const fetchedUser =
+            response.data?.user || response.data?.data || response.data;
           console.log(response.data);
-          setUserData(response.data.user);
+          if (fetchedUser) {
+            setUserData(fetchedUser);
+            console.log(fetchedUser, "fetcdedgwhdwghdghsdDSDsD");
+            // Populate the form with fetched user data
+            reset({
+              fullName: fetchedUser.fullName || fetchedUser.full_name || "",
+              email: fetchedUser.email || "",
+              phone: fetchedUser.phone || fetchedUser.phoneNumber || "",
+            });
+          } else {
+            toast.error("User data not found in response");
+          }
         } catch (error: any) {
           toast.error("Failed to fetch user data.");
+         } finally {
+          setIsLoading(false);
         }
       };
       fetchUserData();
+    }else if (userId && userData) {
+      // If we already have userData (from registration), just use it
+      console.log("Using cached user data:", userData);
+      reset({
+        fullName: userData.fullName || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+      });
+    } else {
+      // Reset form when no userId (creating new user)
+      setUserData(null);
+      reset({
+        fullName: "",
+        email: "",
+        phone: "",
+      });
     }
-  }, [session, id]);
+  }, [userId, reset]);
 
   // Effect to populate the form once userData is fetched
-  useEffect(() => {
-    if (userData) {
-    //   const formattedDob = userData.dob
-    //     ? format(new Date(userData.dob), "yyyy-MM-dd")
-    //     : "";
-      const formValues: AddUserFormValues = {
-        fullName: userData?.fullName || "",
-        email: userData?.email || undefined, // Changed to handle null/undefined properly
-        phone: userData?.phone || "",
-        // gender: userData?.gender || undefined,
-        // roleId: userData?.Role?.id || undefined,
-        // dob: formattedDob || undefined,
-      };
-      reset(formValues);
-    }
-  }, [userData, reset]);
+  // useEffect(() => {
+  //   if (userData) {
+  //     //   const formattedDob = userData.dob
+  //     //     ? format(new Date(userData.dob), "yyyy-MM-dd")
+  //     //     : "";
+  //     const formValues: AddUserFormValues = {
+  //       fullName: userData?.fullName || "",
+  //       email: userData?.email || undefined, // Changed to handle null/undefined properly
+  //       phone: userData?.phone || "",
+  //       // gender: userData?.gender || undefined,
+  //       // roleId: userData?.Role?.id || undefined,
+  //       // dob: formattedDob || undefined,
+  //     };
+  //     reset(formValues);
+  //   }
+  // }, [userData, reset]);
 
   // Effect to fetch the list of all available roles
-//   useEffect(() => {
-//     if (session) {
-//       const fetchRoles = async () => {
-//         try {
-//           const response = await apiClient.get<{ roles: RoleProps[] }>(
-//             `/filters/roles?clientId=${null}`
-//           );
-//         //   setAllRoles(response.data.roles || []);
-//         } catch (error: any) {
-//           toast.error("Failed to fetch roles.");
-//         }
-//       };
-//       fetchRoles();
-//     }
-//   }, [session]);
+  //   useEffect(() => {
+  //     if (session) {
+  //       const fetchRoles = async () => {
+  //         try {
+  //           const response = await apiClient.get<{ roles: RoleProps[] }>(
+  //             `/filters/roles?clientId=${null}`
+  //           );
+  //         //   setAllRoles(response.data.roles || []);
+  //         } catch (error: any) {
+  //           toast.error("Failed to fetch roles.");
+  //         }
+  //       };
+  //       fetchRoles();
+  //     }
+  //   }, [session]);
 
   const genderOptions = ["MALE", "FEMALE", "NONE", "OTHER"].map((value) => ({
     label: value
@@ -153,7 +215,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({ userId: propUserId })
       console.log("Cleaned data being sent:", payload);
       console.log("JSON.stringify:", JSON.stringify(payload, null, 2));
 
-      const response = await apiClient.put(`/users/${id}`, payload);
+      const response = await apiClient.put(`/users/${userId}`, payload);
       if (response.status === 200) {
         toast.success(response.data.message || "User updated successfully!");
         if (response.data.user) {
@@ -167,10 +229,14 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({ userId: propUserId })
 
   return (
     <>
-      <DynamicBreadcrumb links={[
-        { label: "Users", href: '/dashboard/users' },
-        { 
-        label: "Update User" }]} />
+      <DynamicBreadcrumb
+        links={[
+          { label: "Users", href: "/dashboard/users" },
+          {
+            label: "Update User",
+          },
+        ]}
+      />
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -252,9 +318,9 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({ userId: propUserId })
               {/* <TabsContent value="assignments" className="">
                 <ManageAssignments />
               </TabsContent> */}
-              {/* <TabsContent value="tenant" className="">
+              <TabsContent value="tenant" className="">
                 <ManageTenantAssignments />
-              </TabsContent> */}
+              </TabsContent>
             </Tabs>
           </section>
         </form>

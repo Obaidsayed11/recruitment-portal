@@ -3,7 +3,7 @@
 import apiClient from "@/lib/axiosInterceptor";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, UploadCloud } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -14,6 +14,8 @@ import Button from "@/components/Others/Button";
 import { AddJobModalProps } from "@/types/companyInterface";
 import { useSession } from "next-auth/react";
 import { useParams, useSearchParams } from "next/navigation";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Combobox } from "@/components/Others/ComoboboxDemo";
 
 const employmentOptions = ["FULL_TIME", "Contract", "Internship"] as const;
 
@@ -42,6 +44,7 @@ const companyId = params.companyId;
   
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+ const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
 
   const methods = useForm<AddJobDescriptionFormValues>({
     resolver: zodResolver(addJobSchema),
@@ -64,7 +67,7 @@ const companyId = params.companyId;
   
  
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, control } = methods;
 
   const onSubmit: SubmitHandler<AddJobDescriptionFormValues> = async (data) => {
   try {
@@ -74,6 +77,7 @@ const companyId = params.companyId;
     const response = await apiClient.post(`/job?companyId=${companyId}`, payload);
     console.log(response.data,"afh")
     toast.success(response.data.message || "Job added successfully!");
+  
     onAdd(response.data);
     setIsOpen(false);
     reset();
@@ -83,6 +87,27 @@ const companyId = params.companyId;
     setIsClicked(false);
   }
 };
+
+// fetch job descrioptions
+useEffect(() => {
+  if (!companyId) return; // Only fetch if companyId exists
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await apiClient.get(`/department/filter?companyId=${companyId}`);
+      console.log(res,"res of des")
+      
+      setDepartments(res.data.data || []);
+      // Optionally pre-select department from `data.department`:
+      
+    } catch (error) {
+      toast.error("Failed to fetch departments");
+    }
+  };
+  console.log(departments,"departtments in DD ")
+
+  fetchDepartments();
+}, [companyId]);
   return (
     <DialogModal
       open={isOpen}
@@ -103,11 +128,33 @@ const companyId = params.companyId;
             name="title"
             placeholder="Enter Job Title"
           />
-          <InputField
+          {/* <InputField
             label="Department"
             name="department"
             placeholder="Enter Department"
           />
+           */}
+            <FormField
+                control={control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-1">
+                    <FormLabel className="text-fontPrimary">Department</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        placeholder="Select Role"
+                        options={departments.map((dep) => ({
+                          value: dep.id,
+                          label: dep.name,
+                        }))}
+                        value={field.value}
+                        onSelect={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
           <InputField
             label="Location"
             name="location"

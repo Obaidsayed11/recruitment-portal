@@ -39,6 +39,8 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   secondary?: boolean;
+  variant? : string
+  size? : string
 }
 
 export interface LoginData {

@@ -47,7 +47,6 @@
 // import EditTenantAssignment from "../../Modals/EditModals/EditTenantManagement";
 // import { useParams, usePathname, useSearchParams } from "next/navigation";
 
-
 // // --- Types ---
 // interface CompanyOption {
 //   id: string;
@@ -69,8 +68,8 @@
 // }
 
 // // --- The Main Component ---
-// const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = ({ 
-//   userId: propUserId 
+// const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = ({
+//   userId: propUserId
 // }) => {
 //   const params = useParams();
 //   const pathname = usePathname();
@@ -119,7 +118,6 @@
 //   const [companySearchQuery, setCompanySearchQuery] = useState("");
 //   const [isSearchingCompanies, setIsSearchingCompanies] = useState(false);
 
-
 //   const methods = useForm<AssignmentFormValues>({
 //     resolver: zodResolver(assignmentSchema),
 //   defaultValues: {
@@ -164,7 +162,7 @@
 //         setIsSearchingCompanies(false);
 //       }
 //     };
-  
+
 //     // Debounce the search for companieessss
 //     const timeoutId = setTimeout(fetchCompanies, 300);
 //     return () => clearTimeout(timeoutId);
@@ -185,7 +183,7 @@
 //        params.append("page", page.toString());
 //          params.append("limit", "10");
 //       try {
-        
+
 //         const response = await apiClient.get(
 //           `/assignment/assignments?userId=${userId}`
 //         );
@@ -245,11 +243,11 @@
 
 //  const confirmDelete = async () => {
 //     if (!selectedAssignment) return;
-    
+
 //     try {
 //       await apiClient.delete(`/assignment/assignments/${selectedAssignment.id}`);
 //       toast.success("Assignment deleted successfully.");
-      
+
 //       setAssignments((prev) =>
 //         prev.filter((a) => a.id !== selectedAssignment.id)
 //       );
@@ -325,14 +323,14 @@
 //             <TableHeader className="bg-gray-200">
 //               <TableRow>
 //                 <TableHead>Company Nam/components/Modals/EditModals/EditTenantManagement";e</TableHead>
-            
+
 //                 <TableHead className="text-right">Actions</TableHead>
 //               </TableRow>
 //             </TableHeader>
 //             <TableBody className="bg-white">
 //               {assignments.map((assignment) => (
 //                 <TableRow key={assignment.id}>
-                  
+
 //                   <TableCell>{assignment.Company?.name || "N/A"}</TableCell>
 //                   <TableCell className="text-right mx-auto flex gap-2 justify-end">
 //                     <button
@@ -493,6 +491,7 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] =
     useState<TenantAssignment | null>(null);
+  
 
   // State for the data required for the form (Company/Client list)
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
@@ -544,6 +543,7 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
       setLoading(false);
     }
   };
+  console.log(companies,"compaaaaannyyy")
 
   useEffect(() => {
     // Guard clause: Only proceed if userId is available.
@@ -555,6 +555,7 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
     fetchAssignments(userId);
   }, [userId]); // This hook correctly depends only on userId.
 
+  
   // --- Form Submission: Create Assignment ---
   const onCreateSubmit: SubmitHandler<AssignmentFormValues> = async (data) => {
     if (!userId) {
@@ -562,8 +563,9 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
       return;
     }
     try {
+      console.log(data,"DATTAAAAA")
       const response = await apiClient.post("/assignment/assignment", {
-        companyId: data.companyId,
+        companyId:data.companyId,
         userId: userId,
       });
 
@@ -600,7 +602,9 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
   const confirmDelete = async () => {
     if (!selectedAssignment) return;
     try {
-      await apiClient.delete(`/assignment/assignments/${selectedAssignment.id}`);
+      await apiClient.delete(
+        `/assignment/assignments/${selectedAssignment.id}`
+      );
       toast.success("Assignment deleted successfully.");
       setAssignments((prev) =>
         prev.filter((a) => a.id !== selectedAssignment.id)
@@ -631,10 +635,10 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
           {/* Create Assignment Form */}
           <FormProvider {...methods}>
             <form
-             onSubmit={(e) => {
-    e.preventDefault(); // <-- This was missing
-    handleSubmit(onCreateSubmit); // <--- This calls the function but doesn't handle the submit event itself
-  }} // Cleaned up onSubmit handler
+              onSubmit={(e) => {
+                e.preventDefault(); // <-- This was missing
+                handleSubmit(onCreateSubmit); // <--- This calls the function but doesn't handle the submit event itself
+              }} // Cleaned up onSubmit handler
               className="grid mb-4 grid-cols-[1fr_200px] gap-5 items-end w-full"
             >
               <FormField
@@ -684,7 +688,7 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 py-0">
-          {loading ? (
+          {loading && userId ? (
             <div className="flex justify-center items-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="ml-2">Loading Assignments...</span>

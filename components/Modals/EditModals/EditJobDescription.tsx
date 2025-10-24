@@ -11,8 +11,9 @@ import DialogModal from "@/components/Others/DialogModal";
 import InputField from "@/components/Form_Fields/InputField";
 import SelectField from "@/components/Form_Fields/SelectField";
 import Button from "@/components/Others/Button";
-import { FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form";
 import { UpdateJobDescriptionProps } from "@/types/companyInterface";
+import { Combobox } from "@/components/Others/ComoboboxDemo";
 
 const employmentOptions = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"] as const;
 const publishedOptions = ["YES", "NO"] as const;
@@ -57,7 +58,7 @@ const [selectedDepartment, setSelectedDepartment] = useState<{ id: string; name:
 
 
 
-  const { handleSubmit, reset, setValue } = methods;
+  const { handleSubmit, reset, setValue, control } = methods;
 
   // Populate form on open or when data changes
 useEffect(() => {
@@ -104,8 +105,8 @@ useEffect(() => {
       const res = await apiClient.get(`/department/filter?companyId=${data.companyId}`);
       setDepartments(res.data.data || []);
       // Optionally pre-select department from `data.department`:
-      if (data.department) {
-        const dept = res.data.data.find((d: any) => d.name === data.department);
+      if (data.Department) {
+        const dept = res.data.data.find((d: any) => d.name === data.Department);
         if (dept) setSelectedDepartment(dept);
       }
     } catch (error) {
@@ -187,8 +188,31 @@ useEffect(() => {
           {/* <InputField label="Company ID" name="companyId" placeholder="Enter Company ID" formItemClassName="sm:col-span-2" /> */}
           <InputField label="Job Title" name="jobTitle" placeholder="Enter Job Title" formItemClassName="sm:col-span-2" />
 
-          <InputField label="Department" name="department" placeholder="Department" />
-          <InputField label="Location" name="location" placeholder="Location" />
+          {/* <InputField label="Department" name="department" placeholder="Department" />
+          <InputField label="Location" name="location" placeholder="Location" /> */}
+           <FormField
+                control={control}
+                name="department"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-1">
+                    <FormLabel className="text-fontPrimary">Department</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        placeholder="Select Role"
+                        options={departments.map((dep) => ({
+                          value: dep.id,
+                          label: dep.name,
+                        }))}
+                        value={field.value}
+                        onSelect={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+          
 
           <InputField label="Experience Required" name="experienceRequired" placeholder="Experience e.g. 3-5 years" />
           <InputField label="Salary Range" name="salaryRange" placeholder="Salary Range" />

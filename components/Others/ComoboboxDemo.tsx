@@ -21,19 +21,18 @@ import { Option } from "@/types/interface";
 import Link from "next/link";
 
 interface ComboboxDemoProps {
-  //  onSearchChange?: (query: string) => void;
-  //    searchQuery?: string;
+
   options: Option[];
   value: any; // Allow null for unselected state
   onSelect: (value: number | string) => void; // Only allow number
   placeholder?: string; // Optional placeholder prop
   name?: string; // Optional placeholder prop
   className?: string;
-  //  loading?: boolean;
+ 
   disabled?: boolean; // ? Added disabled prop
   label? : string
-  // onSearch
-  onSearch?: (query: string) => void; // ✅ add this
+  
+ 
 }
 
 export function Combobox({
@@ -98,19 +97,19 @@ export function Combobox({
                 {filteredOptions.map((option) => (
                   <CommandItem
                     key={option.value}
-                    value={option.value}
+                     value={String(option.value)} // converting to string
                     onSelect={() => {
-                      onSelect(option.value);
+                       onSelect(String(option.value)); // Convert to string before passing
                       setOpen(false);
                       setSearchTerm("");
                     }}
                   >
                     <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === option.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
+    className={cn(
+      "mr-2 h-4 w-4",
+      String(value) === String(option.value) ? "opacity-100" : "opacity-0"
+    )}
+  />
                     {option.label}
                   </CommandItem>
                 ))}

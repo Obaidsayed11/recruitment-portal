@@ -34,9 +34,9 @@ const headersOptions = [
   { value: "Notice Period" },   
   { value: "Status" },         
   { value: "Source" },          
-  { value: "Created At" },     
-  { value: "Updated At" },      
-  { value: "Notes" },           
+  // { value: "Created At" },     
+  // { value: "Updated At" },      
+  // { value: "Notes" },           
   { value: "Actions" }          
   // REMOVED: "History" - not in API response
 ];
@@ -224,18 +224,12 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
 
       {/* --- Scrollable Table Section --- */}
       <div
-         className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+         className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw)] sm:w-[calc(100vw-82px)]">
         {/* Header */}
         {/* --- Table Header --- */}
         <Header
           checkBox={true}
-          className1="
-            grid sticky top-0 z-10 border
-            
-            min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(17,minmax(120px,1fr))]
-            gap-12 
-            whitespace-nowrap gap-4 "
+         className1="w-full xl:w-full grid sticky top-0 grid-cols-[30px_180px_220px_150px_120px_250px_200px_200px_200px_200px_200px_200px_200px] border gap-5 sm:gap-0 "
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={
@@ -244,7 +238,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
         />
 
         {/* --- Table Body --- */}
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 ">
           {loading && page === 1 ? (
             <Skeleton2 />
           ) : applications.length === 0 ? (
