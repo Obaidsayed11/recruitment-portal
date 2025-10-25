@@ -29,85 +29,72 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
       }
     };
 
-    return (
+return (
       <div
         ref={ref}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap
-        grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px]
-        xl:grid-cols-[20px_1fr_1fr_1.5fr_1fr_1.5fr_2fr_2fr_2fr_2fr_1fr_1fr_1fr]
-        gap-5 transition-all ease-linear border items-center ${
+        className={`bg-background p-2 group w-full xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap
+        /* 1. Explicitly match the column widths (20px checkbox + 12 content + 1 Action = 14 columns) */
+        grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px_1fr]
+
+        /* 2. Match the XL definition using '4fr' for content and '1fr' for actions */
+        xl:grid-cols-[20px_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_1fr]
+        
+        gap-10 transition-all ease-linear border items-center  ${
           isSelected
             ? "bg-secondary hover:bg-secondary border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
         }`}
       >
-        {/* Checkbox */}
+        {/* Checkbox (1st column) */}
         <CheckBox
           checked={isSelected}
           handleCheckboxChange={handleCheckboxChange}
         />
 
-        {/* Job ID */}
-        {/* <span className="text-subtext line-clamp-1">
-          {data.id|| "NA"}
-        </span> */}
-
-        {/* Company ID */}
-        {/* <span className="text-subtext line-clamp-1">
-          {data.companyId|| "NA"}
-        </span> */}
-
-        {/* Job Title */}
+        {/* Job Title (2nd column) */}
         <span className="text-subtext font-medium line-clamp-1">
           {data.title || "NA"}
         </span>
-        {/* Location */}
+        {/* Location (3rd column) */}
         <span className="text-subtext line-clamp-1">
           {data.location || "NA"}
         </span>
 
-        {/* Experience Required */}
+        {/* Experience Required (4th column) */}
         <span className="text-subtext line-clamp-1">
           {data.experience || "NA"}
         </span>
-        {/* Salary Range */}
+        {/* Salary Range (5th column) */}
         <span className="text-subtext line-clamp-1">
           {data.salaryRange || "NA"}
         </span>
 
-        {/* Department */}
+        {/* Department (6th column) */}
         <span className="text-subtext line-clamp-1">
-          {data.Department.name || "NA"}
+          {data.Department?.name || "NA"}
         </span>
 
-
-
-        {/* Employment Type */}
+        {/* Employment Type (7th column) */}
         <span className="text-subtext line-clamp-1">
           {data.employmentType || "NA"}
         </span>
 
-        {/* Description */}
-        <span className="text-subtext line-clamp-2 text-wrap">
+        {/* Description (8th column) */}
+        <span className="text-xs line-clamp-2 text-wrap">
           {data.description || "NA"}
         </span>
 
-        {/* Responsibilities */}
+        {/* Responsibilities (9th column) */}
         <span className="text-subtext line-clamp-2 text-wrap">
           {data.responsibilities || "NA"}
         </span>
 
-        {/* Requirements */}
+        {/* Requirements (10th column) */}
         <span className="text-subtext line-clamp-2 text-wrap">
           {data.requirements || "NA"}
         </span>
 
-        {/* Created By */}
-        {/* <span className="text-subtext line-clamp-1">
-          {data.created_by || "NA"}
-        </span> */}
-
-        {/* Published */}
+        {/* Published (11th column) */}
          <span className="text-subtext">
           {data.published !== undefined ? (
             <span
@@ -123,22 +110,12 @@ const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
             "NA"
           )}
         </span>
-        {/* Status */}
+        {/* Status (12th column) */}
         <span className="text-subtext line-clamp-1">
           {data.status || "NA"}
         </span>
 
-        {/* Created At */}
-        {/* <span className="text-subtext text-sm line-clamp-1">
-          {data.createdAt ? data.createdAt.split("T")[0] : "NA"}
-        </span> */}
-
-        {/* Updated At */}
-        {/* <span className="text-subtext text-sm line-clamp-1">
-          {data.updatedAt ? data.updatedAt.split("T")[0] : "NA"}
-        </span> */}
-
-        {/* Actions */}
+        {/* Actions (13th column - final column) */}
         <Actions
           id={data.id}
           onDelete={handleDelete}

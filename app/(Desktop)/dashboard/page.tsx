@@ -35,14 +35,10 @@
 
 // export  interface Global {
 //   applications : number;
-// companies: number; 
+// companies: number;
 // departments: number;
 // jobs : number
 // }
-
-
-
-
 
 // const AdminDashboardRoute = () => {
 //   const { data: session } = useSession();
@@ -63,7 +59,7 @@
 //           const response = await apiClient.get<any>(`/analytics`);
 //           console.log(response.data.data);
 //           setDashboardData(response?.data?.data || []);
-        
+
 //         } catch (error: any) {
 //           console.error(error.response.data.message);
 //         }
@@ -71,7 +67,6 @@
 //       fetchData();
 //     }
 //   }, [session]);
-  
 
 //   const overViewStats: ClientCardData[] = [
 //   {
@@ -201,6 +196,14 @@ import { Button } from "@/components/ui/button";
 import { useForm, FormProvider } from "react-hook-form";
 import DateInputField from "@/components/Form_Fields/DateField"; // your shared component
 import { toast } from "sonner";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Combobox } from "@/components/Others/ComoboboxDemo";
 
 export interface Global {
   applications: number;
@@ -208,25 +211,57 @@ export interface Global {
   departments: number;
   jobs: number;
 }
+interface CompanyOption {
+  id: string | any;
+  name: string;
+}
 
 const AdminDashboardRoute = () => {
   const { data: session } = useSession();
   const [dashboardData, setDashboardData] = useState<Global | null>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+  // State for the data required for the form (Company/Client list)
+  const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const methods = useForm({
     defaultValues: {
       fromDate: "",
       toDate: "",
+      company: "",
     },
   });
 
- useEffect(() => {
+
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        
+
+
+        const companyRes = await apiClient.get("/company/filter");
+        // FIX 1: Correctly accessing the data array based on your API response structure
+        setCompanies(companyRes.data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch clients:", error);
+        toast.error("Failed to fetch clients.");
+      }
+    };
+    fetchCompanies();
+  }, []);
+
+  // const companyId = companies.map((omp) => (omp.id))
+
+  // console.log("companies",companies.map((omp) => (omp.id)))
+
+
+
+  useEffect(() => {
     if (session) {
       const fetchData = async () => {
         try {
           const response = await apiClient.get<any>(`/analytics`);
           console.log(response.data.data);
           setDashboardData(response?.data?.data || []);
-        
         } catch (error: any) {
           console.error(error.response.data.message);
         }
@@ -239,7 +274,7 @@ const AdminDashboardRoute = () => {
       svg: <CompanySvg stat />,
       label: "Companies",
       className: "bg-[#FEF1F3] rounded-[14px] border border-[#FFCDD4]",
-      className2: "bg-[#FF4560] h-[50px] w-[50px] grid place-content-center",
+      className2: "bg-[#FF4560] h-[50px] w-[50px] grid place-content-center ",
       className3: "text-[#FF4560]",
       number: dashboardData?.companies ?? "-",
     },
@@ -269,39 +304,147 @@ const AdminDashboardRoute = () => {
     },
   ];
 
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+    setError, // Added for potential API validation errors
+  } = methods;
   // 🔽 Download report function
+
   const handleDownload = async () => {
-    const { fromDate, toDate } = methods.getValues();
+    const { fromDate, toDate, company } = methods.getValues();
 
     try {
+      setIsDownloading(true);
+      toast.loading("Preparing your report...", { id: "download-toast" });
+
+      // Build query parameters for dates
       const params = new URLSearchParams();
       if (fromDate) params.append("from", new Date(fromDate).toISOString());
       if (toDate) params.append("to", new Date(toDate).toISOString());
 
-      const response = await apiClient.get(`/report${params.toString() ? `?${params}` : ""}`, {
-        responseType: "blob", // for file download
+      // Build URL based on whether company is selected
+      let url = "";
+      if (company && company !== "") {
+        // If company is selected, include it in the path
+        url = `/report/${company}${params.toString() ? `?${params.toString()}` : ""}`;
+      } else {
+        // If no company selected, get all companies data
+        url = `/report${params.toString() ? `?${params.toString()}` : ""}`;
+      }
+
+      console.log("🔍 Download Request Details:");
+      console.log("  - URL:", url);
+      console.log("  - From Date:", fromDate);
+      console.log("  - To Date:", toDate);
+      console.log("  - Company ID:", company || "All Companies");
+
+      // Fetch the report with extended timeout
+      const response = await apiClient.get(url, {
+        responseType: "blob",
+        timeout: 120000, // 2 minutes timeout for large reports
+        onDownloadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(`📥 Download Progress: ${percentCompleted}%`);
+            if (percentCompleted % 25 === 0) {
+              toast.loading(`Downloading... ${percentCompleted}%`, { id: "download-toast" });
+            }
+          } 
+        },
       });
 
-      // Download logic
-      const blob = new Blob([response.data], { type: "application/octet-stream" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "report.xlsx";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-      toast.success("Reports Downloaded Successfully")
-    } catch (error) {
-      console.error("Error downloading report:", error);
+      console.log("✅ Response received:");
+      console.log("  - Status:", response.status);
+      console.log("  - Content-Type:", response.headers["content-type"]);
+      console.log("  - Data Size:", response.data?.size || 0, "bytes");
+
+      // Check if response is actually a blob
+      if (!response.data || response.data.size === 0) {
+        throw new Error("Empty response received from server. No data available for the selected filters.");
+      }
+
+      // Check if the response is an error message in JSON format
+      const contentType = response.headers["content-type"];
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.data.text();
+        const errorData = JSON.parse(text);
+        throw new Error(errorData.message || "Failed to generate report");
+      }
+
+      // Create blob and download
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"] || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      
+      console.log("📦 Blob created:", blob.size, "bytes");
+
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      
+      // Generate filename with date and company info
+      const dateStr = new Date().toISOString().split('T')[0];
+      const companyName = company 
+        ? companies.find(c => c.id === company)?.name?.replace(/[^a-z0-9]/gi, '_') || "company" 
+        : "all-companies";
+      
+      // Add date range to filename if provided
+      let filename = `report_${companyName}`;
+      if (fromDate || toDate) {
+        const from = fromDate ? new Date(fromDate).toISOString().split('T')[0] : "start";
+        const to = toDate ? new Date(toDate).toISOString().split('T')[0] : "end";
+        filename += `_${from}_to_${to}`;
+      } else {
+        filename += `_${dateStr}`;
+      }
+      filename += ".xlsx";
+      
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+      }, 100);
+      
+      console.log("✅ Download initiated:", filename);
+      toast.success("Report downloaded successfully!", { id: "download-toast" });
+    } catch (error: any) {
+      console.error("❌ Error downloading report:", error);
+      console.error("  - Error Code:", error.code);
+      console.error("  - Error Message:", error.message);
+      console.error("  - Response Status:", error.response?.status);
+      console.error("  - Response Data:", error.response?.data);
+      
+      let errorMessage = "Failed to download report";
+      
+      if (error.code === "ECONNABORTED" || error.message.includes("timeout")) {
+        errorMessage = "Download timeout. The report is too large. Try:\n• Selecting a smaller date range\n• Selecting a specific company";
+      } else if (error.response?.status === 404) {
+        errorMessage = "Report endpoint not found. Please contact support.";
+      } else if (error.response?.status === 500) {
+        errorMessage = "Server error while generating report. Please try again.";
+      } else if (error.response?.status === 400) {
+        errorMessage = "Invalid request parameters. Please check your date range.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage, { id: "download-toast", duration: 5000 });
+    } finally {
+      setIsDownloading(false);
     }
   };
-
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Dashboard" }]} />
-      <section className="bg-white border border-[#E8E8E8] sm:rounded-xl p-3 sm:p-5">
+      <section className="bg-white border border-[#E8E8E8] sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
         <div className="h-[calc(100vh-110px)] overflow-auto pr-1">
           <h2 className="text-base sm:text-lg text-text mb-2">Overall Stats</h2>
 
@@ -320,45 +463,73 @@ const AdminDashboardRoute = () => {
             ))}
           </div>
 
-          
-        <FormProvider {...methods}>
-  <div className="border-t border-gray-200 mt-6 pt-5">
-    <h3 className="text-base font-semibold text-gray-800 mb-3">
-      Download Reports
-    </h3>
+          <FormProvider {...methods}>
+            <div className="border-t border-gray-200 mt-6 pt-5">
+              <h3 className="text-base font-semibold text-gray-800 mb-3">
+                Download Reports
+              </h3>
 
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
-      {/* Date Inputs */}
-      <div className="flex flex-wrap items-end gap-4">
-        <DateInputField
-          name="fromDate"
-          label="From"
-          placeholder="Start date"
-          className="w-[200px]"
-          formLabelClassName="text-sm font-medium text-gray-700"
-        />
-        <span className="text-gray-500 font-medium">to</span>
-        <DateInputField
-          name="toDate"
-          label="To"
-          placeholder="End date"
-          className="w-[200px]"
-          formLabelClassName="text-sm font-medium text-gray-700"
-        />
-      </div>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
+                 <div className="w-[40%]">
+                <FormField
+                  control={control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem className="sm:col-span-1">
+                      <FormLabel className="text-lg font-medium text-gray-700">
+                        Companies
+                      </FormLabel>
+                      <FormControl>
+                        <Combobox
+                          placeholder="Select Companies"
+                         options={[
+                              { value: "", label: "All Companies" },
+                              ...companies.map((c) => ({
+                                value: c.id,
+                                label: c.name,
+                              })),
+                            ]}
+                          value={field.value}
+                          onSelect={field.onChange}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                </div>
+               
+                {/* Date Inputs */}
+                <div className="flex flex-wrap items-end gap-4">
+                  <DateInputField
+                    name="fromDate"
+                    label="From"
+                    placeholder="Start date"
+                    className="w-[250px]"
+                    formLabelClassName="text-sm font-medium text-gray-700"
+                  />
+                  <span className="text-gray-500 font-medium">to</span>
+                  <DateInputField
+                    name="toDate"
+                    label="To"
+                    placeholder="End date"
+                    className="w-[250px]"
+                    formLabelClassName="text-sm font-medium text-gray-700"
+                  />
+                </div>
+              
 
-      {/* Download Button */}
-      <Button
-        type="button"
-        onClick={handleDownload}
-        className="bg-[#00CFA6] text-white hover:bg-[#00b894] px-5 py-2 rounded-lg shadow-md transition-all"
-      >
-        Download Report
-      </Button>
-    </div>
-  </div>
-</FormProvider>
-
+                {/* Download Button */}
+                <Button
+                  type="button"
+                  onClick={handleDownload}
+                  className="bg-[#00CFA6] text-white hover:bg-[#00b894] px-5 py-2 rounded-lg shadow-md transition-all"
+                >
+                  Download Report
+                </Button>
+              </div>
+            </div>
+          </FormProvider>
         </div>
       </section>
     </>

@@ -125,26 +125,26 @@ const navigationData: Record<UserRole, NavigationSection[]> = {
           icon: (isActive) => <DashboardSvg isActive={isActive} />,
         },
         {
+          name: "Companies",
+          link: "/dashboard/AdminCompanies",
+          icon: (isActive) => <CompanySvg isActive={isActive} />,
+        },
+        {
           name: "Users",
           link: "/dashboard/users",
           icon: (isActive) => <UserSvg isActive={isActive} />,
         },
         
         {
-          name: "Companies",
-          link: "/dashboard/AdminCompanies",
-          icon: (isActive) => <CompanySvg isActive={isActive} />,
-        },
-        {
           name: "Settings",
           link: "/dashboard/AdminSettings",
           icon: (isActive) => <SettingsSvg isActive={isActive} />,
         },
-        {
-          name: "Reports",
-          link: "/dashboard/reports",
-          icon: (isActive) => <ReportsSvg isActive={isActive} />,
-        },
+        // {
+        //   name: "Reports",
+        //   link: "/dashboard/reports",
+        //   icon: (isActive) => <ReportsSvg isActive={isActive} />,
+        // },
         
       ],
     },

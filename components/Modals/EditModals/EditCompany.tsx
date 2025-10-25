@@ -94,13 +94,8 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 sm:grid-cols-2">
-          <InputField label="Name" name="name" placeholder="Enter company name" formItemClassName="sm:col-span-2" />
-          <InputField label="Website URL" name="websiteUrl" placeholder="https://example.com" />
-          <InputField label="Career Page URL" name="careerPageUrl" placeholder="https://careers.example.com" />
-          <InputField label="Description" name="description" placeholder="Short description" formItemClassName="sm:col-span-2" />
-
-          <div className="sm:col-span-2">
-            <label className="block mb-1 text-sm text-gray-600">Upload File</label>
+               <div className="sm:col-span-2">
+            <label className="block mb-1 text-sm text-gray-600">Upload Logo</label>
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400"
               onClick={() => document.getElementById("company-file-upload-edit")?.click()}
@@ -111,6 +106,12 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
               {selectedFile && <p className="mt-2 text-sm text-green-600">{selectedFile.name} selected</p>}
             </div>
           </div>
+          <InputField label="Name" name="name" placeholder="Enter company name" formItemClassName="sm:col-span-2" />
+          <InputField label="Website URL" name="websiteUrl" placeholder="https://example.com" />
+          <InputField label="Career Page URL" name="careerPageUrl" placeholder="https://careers.example.com" />
+          <InputField label="Description" name="description" placeholder="Short description" formItemClassName="sm:col-span-2" />
+
+     
 
           <Button type="submit" disabled={isClicked || methods.formState.isSubmitting} className="sm:col-span-2 w-fit justify-self-end">
             {isClicked ? "Updating..." : "Update Company"}

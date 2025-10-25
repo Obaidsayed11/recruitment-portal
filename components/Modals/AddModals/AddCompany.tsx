@@ -97,13 +97,8 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
     >
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 sm:grid-cols-2">
-          <InputField label="Name" name="name" placeholder="Enter company name" formItemClassName="sm:col-span-2" />
-          <InputField label="Website URL" name="websiteUrl" placeholder="Enter website URL" />
-          <InputField label="Career Page URL" name="careerPageUrl" placeholder="Enter career page URL" />
-          <InputField label="Description" name="description" placeholder="Enter description" formItemClassName="sm:col-span-2" />
-          
-          <FormItem className="gap-2 grid sm:col-span-2">
-            <FormLabel>File</FormLabel>
+              <FormItem className="gap-2 grid sm:col-span-2">
+            <FormLabel>Logo</FormLabel>
             <FormControl>
               <div
                 className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-gray-400"
@@ -122,6 +117,12 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
             </FormControl>
             <FormMessage />
           </FormItem>
+          <InputField label="Name" name="name" placeholder="Enter company name" formItemClassName="sm:col-span-2" />
+          <InputField label="Website URL" name="websiteUrl" placeholder="Enter website URL" />
+          <InputField label="Career Page URL" name="careerPageUrl" placeholder="Enter career page URL" />
+          <InputField label="Description" name="description" placeholder="Enter description" formItemClassName="sm:col-span-2" />
+          
+      
 
           <Button type="submit" disabled={isClicked} className="sm:col-span-2 w-fit justify-self-end">
             {isClicked ? "Adding..." : "Add Company"}

@@ -111,9 +111,11 @@ const SettingGroups = () => {
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
+          const params = new URLSearchParams();
           params.append("query", debouncedSearchQuery);
+          
           response = await apiClient.get<GroupListProps>(
-            `/groups?${params.toString()}`
+            `/groups/search?${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---

@@ -101,9 +101,10 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
+              const params = new URLSearchParams();
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<DepartmentListProps>(
-            `/department?companyId=${companyId}/search?${params.toString()}`
+            `/search?id=${companyId}&${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---

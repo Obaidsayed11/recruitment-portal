@@ -118,17 +118,19 @@ const SettingRoles = () => {
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
+           params.append("query", debouncedSearchQuery);
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<RoleListProps>(
-            `/admin/users/search?${params.toString()}`
+            `/roles/search?${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
           if (selectedRole && selectedRole !== "All") {
+            
             params.append("role", selectedRole);
           }
           response = await apiClient.get<RoleListProps>(
-            `/roles?${params.toString()}`
+            `/roles/search?${params.toString()}`
           );
         }
         console.log(response);

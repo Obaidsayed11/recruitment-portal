@@ -11,7 +11,8 @@ import JobDescription from './company/job-descriptions/page';
 import { useTabContext } from '@/context/TabsContext';
 import CompanyApplication from './company/application/page';
 import CompanyDepartment from './company/department/page';
-import { CompanyProps } from '@/types/companyInterface';
+import { CompanyListProps } from '@/types/companyInterface';
+import ClientInfoSection from '@/components/Card/ClientDetails';
 
 const CompanyDetailPage = () => {
   const { activeTab, setActiveTab } = useTabContext();
@@ -24,7 +25,7 @@ const CompanyDetailPage = () => {
   
   const tabs = ["job-description", "application", "department"];
   
-  const [company, setCompany] = useState<CompanyProps | null>(null);
+  const [company, setCompany] = useState<CompanyListProps | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Sync activeTab with URL and ensure valid tab is set
@@ -48,7 +49,7 @@ const CompanyDetailPage = () => {
     const fetchCompanyDetails = async () => {
       setLoading(true);
       try {
-        const response = await apiClient.get<CompanyProps>(`/company/${companyId}`);
+        const response = await apiClient.get<CompanyListProps>(`/company/${companyId}`);
         setCompany(response.data);
       } catch (error: any) {
         console.error("Failed to fetch company details:", error);
@@ -113,7 +114,7 @@ const CompanyDetailPage = () => {
       <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-110px)]">
         <div className="flex flex-col w-full">
           {/* Company Info Card */}
-          <Card className="p-4 mb-4">
+          {/* <Card className="p-4 mb-4">
             <h2 className="text-xl font-semibold mb-2">{company.name}</h2>
             {company.websiteUrl && (
               <p className="text-sm text-gray-600">
@@ -123,10 +124,12 @@ const CompanyDetailPage = () => {
                 </a>
               </p>
             )}
-            {company.description && (
-              <p className="text-sm text-gray-600 mt-2">{company.description}</p>
+            {company.location && (
+              <p className="text-sm text-gray-600 mt-2">{company.location}</p>
             )}
-          </Card>
+          </Card> */}
+          <ClientInfoSection companyData={company} />
+
 
           {/* Tabs */}
           <Tabs

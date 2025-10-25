@@ -21,6 +21,7 @@ import UserCard from "@/components/Card/UserCard";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import Button from "@/components/Others/Button";
+import { Plus } from "lucide-react";
 
 const headersOptions = [
   { value: "Full Name" },
@@ -109,6 +110,7 @@ useEffect(() => {
 
         let url: string;
         if (debouncedSearchQuery) {
+              const params = new URLSearchParams();
           params.append("query", debouncedSearchQuery);
           url = `/user/search?${params.toString()}`;
         } else {
@@ -230,15 +232,19 @@ useEffect(() => {
           />
           <Button
   onClick={handleCreateUser}
-  className="bg-primary text-white px-4 py-2 rounded-lg"
+  className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
+    icon={<Plus />}
 >
-  + Create User
+  Create User
+  
 </Button>
+
+
         </div>
         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
+            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={

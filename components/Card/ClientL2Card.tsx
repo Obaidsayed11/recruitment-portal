@@ -36,7 +36,7 @@ const ClientL2Card: React.FC<ClientL2CardProps> = ({
           )}
           <div className="flex flex-col gap-0 leading-[40px]">
             {label && (
-              <p className="text-xl text-text leading-[23px] font-normal">
+              <p className="text-lg text-text leading-[23px] font-normal">
                 {label}
               </p>
             )}

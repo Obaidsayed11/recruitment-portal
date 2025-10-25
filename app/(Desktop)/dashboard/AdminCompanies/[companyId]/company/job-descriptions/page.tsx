@@ -123,54 +123,51 @@
       if (!companyId) return;
       
 
-      const fetchData = async () => {
-        setLoading(true);
-        try {
-          // Build parameters dynamically for every request
-          const params = new URLSearchParams();
-          console.log(params,"params")
-          params.append("page", page.toString());
-          params.append("limit", "10");
-        
+    const fetchData = async () => {
+  setLoading(true);
+  try {
+      const params = new URLSearchParams();
+        params.append("page", page.toString());
+      params.append("limit","10")
+    let response;
 
-          let response;
-          console.log(response,"sefl")
-      
-          if (debouncedSearchQuery) {
-            // --- Paginated Server Search Logic ---
-            params.append("query", debouncedSearchQuery);
-          response = await apiClient.get<JobDescriptionListProps>(
-            `/job?companyId=${companyId}?${params.toString()}`
-            );
-          } else {
-            // --- Paginated Role Filter Logic ---
-            if (selectedRole && selectedRole !== "All") {
-              params.append("role", selectedRole);
-            }
-            response = await apiClient.get<JobDescriptionListProps>(
-              `/job?companyId=${companyId}&${params.toString()}`
-            );
-          }
-          console.log(response);
-          const newDescription = response.data.jobs || [];
+    if (debouncedSearchQuery) {
+      // --- Search Logic ---
+      const params = new URLSearchParams();
+      params.append("query", debouncedSearchQuery);
 
-          // If it's the first page, we are starting a new list.
-          // For all subsequent pages, we append to the existing list.
-          if (page === 1) {
-            setDescription(newDescription as any);
-          } else {
-            setDescription((prev) => [...prev, ...newDescription]);
-          }
+      response = await apiClient.get<JobDescriptionListProps>(
+        `/job/search?id=${companyId}&${params.toString()}`
+      );
+    } else {
+      // --- Normal Pagination Logic ---
+  
 
-          // Update pagination status based on the API response.
-          setHasMore(response.data.currentPage < response.data.totalPages);
-        } catch (error: any) {
-          // The catch block will now correctly handle 404 errors from requesting a page that doesn't exist.
-          setHasMore(false); // Stop trying to fetch more if an error occurs.
-        } finally {
-          setLoading(false);
-        }
-      };
+      if (selectedRole && selectedRole !== "All") {
+        params.append("role", selectedRole);
+      }
+
+      response = await apiClient.get<JobDescriptionListProps>(
+        `/job?companyId=${companyId}&${params.toString()}`
+      );
+    }
+
+    const newDescription = response.data.jobs || [];
+
+    if (page === 1) {
+      setDescription(newDescription as any);
+    } else {
+      setDescription((prev) => [...prev, ...newDescription]);
+    }
+
+    setHasMore(response.data.currentPage < response.data.totalPages);
+  } catch (error: any) {
+    setHasMore(false);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
       fetchData();
       // This dependency array is now correct. It runs when the page or query changes, but will not loop on its own state updates.
@@ -247,19 +244,35 @@
           {/* Header */}
           <Header
     checkBox={true}
-    className1="
-      w-full grid sticky top-0 border
-      grid-cols-[30px_repeat(16,100px)]
-      lg:grid-cols-[30px_repeat(16,110px)]
-      xl:grid-cols-[30px__1fr_1fr_1.5fr_1fr_1fr_1fr_2fr_2fr_2fr_1fr_1fr_1fr]
-      gap-8 whitespace-nowrap
-      "
+    // className1="
+    //   w-full grid sticky top-0 border
+    //   grid-cols-[30px_repeat(13,100px)]
+    //   lg:grid-cols-[30px_repeat(13,110px)]
+    //   xl:grid-cols-[30px_repeat(13,4fr)]
+      
+    //   gap-8 whitespace-nowrap
+    //   "
+    
+      // xl:grid-cols-[30px__2fr_2fr_2fr_2fr_2fr_2fr_2fr_2fr_2fr_1fr_1fr_1fr]
+      className1="
+      w-full grid sticky top-0 border 
+      /* Match the List Item's grid-cols for smaller screens */
+      grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px_1fr] 
+      
+      /* Use the original LG/XL fluid definitions and ensure 14 columns */
+      lg:grid-cols-[20px_repeat(13,110px)]
+      /* Ensure full width (1fr) for the last column (Actions) to match the list item */
+      xl:grid-cols-[20px_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_1fr] 
+      
+      gap-5 whitespace-nowrap
+    "
     headersall={headersOptions}
     handleSelectAll={handleSelectAll}
     isAllSelected={
       allCards.length > 0 && selectedCards.length === allCards.length
     }
   />
+
 
           {/* User List */}
           <div className="divide-y divide-gray-100">

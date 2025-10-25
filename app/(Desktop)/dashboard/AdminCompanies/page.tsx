@@ -14,10 +14,10 @@ import AddCompany from "@/components/Modals/AddModals/AddCompany";
 import CompanyCard from "@/components/Card/CompanyCard";
 
 const headersOptions = [
+  { value: "Logo" },
   { value: "Name" },
   { value: "Website" },
   { value: "Career Page" },
-  { value: "Logo" },
   { value: "Description" },
   { value: "Actions" },
 ];
@@ -68,7 +68,10 @@ const CompanyRoute = () => {
         const params = new URLSearchParams();
         params.append("page", page.toString());
         params.append("limit", "10");
-        if (debouncedSearchQuery) params.append("query", debouncedSearchQuery);
+        if (debouncedSearchQuery){ 
+          
+              const params = new URLSearchParams();
+          params.append("query", debouncedSearchQuery);}
 
         const url = debouncedSearchQuery ? `/company/search?${params}` : `/company?${params}`;
         const response = await apiClient.get<CompanyListProps>(url);

@@ -6,11 +6,13 @@ export interface CompanyProps {
   websiteUrl?: string;
   careerPageUrl?: string;
   description?: string;
+  location? : string;
   logoUrl?: string;
 }
 
 export interface CompanyListProps {
   companies: CompanyProps[];
+  name: string
     totalPages: string;
   page: string;
 }

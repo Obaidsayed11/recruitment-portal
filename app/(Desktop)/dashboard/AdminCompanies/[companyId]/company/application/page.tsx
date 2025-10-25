@@ -108,6 +108,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
     if (!session || (page > 1 && !hasMore)) {
       return;
     }
+    if (!companyId) return;
 
     const fetchData = async () => {
       setLoading(true);
@@ -120,15 +121,16 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
+           const params = new URLSearchParams();
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<ApplicationListProps>(
-            `/admin/users/search?${params.toString()}`
+            `/application/search?id=${companyId}&${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
-          // if (selectedRole && selectedRole !== "All") {
-          //   params.append("role", selectedRole);
-          // }
+          if (selectedRole && selectedRole !== "All") {
+            params.append("role", selectedRole);
+          }
            response = await apiClient.get<ApplicationListProps>(
           `/application?companyId=${companyId}&${params.toString()}`
           );

@@ -22,6 +22,7 @@ import EditDepartment from "../Modals/EditModals/EditDepartment";
 import EditGroups from "../Modals/EditModals/EditGroups";
 import EditRoles from "../Modals/EditModals/EditRoles";
 import { Pencil } from "lucide-react";
+import Button from "./Button";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
@@ -68,9 +69,9 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     // }
     if (pathname.includes("/dashboard/users")) {
       return (
-        <button  onClick={handleEditClick}>
+        <Button  onClick={handleEditClick}>
         <Pencil size={18} />
-        </button>
+        </Button>
       );
     }
     else if (
