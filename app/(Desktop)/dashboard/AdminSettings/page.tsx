@@ -59,7 +59,7 @@ const Settings = () => {
     <>
       <DynamicBreadcrumb links={[{ label: "Settings" }]} />
 
-      <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-105px)]">
+      <div className="grid  gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-110px)]">
         <div className="flex flex-col w-full">
           {/* Tabs Section */}
           <Tabs

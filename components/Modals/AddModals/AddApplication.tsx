@@ -285,12 +285,12 @@ const AddApplication: React.FC<{ onAdd: (data: any) => void }> = ({
               </div>
             ))}
           </div>
-          <InputField
+          {/* <InputField
             label="skills"
             name="skills"
             placeholder="Enter Your Total Experience"
-          />
-
+          /> */}
+{/* 
           <InputField
             label="Current CTC"
             name="currentCTC"
@@ -300,14 +300,14 @@ const AddApplication: React.FC<{ onAdd: (data: any) => void }> = ({
             label="Expected CTC"
             name="expectedCTC"
             placeholder="Current CTC"
-          />
-          <InputField
+          /> */}
+          {/* <InputField
             label="Notice Period"
             name="noticePeriod"
             placeholder="Notice Period"
-          />
+          /> */}
           {/* <InputField label="Status" name="status" placeholder="Status" /> */}
-          <InputField label="Source" name="source" placeholder="Source" />
+          {/* <InputField label="Source" name="source" placeholder="Source" /> */}
           {/* <InputField label="Notes" name="Notes" placeholder="Source" />
           <InputField label="History" name="History" placeholder="History" /> */}
           <Button type="submit" className="sm:col-span-2" disabled={isClicked}>

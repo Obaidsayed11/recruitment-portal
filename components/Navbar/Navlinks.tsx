@@ -126,7 +126,7 @@ const navigationData: Record<UserRole, NavigationSection[]> = {
         },
         {
           name: "Companies",
-          link: "/dashboard/AdminCompanies",
+          link: "/dashboard/companies",
           icon: (isActive) => <CompanySvg isActive={isActive} />,
         },
         {

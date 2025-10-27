@@ -47,10 +47,12 @@ export interface CardProps {
   onDelete: (id: string) => void;
   onUpdate: (data: any) => void;
   isSelected: boolean;
+    onClick?: () => void; // Add this line
+
 }
 
 
-export type EmploymentType = "FULL_TIME" | "CONTRACT" | "INTERNSHIP";
+export type EmploymentType = "FULL TIME" | "CONTRACT" | "INTERNSHIP";
 export type PublishedType = true | false;
 export type StatusType = "ACTIVE" | "CLOSED" | "DRAFT";
 

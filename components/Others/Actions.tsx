@@ -75,26 +75,26 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
       );
     }
     else if (
-      /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&
+      /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
       tabParam === "job-description"
     ) {
       return <EditJobDescription id={id} onUpdate={onUpdate} data={data} />;
     } 
     else if (
-      /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&
+      /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
       tabParam === "application"
     ) {
       return <EditApplication id={id} onUpdate={onUpdate} data={data} />;
     } 
     else if (
-      /^\/dashboard\/AdminCompanies\/[^/]+$/.test(pathname) &&
+      /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
       tabParam === "department"
     ) {
       return <EditDepartment id={id} onUpdate={onUpdate} data={data} />;
     }
     
-    // Match: /dashboard/AdminCompanies (company list page, no ID)
-    else if (pathname === "/dashboard/AdminCompanies") {
+    // Match: /dashboard/companies (company list page, no ID)
+    else if (pathname === "/dashboard/companies") {
       return <EditCompany id={id} onUpdate={onUpdate} data={data} />;
     }
      else if (pathname === "/dashboard/AdminSettings" && tabParam === "groups") {

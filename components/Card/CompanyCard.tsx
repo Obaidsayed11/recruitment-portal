@@ -77,55 +77,52 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       <div
         ref={ref}
         onClick={handleRowClick}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_1fr_2fr_1fr_1fr_3fr_1fr] gap-5 items-center cursor-pointer transition-all ${
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_2.4fr_2.4fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
           isSelected
             ? "bg-secondary hover:bg-secondary border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
-        }`}
+        }`} 
       >
         <div onClick={(e) => e.stopPropagation()}>
           <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
         </div>
-         <div className="overflow-hidden">
-  {data.logoUrl ? (
-    <div className="flex items-center gap-2">
-      <Image
-        className="w-[50px] h-[50px] rounded-lg object-cover bg-secondary border"
-        src={data.logoUrl}
-       alt={data.name || "Company Logo"}
-
-        width={50}
-        height={50}
-      />
-      {/* <a
-        href={data.logoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleLinkClick}
-        className="group/link text-blue-600 hover:text-blue-800 text-sm transition-colors flex items-center gap-1"
-        title={data.logoUrl}
-      >
-        <span className="line-clamp-1">View Logo</span>
-        <ExternalLink className="h-3 w-3 opacity-0 group-hover/link:opacity-100 transition-opacity flex-shrink-0" />
-      </a> */}
-    </div>
+         <div className="grid grid-cols-[50px_1fr] gap-2 items-center">
+  {/* Avatar - Always present to maintain grid structure */}
+  {data?.logoUrl ? (
+    <Image
+      className="w-[100px] h-[50px] rounded-lg object-contain bg-white border"
+      src={data.logoUrl}
+      alt={data.name && data.name}
+      width={50}
+      height={50}
+    />
   ) : (
-    <span className="text-subtext text-sm">NA</span>
+    <div className="w-[50px] h-[50px] rounded-lg bg-gray-400 flex items-center justify-center text-white font-bold text-xl">
+      {data?.name?.charAt(0).toUpperCase() || "N"}
+    </div>
   )}
+
+  {/* Name */}
+  <h4 className="font-medium text-text line-clamp-2">
+    {data?.name || "NA"}
+  </h4>
 </div>
-        <span className="font-medium text-text line-clamp-2">{data.name || "NA"}</span>
+        
         {/* <span className="text-subtext line-clamp-1">{data.websiteUrl || "NA"}</span> */}
-         <div className="overflow-hidden">
+         <div className="overflow-hidden truncate">
           <UrlLink url={data.websiteUrl} label={data.websiteUrl} />
         </div>
          {/* Career Page URL */}
-        <div className="overflow-hidden">
+        <div className="overflow-hidden truncate">
           <UrlLink url={data.careerPageUrl} label={data.careerPageUrl} />
         </div>
+        <h4 className="font-medium text-text line-clamp-2">
+    {data?.location || "NA"}
+  </h4>
           {/* Logo URL */}
      
 
-        <span className="text-subtext line-clamp-2">{data.description || "NA"}</span>
+        <span className="text-sm line-clamp-2 text-clip">{data.description || "NA"}</span>
         <div onClick={handleActionClick}>
           <Actions
             id={data.id}

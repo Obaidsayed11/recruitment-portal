@@ -175,7 +175,10 @@ const SettingGroups = () => {
   <>
     {/* <DynamicBreadcrumb links={[{ label: "Groups" }]} /> */}
 
-     <section className="bg-white  sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-200px)] flex flex-col">
+    <section
+        className="bg-white sm:rounded-xl 
+        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-180px)] w-full"
+      >
       {/* Top Operations Bar */}
        <div
         className="flex flex-col sm:flex-row items-start sm:items-center 
@@ -218,13 +221,7 @@ const SettingGroups = () => {
         {/* Header */}
         <Header
           checkBox={true}
-          className1="
-            grid sticky top-0 z-10 border
-            
-            min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(2,minmax(120px,1fr))]
-            gap-0
-            whitespace-nowrap gap-10"
+          className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={
@@ -233,7 +230,7 @@ const SettingGroups = () => {
         />
 
         {/* User List */}
-        <div className="divide-y divide-gray-100">
+       
           {loading && page === 1 ? (
             <Skeleton2 />
           ) : groups.length === 0 ? (
@@ -268,7 +265,7 @@ const SettingGroups = () => {
             </p>
           )}
         </div>
-      </div>
+    
     </section>
   </>
 );

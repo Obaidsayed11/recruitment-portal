@@ -11,25 +11,25 @@ const nextConfig = {
   },
 
   images: {
-    // remotePatterns: [
-    //   {
-    //     protocol: "https",
-    //     hostname: "api.quickcraves.com",
-    //     pathname: "**",
-    //   },
-    //   {
-    //     protocol: "http",
-    //     hostname: "192.168.102.142",
-    //     pathname: "**",
-    //   },
-    //   {
-    //     protocol: "http",
-    //     hostname: "192.168.0.133",
-    //     port : "5000",
-    //     pathname: "**",
-    //   },
-    // ],
-    domains: ["api.quickcraves.com", "192.168.102.142", "192.168.0.133"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "api.quickcraves.com",
+        pathname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "192.168.102.142",
+        pathname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "192.168.0.133",
+        port : "5000",
+        pathname: "**",
+      },
+    ],
+  
   },
 
   env: {
@@ -69,11 +69,13 @@ const nextConfig = {
   },
 };
 
-const pwaConfig = {
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === "development", // Disable PWA in development
-};
+// const pwaConfig = {
+//   dest: "public",
+//   register: true,
+//   skipWaiting: true,
+//   disable: process.env.NODE_ENV === "development", // Disable PWA in development
+// };
 
-export default withPWA(pwaConfig)(nextConfig);
+// export default withPWA(pwaConfig)(nextConfig);
+export default (nextConfig);
+

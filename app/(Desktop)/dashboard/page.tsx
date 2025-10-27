@@ -1,4 +1,4 @@
-// "use client";
+  // "use client";
 // // import { InvardChart } from "@/components/Charts/InvardChart";
 // // import { OutwardChart } from "@/components/Charts/Outward";
 // // import { ProductAcceptanceMetrics } from "@/components/Charts/ProductAcceptanceMetrics";
@@ -470,7 +470,7 @@ const AdminDashboardRoute = () => {
               </h3>
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
-                 <div className="w-[40%]">
+                 <div className="w-[55%]">
                 <FormField
                   control={control}
                   name="company"
@@ -505,7 +505,7 @@ const AdminDashboardRoute = () => {
                     name="fromDate"
                     label="From"
                     placeholder="Start date"
-                    className="w-[250px]"
+                    className="w-[210px]"
                     formLabelClassName="text-sm font-medium text-gray-700"
                   />
                   <span className="text-gray-500 font-medium">to</span>
@@ -513,7 +513,7 @@ const AdminDashboardRoute = () => {
                     name="toDate"
                     label="To"
                     placeholder="End date"
-                    className="w-[250px]"
+                    className="w-[210px]"
                     formLabelClassName="text-sm font-medium text-gray-700"
                   />
                 </div>
@@ -523,7 +523,7 @@ const AdminDashboardRoute = () => {
                 <Button
                   type="button"
                   onClick={handleDownload}
-                  className="bg-[#00CFA6] text-white hover:bg-[#00b894] px-5 py-2 rounded-lg shadow-md transition-all"
+                  className="bg-[#00CFA6] text-white hover:bg-[#00b894] px-5 py-2 rounded-lg shadow-md transition-all mt-6 "
                 >
                   Download Report
                 </Button>

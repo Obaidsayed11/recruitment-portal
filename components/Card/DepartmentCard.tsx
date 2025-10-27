@@ -26,10 +26,12 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
     return (
       <div
         ref={ref}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap
-          grid-cols-[20px_200px_150px_150px_150px_150px_100px]
-          xl:grid-cols-[20px_1.5fr_1fr_1fr_1fr_1fr_1fr]
-          gap-5 transition-all ease-linear border items-center ${
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
+          grid-cols-[20px_120px_120px_150px]
+          lg:grid-cols-[40px_1fr_1fr_1fr]
+          xl:grid-cols-[0px_1fr_1fr_1fr]
+          
+          gap-10 transition-all cursor-pointer items-center text-left ${
             isSelected
               ? "bg-secondary hover:bg-secondary border-border rounded-xl"
               : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"

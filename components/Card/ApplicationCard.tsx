@@ -41,18 +41,20 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
   return (
       <div
         ref={ref}
-        className={`bg-white p-2 group w-full xl:w-full my-1 border-t border-gray-100 border-b 
-        grid grid-cols-[30px_180px_220px_150px_120px_250px_200px_200px_200px_200px_120px_120px_100px]
-        xl:grid-cols-[30px_180px_220px_110px_120px_250px_200px_200px_160px_160px_120px_160px_120px]
-        items-center gap-5 transition-all ease-linear
+         className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
+          grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px]
+          lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
+          xl:grid-cols-[0px_0.9fr_0.9fr_0.9fr_0.9fr_0.9fr_1fr_1fr]
+          
+          gap-10 transition-all cursor-pointer items-center
         ${
           isSelected
-            ? "bg-secondary hover:bg-secondary border-border rounded-xl"
-            : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
+           ? "bg-secondary hover:bg-secondary border-border rounded-xl"
+              : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
         }`}
       >
         {/* Checkbox */}
-        <div className="flex items-center justify-center">
+        <div >
           <CheckBox
             checked={isSelected}
             handleCheckboxChange={handleCheckboxChange}
@@ -158,7 +160,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
         </div>
 
         {/* Skills */}
-        <div className="text-left">
+        {/* <div className="text-left">
           {data.skills && data.skills.length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {data.skills.slice(0, 3).map((skill, index) => (
@@ -178,28 +180,28 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
           ) : (
             <span className="text-subtext text-sm">NA</span>
           )}
-        </div>
+        </div> */}
 
         {/* Current CTC */}
-        <div className="text-left">
+        {/* <div className="text-left">
           <span className="text-subtext text-sm line-clamp-1">
             {data.currentCTC || "NA"}
           </span>
-        </div>
+        </div> */}
 
         {/* Expected CTC */}
-        <div className="text-left">
+        {/* <div className="text-left">
           <span className="text-subtext text-sm line-clamp-1">
             {data.expectedCTC || "NA"}
           </span>
-        </div>
+        </div> */}
 
         {/* Notice Period */}
-        <div className="text-left">
+        {/* <div className="text-left">
           <span className="text-subtext text-sm line-clamp-1">
             {data.noticePeriod || "NA"}
           </span>
-        </div>
+        </div> */}
 
         {/* Status */}
         <div className="text-left">
@@ -225,11 +227,11 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
         </div>
 
         {/* Source */}
-        <div className="text-left">
+        {/* <div className="text-left">
           <span className="text-subtext text-sm line-clamp-1 ml-10">
             {data.source || "NA"}
           </span>
-        </div>
+        </div> */}
 
         {/* Actions */}
         <div className=" ">

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -14,10 +14,10 @@ import AddCompany from "@/components/Modals/AddModals/AddCompany";
 import CompanyCard from "@/components/Card/CompanyCard";
 
 const headersOptions = [
-  { value: "Logo" },
-  { value: "Name" },
+  { value: "company" },
   { value: "Website" },
   { value: "Career Page" },
+    { value: "Address" },
   { value: "Description" },
   { value: "Actions" },
 ];
@@ -120,7 +120,7 @@ const CompanyRoute = () => {
 
   // NEW: Handle company click to navigate to detail page
   const handleCompanyClick = (companyId: string) => {
-    router.push(`/dashboard/AdminCompanies/${companyId}`);
+    router.push(`/dashboard/companies/${companyId}`);
   };
 
   return (
@@ -154,7 +154,7 @@ const CompanyRoute = () => {
         <div className="overflow-auto h-[calc(100vh-210px)]">
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[40px_1.5fr_1fr_1fr_1fr_2fr_1fr]"
+            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr]"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={allCards.length > 0 && selectedCards.length === allCards.length}

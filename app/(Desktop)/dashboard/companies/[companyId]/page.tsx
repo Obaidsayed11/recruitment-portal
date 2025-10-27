@@ -80,7 +80,7 @@ const CompanyDetailPage = () => {
     return (
       <>
         <DynamicBreadcrumb links={[
-          { label: "Companies", href: "/dashboard/AdminCompanies" },
+          { label: "Companies", href: "/dashboard/companies" },
           { label: "Loading..." }
         ]} />
         <div className="flex items-center justify-center h-[calc(100vh-110px)]">
@@ -94,7 +94,7 @@ const CompanyDetailPage = () => {
     return (
       <>
         <DynamicBreadcrumb links={[
-          { label: "Companies", href: "/dashboard/AdminCompanies" },
+          { label: "Companies", href: "/dashboard/companies" },
           { label: "Not Found" }
         ]} />
         <div className="flex items-center justify-center h-[calc(100vh-110px)]">
@@ -107,11 +107,11 @@ const CompanyDetailPage = () => {
   return (
     <>
       <DynamicBreadcrumb links={[
-        { label: "Companies", href: "/dashboard/AdminCompanies" },
+        { label: "Companies", href: "/dashboard/companies" },
         { label: company.name || "Company Details" }
       ]} />
 
-      <div className="grid lg:grid-cols-2 gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-110px)]">
+      <div className="grid  gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-110px)]">
         <div className="flex flex-col w-full">
           {/* Company Info Card */}
           {/* <Card className="p-4 mb-4">

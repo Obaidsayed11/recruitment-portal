@@ -24,24 +24,13 @@
   import JobDescriptionCard from "@/components/Card/JobDescriptionCard";
 
   const headersOptions = [
-    // { value: "Job ID" },
-    // { value: "Company ID" },
     { value: "Job Title" },
-    { value: "Location" },
-    { value: "Experience" },
-    { value: "Salary Range" },
+    { value: "Experience/Salary" },
     { value: "Department" },
     { value: "Employment Type" },
-    { value: "Description" },
-    { value: "Responsibilities" },
-    { value: "Requirements" },
-    // { value: "Created By" },
     { value: "Published" },
     { value: "Status" },
     {value: "Actions"}
-    // { value: "Created At" },
-    // { value: "Updated At" },
-
     ];
 
     type Props = {
@@ -200,7 +189,7 @@
 
       <section
         className="bg-white sm:rounded-xl 
-        p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
+        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-280px)] w-full"
       >
         {/* Top Operations Bar */}
         <div
@@ -239,30 +228,12 @@
         </div>
 
         {/* Scrollable User List */}
-        <div
-          className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+       <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           {/* Header */}
           <Header
     checkBox={true}
-    // className1="
-    //   w-full grid sticky top-0 border
-    //   grid-cols-[30px_repeat(13,100px)]
-    //   lg:grid-cols-[30px_repeat(13,110px)]
-    //   xl:grid-cols-[30px_repeat(13,4fr)]
-      
-    //   gap-8 whitespace-nowrap
-    //   "
-    
-      // xl:grid-cols-[30px__2fr_2fr_2fr_2fr_2fr_2fr_2fr_2fr_2fr_1fr_1fr_1fr]
-      className1="
-      w-full grid sticky top-0 border 
-      /* Match the List Item's grid-cols for smaller screens */
-      grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px_1fr] 
-      lg:grid-cols-[20px_repeat(13,110px)]
-      xl:grid-cols-[20px_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_1fr] 
-      
-      gap-5 whitespace-nowrap
-    "
+      className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+   
     headersall={headersOptions}
     handleSelectAll={handleSelectAll}
     isAllSelected={
@@ -272,7 +243,7 @@
 
 
           {/* User List */}
-          <div className="divide-y divide-gray-100">
+         
             {loading && page === 1 ? (
               <Skeleton2 />
             ) : description.length === 0 ? (
@@ -308,7 +279,7 @@
               </p>
             )}
           </div>
-        </div>
+      
       </section>
     </>
   );

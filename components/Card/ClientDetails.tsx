@@ -1,8 +1,15 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
+import apiClient from "@/lib/axiosInterceptor";
+import { useSession } from "next-auth/react";
+import CompanySvg from "../Svgs/CompanySvg";
+import ReportsSvg from "../Svgs/ReportsSvg";
+import DarkStoreSvg from "../Svgs/DarkStore";
+import VendorSvg from "../Svgs/VendorSvg";
+import ClientL2Card from "./ClientL2Card";
 
-// --- Interfaces for the component (kept same as original) ---
 interface CompanyData {
   company: {
     name?: string;
@@ -10,12 +17,8 @@ interface CompanyData {
     careerPageUrl?: string;
     location?: string;
     logoUrl?: string;
-    description?: string;
     createdAt?: string;
     updatedAt?: string;
-    Applications?: any[];
-    Department?: any[];
-    Jobs?: any[];
   };
 }
 
@@ -23,59 +26,50 @@ interface ClientInfoSectionProps {
   companyData: CompanyData | null;
 }
 
-// --- Helper Component for the Delivery Performance Section ---
-const DeliveryStats: React.FC = () => {
-  // Hardcoded stats based on the image
-  const totalDeliveries = 120;
-  const completed = 60;
-  const pending = 59;
-  const failed = 1;
+const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) => {
+  const { data: session } = useSession();
+  const [dashboardData, setDashboardData] = useState<any>({});
 
-  // Array for iteration over status cards
-  const statusCards = [
-    { label: "Completed", value: completed, className: "text-green-600 border-green-400 bg-green-50/50" },
-    { label: "Pending", value: pending, className: "text-gray-700 border-gray-300 bg-gray-50/50" },
-    { label: "Failed", value: failed, className: "text-red-600 border-red-400 bg-red-50/50" },
+  useEffect(() => {
+    if (session) {
+      const fetchData = async () => {
+        try {
+          const response = await apiClient.get<any>(`/analytics`);
+          setDashboardData(response?.data?.data || []);
+        } catch (error: any) {
+          console.error(error.response?.data?.message);
+        }
+      };
+      fetchData();
+    }
+  }, [session]);
+
+  const overViewStats = [
+    {
+      
+      label: "Companies",
+      className: "bg-[#FEF1F3] border border-[#FFCDD4]",
+      className2: "bg-[#FF4560] h-[36px] w-[36px] grid place-content-center rounded-lg",
+      className3: "text-[#FF4560]",
+      number: dashboardData?.companies ?? "-",
+    },
+    {
+    
+      label: "Job Description",
+      className: "bg-[#FDF2E7] border border-[#FFDDB8]",
+      className2: "bg-[#FF9C2F] h-[36px] w-[36px] grid place-content-center rounded-lg",
+      className3: "text-[#FF9C2F]",
+      number: dashboardData?.jobs ?? "-",
+    },
+    {
+      
+      label: "Applications",
+      className: "bg-[#F1F1F1] border border-[#A3A3A3]",
+      className2: "bg-[#888] h-[36px] w-[36px] grid place-content-center rounded-lg",
+      className3: "text-[#888]",
+      number: dashboardData?.applications ?? "-",
+    },
   ];
-
-  return (
-    <div className="mt-6">
-      {/* The 1560 Fill x 80 Hug Tag - centered just above the title */}
-      {/* <div className="flex justify-center mb-4">
-        <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-          1560 Fill × 80 Hug
-        </span>
-      </div> */}
-
-      {/* <h3 className="text-gray-700 text-base mb-3 font-medium">Delivery Performance</h3> */}
-      {/* <div className="flex gap-4"> */}
-        {/* Total Deliveries Card */}
-        {/* <div className="p-4 border border-gray-200 rounded-lg w-1/4">
-          <p className="text-sm text-gray-500 mb-1">Deliveries</p>
-          <strong className="text-3xl font-semibold text-teal-500">{totalDeliveries}</strong>
-        </div> */}
-
-        {/* Status Cards (Completed, Pending, Failed) */}
-        {/* <div className="flex gap-4 w-3/4">
-          {statusCards.map((card) => (
-            <div
-              key={card.label}
-              className={`flex-1 p-4 border rounded-lg transition-shadow duration-300 ${card.className}`}
-            >
-              <p className="text-sm mb-1">{card.label}</p>
-              <strong className="text-xl font-semibold">{card.value}</strong>
-            </div>
-          ))}
-        </div>
-      </div> */}
-    </div>
-  );
-};
-
-// --- Main Component ---
-const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({
-  companyData,
-}) => {
 
   if (!companyData) {
     return (
@@ -87,94 +81,73 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({
 
   const { company } = companyData;
 
-  // Helper to format date strings (assuming ISO format)
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "NA";
-    try {
-        // Simple way to get YYYY-MM-DD from an ISO string
-        return dateString.split("T")[0];
-    } catch {
-        return dateString; // Fallback if not an ISO string
-    }
-  };
-
-
-  // Data structured for the UI grid in the image
-  const infoBlocks = [
-    // Block 1: Name (used as main) and generic placeholder (sub)
-    {
-      main: company.name || "Company Name",
-      sub: "WH-1234",
-    },
-    // Block 2: Location (split if possible, otherwise use full location)
-    {
-      main: company.location?.split(",")[0].trim() || "Location Part 1",
-      sub: company.location?.split(",").slice(1).join(", ").trim() || "Location Part 2",
-    },
-    // Block 3: Simple address detail (using a generic placeholder)
-    {
-      main: "Shop no. 12, Storia Complex, Worli",
-      sub: null,
-    },
-    // Block 4: Contact/Website
-    {
-      main: company.websiteUrl ? (
-        <a
-          href={company.websiteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center group/link"
-        >
-          {company.websiteUrl.replace(/^(https?:\/\/)?(www\.)?/, '')}
-          <ExternalLink className="h-3 w-3 ml-1 opacity-80 group-hover/link:opacity-100" />
-        </a>
-      ) : "+91 98765 43210", // Placeholder if no website
-      sub: "naga.jyoti@gmail.com",
-    },
-  ];
-
   return (
     <section className="w-full">
-      {/* --- Top Info Box (Mimicking the light blue box) --- */}
-      <div className="border border-blue-300 rounded-lg p-3 bg-blue-50/50 mb-6">
-        <div className="flex items-center">
-          {infoBlocks.map((block, index) => (
-            <div
-              key={index}
-              className={`flex-1 min-w-[150px] p-2 ${
-                index < infoBlocks.length - 1 ? "border-r border-gray-300" : ""
-              }`}
-            >
-              <div className={`flex flex-col`}>
-                <span className={`text-sm font-medium text-gray-800`}>
-                  {block.main}
-                </span>
-                {block.sub && (
-                  <span className={`text-xs text-gray-500 mt-0.5`}>
-                    {block.sub}
-                  </span>
-                )}
-              </div>
+      {/* --- Top Info Section --- */}
+      <div className="border border-[#A3A3A3] bg-secondary rounded-lg p-4 mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
+        {/* --- Column 1: Logo, Name, Website --- */}
+        <div className="flex items-center gap-3">
+          {company.logoUrl ? (
+            <Image
+              src={company.logoUrl}
+              alt={company.name || "Logo"}
+              width={60}
+              height={60}
+              className="rounded-lg object-contain bg-white border w-[60px] h-[60px]"
+            />
+          ) : (
+            <div className="w-[60px] h-[60px] bg-gray-400 text-white rounded-lg flex items-center justify-center text-2xl font-bold">
+              {company.name?.charAt(0).toUpperCase() || "N"}
             </div>
-          ))}
-
-          {/* Timestamps Section - using companyData */}
-          <div className="flex-1 min-w-[150px] p-2 ml-auto text-sm">
-            <div className="flex flex-col">
-                <span className="text-gray-600">
-                    <strong className="font-semibold text-gray-700 mr-1">Created at:</strong>
-                    {formatDate(company.createdAt)}
-                </span>
-                <span className="text-gray-600">
-                    <strong className="font-semibold text-gray-700 mr-1">Updated at:</strong>
-                    {formatDate(company.updatedAt)}
-                </span>
-            </div>
+          )}
+          <div className="flex flex-col">
+            <h3 className="font-semibold text-gray-800 text-lg">{company.name || "Company Name"}</h3>
+            {company.websiteUrl && (
+              <a
+                href={company.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+              >
+                {company.websiteUrl.replace(/^(https?:\/\/)?(www\.)?/, "")}
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
           </div>
         </div>
+
+        {/* --- Column 2: Location + Career URL --- */}
+        <div className="flex flex-col gap-1">
+          <p className="text-gray-700 text-sm">
+            <strong>Location:</strong> {company.location || "Not available"}
+          </p>
+          {company.careerPageUrl && (
+            <a
+              href={company.careerPageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+            >
+            {company.careerPageUrl}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+        </div>
+
+        {/* --- Column 3: Compact Stats Cards --- */}
+        <div className="grid grid-cols-3 gap-2">
+          {overViewStats.map((card, index) => (
+            <div
+              key={index}
+              className={`p-2 rounded-lg border text-center text-xs ${card.className}`}
+            >
+            
+              <div className="text-[10px] text-gray-500 mt-0.5">{card.label}</div>
+              <div className={`font-semibold ${card.className3}`}>{card.number}</div>
+            </div>
+          ))}
+        </div>
       </div>
-      {/* --- Delivery Performance Section --- */}
-      <DeliveryStats />
     </section>
   );
 };

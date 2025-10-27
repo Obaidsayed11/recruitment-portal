@@ -183,9 +183,9 @@ const SettingRoles = () => {
     {/* <DynamicBreadcrumb links={[{ label: "Groups" }]} /> */}
 
      <section
-      className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
-    >
+        className="bg-white sm:rounded-xl 
+        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-180px)] w-full"
+      >
       {/* Top Operations Bar */}
       <div
         className="flex flex-col sm:flex-row items-start sm:items-center 
@@ -214,27 +214,20 @@ const SettingRoles = () => {
           handleServerSearchQueryChange={(e) =>
             setServerSearchQuery(e.target.value)
           }
-          serverSearchPlaceholder="Search all Groups..."
+          serverSearchPlaceholder="Search all Roles..."
         />
 
-        <div className="w-full sm:w-auto">
+        {/* <div className="w-full sm:w-auto"> */}
           <AddRoles onAdd={handleAddRoles} />
-        </div>
+        {/* </div> */}
       </div>
 
       {/* Scrollable User List */}
-        <div
-        className="overflow-auto max-h-[100vh] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
         {/* Header */}
         <Header
           checkBox={true}
-          className1="
-            grid sticky top-0 z-10 border
-            
-            min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
-            grid-cols-[30px_repeat(5,minmax(120px,1fr))]
-            gap-30 
-            whitespace-nowrap gap-4"
+         className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={
@@ -243,7 +236,7 @@ const SettingRoles = () => {
         />
 
         {/* User List */}
-        <div className="divide-y divide-gray-100">
+      
           {loading && page === 1 ? (
             <Skeleton2 />
           ) : roles.length === 0 ? (
@@ -278,7 +271,7 @@ const SettingRoles = () => {
             </p>
           )}
         </div>
-      </div>
+   
     </section>
   </>
 );
