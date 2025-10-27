@@ -77,7 +77,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       <div
         ref={ref}
         onClick={handleRowClick}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_1.5fr_1fr_1fr_1fr_2fr_1fr] gap-5 items-center cursor-pointer transition-all ${
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_1fr_2fr_1fr_1fr_3fr_1fr] gap-5 items-center cursor-pointer transition-all ${
           isSelected
             ? "bg-secondary hover:bg-secondary border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"

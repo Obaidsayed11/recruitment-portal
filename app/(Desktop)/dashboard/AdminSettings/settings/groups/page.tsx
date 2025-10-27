@@ -175,10 +175,7 @@ const SettingGroups = () => {
   <>
     {/* <DynamicBreadcrumb links={[{ label: "Groups" }]} /> */}
 
-      <section
-      className="bg-white sm:rounded-xl 
-      p-3 sm:p-5 flex flex-col w-[82.5vw] max-h-[calc(100vh-169px)]"
-    >
+     <section className="bg-white  sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-200px)] flex flex-col">
       {/* Top Operations Bar */}
        <div
         className="flex flex-col sm:flex-row items-start sm:items-center 
@@ -226,8 +223,8 @@ const SettingGroups = () => {
             
             min-w-[1000px] md:min-w-[1200px] xl:min-w-[1400px]
             grid-cols-[30px_repeat(2,minmax(120px,1fr))]
-            gap-12 
-            whitespace-nowrap gap-4"
+            gap-0
+            whitespace-nowrap gap-10"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={

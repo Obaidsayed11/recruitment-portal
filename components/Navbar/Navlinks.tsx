@@ -233,7 +233,11 @@ const Navlinks: React.FC = () => {
                 </h3>
               )}
               {section.items.map((navItem: NavigationItem) => {
-                const isActive = pathname?.startsWith(navItem.link);
+              const isActive =
+  navItem.link === "/dashboard"
+    ? pathname === "/dashboard"
+    : pathname?.startsWith(navItem.link);
+
                 return (
                   <Link
                     key={navItem.link}

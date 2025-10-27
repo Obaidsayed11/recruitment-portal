@@ -33,10 +33,7 @@ return (
       <div
         ref={ref}
         className={`bg-background p-2 group w-full xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap
-        /* 1. Explicitly match the column widths (20px checkbox + 12 content + 1 Action = 14 columns) */
         grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px_1fr]
-
-        /* 2. Match the XL definition using '4fr' for content and '1fr' for actions */
         xl:grid-cols-[20px_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_1fr]
         
         gap-10 transition-all ease-linear border items-center  ${

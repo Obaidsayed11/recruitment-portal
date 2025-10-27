@@ -258,10 +258,7 @@
       w-full grid sticky top-0 border 
       /* Match the List Item's grid-cols for smaller screens */
       grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px_250px_250px_250px_120px_100px_1fr] 
-      
-      /* Use the original LG/XL fluid definitions and ensure 14 columns */
       lg:grid-cols-[20px_repeat(13,110px)]
-      /* Ensure full width (1fr) for the last column (Actions) to match the list item */
       xl:grid-cols-[20px_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_4fr_1fr] 
       
       gap-5 whitespace-nowrap

@@ -27,9 +27,7 @@ const Navbar: React.FC = () => {
           logo={"/foodland-logo.png"}
           companyName="Foodland"
         />
-        <p className="text-text text-center text-sm font-medium">
-          LAST MILE{" "}
-        </p>
+      
       </Link>
 
       <div className="overflow-auto flex flex-col h-[calc(90vh-100px)] p-2">
@@ -42,7 +40,7 @@ const Navbar: React.FC = () => {
           Logout <LogOut size={20} />
         </button>
         <p className="text-text text-xs mt-3 flex gap-1 justify-center mx-auto">
-          Developed by <strong>Sovorun Technologies</strong>
+          Developed by <strong>Sovorun</strong>
         </p>
       </div>
     </nav>
