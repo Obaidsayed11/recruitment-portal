@@ -12,6 +12,7 @@ export interface CompanyProps {
 
 export interface CompanyListProps {
   companies: CompanyProps[];
+  company : CompanyProps,
   name: string
     totalPages: string;
   page: string;

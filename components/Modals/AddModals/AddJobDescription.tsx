@@ -142,7 +142,7 @@ useEffect(() => {
                     <FormLabel className="text-fontPrimary">Department</FormLabel>
                     <FormControl>
                       <Combobox
-                        placeholder="Select Role"
+                        placeholder="Select Department"
                         options={departments.map((dep) => ({
                           value: dep.id,
                           label: dep.name,
@@ -174,7 +174,7 @@ useEffect(() => {
             label="Employment Type"
             name="employmentType"
             placeholder="Select Type"
-            options={employmentOptions.map((v) => ({ label: v, value: v }))}
+            options={employmentOptions.map((v) => ({ label: v, value: v}))}
           />
           <InputField
             label="Description"

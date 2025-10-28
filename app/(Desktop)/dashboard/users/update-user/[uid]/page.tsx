@@ -26,7 +26,10 @@ import DateInputField from "@/components/Form_Fields/DateField";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ManageTenantAssignments from "@/components/Tabs/UserTabs/TenantAssignmentTab";
+import { useRoles } from "@/hooks/useRoles";
 // import ManageTenantAssignments from "@/components/Tabs/TenantAssignmentTab";
+
+
 
 // Schema that properly handles optional email
 const UserUpdateSchema = z.object({
@@ -41,6 +44,7 @@ const UserUpdateSchema = z.object({
       }
     ),
   phone: z.string().min(10, "Phone must be valid"),
+  role: z.string()
 });
 interface UpdateUserRouteProps {
   userId?: string;
@@ -59,6 +63,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
   const pathname = usePathname(); // 2. Get the current URL path
   const searchParams = useSearchParams();
   const params = useParams();
+   const { roles, loading, error, refetch } = useRoles();
   const userId = useMemo(() => {
     // Get both potential IDs from the URL parameters
     const idFromParams = params?.id as string;
@@ -94,6 +99,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
       fullName: "",
       phone: "",
       email: "", // Changed from "" to undefined
+      role: ""
     },
   });
 
@@ -122,6 +128,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
               fullName: fetchedUser.fullName || fetchedUser.full_name || "",
               email: fetchedUser.email || "",
               phone: fetchedUser.phone || fetchedUser.phoneNumber || "",
+               role: fetchedUser.role || fetchedUser.role || "",
             });
           } else {
             toast.error("User data not found in response");
@@ -140,6 +147,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
+        role: userData.role?.name || userData.role?.id || "", // Use role's string property
       });
     } else {
       // Reset form when no userId (creating new user)
@@ -148,6 +156,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
         fullName: "",
         email: "",
         phone: "",
+        role: "",
       });
     }
   }, [userId, reset]);
@@ -289,6 +298,28 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
                   </FormItem>
                 )}
               /> */}
+                 <FormField
+                              control={control}
+                              name="role"
+                              render={({ field }) => (
+                                <FormItem className="sm:col-span-1">
+                                  <FormLabel className="text-fontPrimary">Roles</FormLabel>
+                                  <FormControl>
+                                    <Combobox
+                                    className="mt-2"
+                                      placeholder="Select Role"
+                                      options={roles.map((dep) => ({
+                                        value: dep.id,
+                                        label: dep.name.split("_").join(" "),
+                                      }))}
+                                      value={field.value}
+                                      onSelect={field.onChange}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
               <Button
                 type="submit"
                 disabled={isSubmitting}

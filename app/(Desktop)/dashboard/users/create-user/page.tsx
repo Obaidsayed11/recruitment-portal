@@ -19,11 +19,17 @@ import AssignGroupsTab from "@/components/Tabs/UserTabs/AssignGroupsTab";
 import AssignTenantTab from "@/components/Tabs/UserTabs/AssignTenantTab";
 import apiClient from "@/lib/axiosInterceptor";
 import ManageTenantAssignments from "@/components/Tabs/UserTabs/TenantAssignmentTab";
+import { FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form";
+import { Combobox } from "@/components/Others/ComoboboxDemo";
+import { useRoles } from "@/hooks/useRoles";
+
+
 
 const UserCreateSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email").optional(),
   phone: z.string().min(10, "Phone must be valid"),
+  role: z.string().min(1,"Please select a Role")
 });
 
 type AddUserFormValues = z.infer<typeof UserCreateSchema>;
@@ -44,7 +50,7 @@ const CreateUserRoute = () => {
 const pathname = usePathname(); // 2. Get the current URL path
     const searchParams = useSearchParams();
 
-    
+     const { roles, loading, error, refetch } = useRoles();
 
   const { data: session } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,10 +63,11 @@ const pathname = usePathname(); // 2. Get the current URL path
       fullName: "",
       email: "",
       phone: "",
+      role:""
     },
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, control } = methods;
     const userId = useMemo(() => {
          // Get both potential IDs from the URL parameters
          const idFromParams = params?.id as string;
@@ -113,6 +120,7 @@ const pathname = usePathname(); // 2. Get the current URL path
               fullName: fetchedUser.fullName || fetchedUser.full_name || "",
               email: fetchedUser.email || "",
               phone: fetchedUser.phone || fetchedUser.phoneNumber || "",
+              role: fetchedUser.role || fetchedUser.role || "",
             });
           } else {
             toast.error("User data not found in response");
@@ -132,6 +140,7 @@ const pathname = usePathname(); // 2. Get the current URL path
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
+        role: userData.role || "",
       });
     } else {
       // Reset form when no userId (creating new user)
@@ -140,6 +149,7 @@ const pathname = usePathname(); // 2. Get the current URL path
         fullName: "",
         email: "",
         phone: "",
+        role: "",
       });
     }
   }, [userId, reset]);
@@ -164,6 +174,7 @@ setUserData(createdUser);
           fullName: createdUser.fullName ,
           email: createdUser.email || "",
           phone: createdUser.phone || "",
+          role: createdUser.role || "",
         });
 
        const searchParams = new URLSearchParams(window.location.search);
@@ -204,15 +215,48 @@ router.replace(`/dashboard/users/create-user?${searchParams.toString()}`, { scro
             {isLoading ? (
               <div className="text-center py-4">Loading user data...</div>
             ) : (
-              <div className="grid sm:grid-cols-3 gap-5">
+              <>
+              <div className="gap-5">
+
+                <div className="grid sm:grid-cols-2 gap-5">
+
+
                 <InputField label="Full Name" name="fullName" placeholder="Enter full name" />
                 <InputField label="Phone" name="phone" placeholder="Enter phone number" />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-5 mt-4" >
+
                 <InputField label="Email" name="email" placeholder="Enter email" />
+                <FormField
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-1">
+                    <FormLabel className="text-fontPrimary">Roles</FormLabel>
+                    <FormControl>
+                      <Combobox
+                      className="mt-2"
+                        placeholder="Select Role"
+                        options={roles.map((dep) => ({
+                          value: dep.id,
+                          label: dep.name.split("_").join(" "),
+                        }))}
+                        value={field.value}
+                        onSelect={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                </div>
+
                 
                 <Button
                   type="submit"
                   disabled={isSubmitting || isLoading}
-                  className="w-fit justify-self-end sm:col-span-2 lg:col-span-3"
+                  className="w-fit justify-self-end sm:col-span-2 lg:col-span-3 mt-2"
                 >
                   {isSubmitting 
                     ? (userId ? "Updating..." : "Creating...") 
@@ -220,6 +264,7 @@ router.replace(`/dashboard/users/create-user?${searchParams.toString()}`, { scro
                   }
                 </Button>
               </div>
+              </>
             )}
           </section>
 

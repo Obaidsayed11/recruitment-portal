@@ -191,6 +191,15 @@ useEffect(() => {
   });
 };
 
+allUsers.map((user,index)=> {
+  console.log(user.role,"dqyfdddddddddddddddddddddddddddddd")
+const rolees =  user.role
+return rolees
+}
+
+)
+
+
 
   
   
@@ -198,6 +207,12 @@ useEffect(() => {
     /* ... */
   };
 
+
+const uniqueRoles = [...new Set(
+  allUsers
+    .map(user => (user.role as any)?.name || user.role)
+    .filter(Boolean)
+)] as string[];
   // --- Render Logic ---
   return (
     <>
@@ -206,15 +221,15 @@ useEffect(() => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center 
         justify-between gap-3 sm:gap-4 pb-5">
           <Operations
-            filterProps={{
-              filter: true,
-              filters: [
-                {
-                  queryKey: "role",
-                  options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
-                },
-              ],
-            }}
+          filterProps={{
+  filter: true,
+  filters: [
+    {
+      queryKey: "role",
+      options: uniqueRoles,
+    },
+  ],
+}}
             checkBox
             isAllSelected={
               allCards.length > 0 && selectedCards.length === allCards.length

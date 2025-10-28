@@ -10,7 +10,8 @@ export interface CardProps {
   isSelected: boolean;
 }
 export interface UserRole {
-  code: string;
+  id: string;
+  name: string
 }
 
 
