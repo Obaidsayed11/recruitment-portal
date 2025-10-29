@@ -32,7 +32,7 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
         className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
           grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
-          xl:grid-cols-[0px_0.9fr_0.9fr_0.9fr_0.9fr_0.9fr_1fr_1fr]
+          xl:grid-cols-[20px_1fr_1fr_1fr_1fr] text-start
           
           gap-10 transition-all cursor-pointer items-center  ${
             isSelected
@@ -44,7 +44,7 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
         <span className="text-subtext font-medium line-clamp-1">{data.name}</span>
          <span className="text-subtext font-medium line-clamp-1">{data.code}</span>
         <span className="text-subtext text-sm line-clamp-1">{data.description?.split("T")[0] || "NA"}</span>
-           <span className="text-subtext font-medium line-clamp-1">{data.roleType}</span>
+           {/* <span className="text-subtext font-medium line-clamp-1">{data.roleType}</span> */}
         
         <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
       </div>

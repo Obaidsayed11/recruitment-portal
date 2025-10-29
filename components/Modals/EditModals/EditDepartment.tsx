@@ -113,7 +113,7 @@ const EditDepartment: React.FC<UpdateDepartmentProps> = ({
             placeholder="Enter Full Name"
           />
           <InputField label="Description" name="description" placeholder="Enter Description" />
-          <Button type="submit" className="sm:col-span-2" disabled={isClicked}>
+          <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
             {isClicked ? "Updating..." : "Update Department"}
           </Button>
         </form>

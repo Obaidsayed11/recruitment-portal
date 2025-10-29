@@ -105,7 +105,7 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
               const params = new URLSearchParams();
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<DepartmentListProps>(
-            `/search?id=${companyId}&${params.toString()}`
+            `department/search?id=${companyId}&${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
@@ -166,7 +166,7 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
       {/* <DynamicBreadcrumb links={[{ label: "Departments" }]} /> */}
       <section
         className="bg-white sm:rounded-xl 
-        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-280px)] w-full"
+        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-308px)] w-full"
       >
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center 
@@ -215,7 +215,7 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
           {loading && page === 1 ? (
             <Skeleton2 />
           ) : departments.length === 0 ? (
-            <div className="text-center py-10 text-gray-500">
+            <div className="text-center py-10 text-gray-500" >
               No Departments found.
             </div>
           ) : (

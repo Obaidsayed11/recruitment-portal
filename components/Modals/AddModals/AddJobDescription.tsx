@@ -174,7 +174,7 @@ useEffect(() => {
             label="Employment Type"
             name="employmentType"
             placeholder="Select Type"
-            options={employmentOptions.map((v) => ({ label: v, value: v}))}
+            options={employmentOptions.map((v) => ({ label: v.split("_").join(" "), value: v}))}
           />
           <InputField
             label="Description"
@@ -192,7 +192,7 @@ useEffect(() => {
             placeholder="Requirements"
           />
 
-          <Button type="submit" className="sm:col-span-2" disabled={isClicked}>
+          <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
             {isClicked ? "Adding..." : "Add Job"}
           </Button>
         </form>

@@ -104,6 +104,8 @@ const CompanyDetailPage = () => {
     );
   }
 
+
+
   return (
     <>
       <DynamicBreadcrumb links={[

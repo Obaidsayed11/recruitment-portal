@@ -269,12 +269,12 @@ const AdminDashboardRoute = () => {
       fetchData();
     }
   }, [session]);
-  const overViewStats = [
+const overViewStats = [
     {
       svg: <CompanySvg stat />,
       label: "Companies",
       className: "bg-[#FEF1F3] rounded-[14px] border border-[#FFCDD4]",
-      className2: "bg-[#FF4560] h-[50px] w-[50px] grid place-content-center ",
+      className2: "bg-[#FF4560] h-[50px] w-[60px] grid place-content-center ",
       className3: "text-[#FF4560]",
       number: dashboardData?.companies ?? "-",
     },
@@ -282,7 +282,7 @@ const AdminDashboardRoute = () => {
       svg: <ReportsSvg stat />,
       label: "Job Description",
       className: "bg-[#FDF2E7] rounded-[14px] border border-[#FFDDB8]",
-      className2: "bg-[#FF9C2F] h-[50px] w-[50px] grid place-content-center",
+      className2: "bg-[#FF9C2F] h-[50px] w-[60px] grid place-content-center",
       className3: "text-[#FF9C2F]",
       number: dashboardData?.jobs ?? "-",
     },
@@ -290,7 +290,7 @@ const AdminDashboardRoute = () => {
       svg: <DarkStoreSvg stat />,
       label: "Applications",
       className: "bg-[#F1F1F1] rounded-[14px] border border-[#A3A3A3]",
-      className2: "bg-[#888] h-[50px] w-[50px] grid place-content-center",
+      className2: "bg-[#888] h-[50px] w-[60px] grid place-content-center",
       className3: "text-[#888]",
       number: dashboardData?.applications,
     },
@@ -298,7 +298,7 @@ const AdminDashboardRoute = () => {
       svg: <VendorSvg stat />,
       label: "Departments",
       className: "bg-[#ECF6F4] rounded-[14px] border border-[#A1E0D3]",
-      className2: "bg-[#00CFA6] h-[50px] w-[50px] grid place-content-center",
+      className2: "bg-[#00CFA6] h-[50px] w-[60px] grid place-content-center",
       className3: "text-[#00CFA6]",
       number: dashboardData?.departments,
     },
@@ -348,7 +348,7 @@ const AdminDashboardRoute = () => {
         onDownloadProgress: (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            console.log(`📥 Download Progress: ${percentCompleted}%`);
+            console.log(`Download Progress: ${percentCompleted}%`);
             if (percentCompleted % 25 === 0) {
               toast.loading(`Downloading... ${percentCompleted}%`, { id: "download-toast" });
             }
@@ -356,12 +356,9 @@ const AdminDashboardRoute = () => {
         },
       });
 
-      console.log("✅ Response received:");
-      console.log("  - Status:", response.status);
-      console.log("  - Content-Type:", response.headers["content-type"]);
-      console.log("  - Data Size:", response.data?.size || 0, "bytes");
+     
 
-      // Check if response is actually a blob
+
       if (!response.data || response.data.size === 0) {
         throw new Error("Empty response received from server. No data available for the selected filters.");
       }
@@ -379,7 +376,7 @@ const AdminDashboardRoute = () => {
         type: response.headers["content-type"] || "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
       
-      console.log("📦 Blob created:", blob.size, "bytes");
+  ;
 
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -449,7 +446,7 @@ const AdminDashboardRoute = () => {
           <h2 className="text-base sm:text-lg text-text mb-2">Overall Stats</h2>
 
           {/* ✅ Stats Cards */}
-          <div className="grid gap-3 md:gap-5 md:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 mb-8">
+          <div className="grid gap-3 md:gap-5 md:grid-cols-2 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 mb-8">
             {overViewStats.map((card, index) => (
               <ClientL2Card
                 key={index}

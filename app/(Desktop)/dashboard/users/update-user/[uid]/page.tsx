@@ -224,8 +224,8 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
       console.log("Cleaned data being sent:", payload);
       console.log("JSON.stringify:", JSON.stringify(payload, null, 2));
 
-      const response = await apiClient.put(`/users/${userId}`, payload);
-      if (response.status === 200) {
+      const response = await apiClient.put(`/user/${userId}`, payload);
+      if (response.status === 201 && response.data.user) {
         toast.success(response.data.message || "User updated successfully!");
         if (response.data.user) {
           setUserData(response.data.user);

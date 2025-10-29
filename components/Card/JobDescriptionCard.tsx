@@ -21,7 +21,7 @@
       const handleDelete = async () => {
         try {
           const response = await apiClient.delete(
-            `/admin/jobdescription/${data.id}`
+            `/job/${data.id}`
           );
           toast.success(response.data.message);
           onDelete(data.id);

@@ -107,7 +107,7 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 sm:grid-cols-2">
               <FormItem className="gap-2 grid sm:col-span-2">
-            <FormLabel className="text-fontPrimary">Logo</FormLabel>
+            <FormLabel className="text-fontPrimary">Profile</FormLabel>
             <FormControl>
                  <div className="flex items-center gap-4">
               <div
@@ -125,9 +125,9 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
                 {selectedFile && <p className="text-fontPrimary">{selectedFile.name} selected</p>}
                 
               </div>
-              <>
+              
               {previewUrl && (
-                                <Image
+                                <img
                                   src={previewUrl}
                                   alt="Selected image preview"
                                   width={150}
@@ -135,7 +135,7 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
                                   className="object-cover rounded-md w-full max-w-36 h-36"
                                 />
                               )}
-                              </>
+                         
               </div>
               
             </FormControl>

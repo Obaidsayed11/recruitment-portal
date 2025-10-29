@@ -57,7 +57,7 @@ const AddGroup: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-1">
           <InputField label="Group Name" name="group_name" placeholder="Enter Group Name" />
-          <Button type="submit" disabled={isClicked}>
+          <Button type="submit" disabled={isClicked}  className="sm:col-span-2 w-fit justify-self-end" >
             {isClicked ? "Adding..." : "Add Group"}
           </Button>
         </form>

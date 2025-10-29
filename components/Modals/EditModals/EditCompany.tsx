@@ -10,9 +10,11 @@ import InputField from "@/components/Form_Fields/InputField";
 import Button from "@/components/Others/Button";
 import { Pencil, UploadCloud } from "lucide-react";
 import apiClient from "@/lib/axiosInterceptor";
-import { FormItem, FormLabel } from "@/components/ui/form";
+import { FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Image from "next/image";
 import { FormControl } from "@/components/ui/form";
+import { BASE_URL } from "@/config";
+import { log } from "console";
 
 const editCompanySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -21,6 +23,7 @@ const editCompanySchema = z.object({
   description: z.string().min(1, "Description is required"),
   file: z.any().optional(),
   location: z.string(),
+  logoUrl: z.string().optional(), // ✅ Add this line
 });
 
 type EditCompanyFormValues = z.infer<typeof editCompanySchema>;
@@ -30,8 +33,10 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
   const [isFirstDialogOpen, setIsFirstDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+   const [hasExistingImage, setHasExistingImage] = useState(false); // Track if there's an existing image
+     const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log(data,"datasaSDsdSDsdSDsdSDsd")
+  console.log(data.logoUrl, "datasaSDsdSDsdSDsdSDsd");
 
   const methods = useForm<EditCompanyFormValues>({
     resolver: zodResolver(editCompanySchema),
@@ -40,31 +45,38 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
       websiteUrl: "",
       careerPageUrl: "",
       description: "",
-      file: data.logoUrl,
+      file: undefined,
       location: "",
     },
   });
 
   const { handleSubmit, reset, setValue } = methods;
+useEffect(() => {
+  if (data && isFirstDialogOpen) {
+    reset({
+      name: data.name,
+      websiteUrl: data.websiteUrl,
+      careerPageUrl: data.careerPageUrl,
+      description: data.description,
+      location: data.location,
+       logoUrl: data.logoUrl || "", // ✅ store existing logo URL in form state
+    });
 
-  useEffect(() => {
-    if (data) {
-      reset({
-        name: data.name,
-        websiteUrl: data.websiteUrl,
-        careerPageUrl: data.careerPageUrl,
-        description: data.description,
-        location: data.location,
-        file : data.logoUrl
-      });
-      // Set initial preview for existing image
-      if (data.logoUrl) {
-        setPreviewUrl(data.logoUrl);
-      } else {
-        setPreviewUrl(null);
-      }
+    if (data.logoUrl) {
+    
+      setPreviewUrl(data.logoUrl);
+    } else {
+      setPreviewUrl(null);
     }
-  }, [data, reset]);
+    setSelectedFile(null);
+  }
+}, [data, isFirstDialogOpen, setValue]);
+
+
+console.log(previewUrl,"previewwewEWEee")
+console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
+
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -76,12 +88,14 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
         return;
       }
       setSelectedFile(file);
+      console.log(selectedFile,"selectedfileleee")
       setPreviewUrl(URL.createObjectURL(file));
       setValue("file", file);
+       setHasExistingImage(false); // User is replacing the image
     }
   };
 
-  console.log(previewUrl,"previewwwwwww")
+  console.log(previewUrl, "previewwwwwww");
 
   const onSubmit: SubmitHandler<EditCompanyFormValues> = async (data) => {
     try {
@@ -92,16 +106,27 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
       formData.append("careerPageUrl", data.careerPageUrl);
       formData.append("description", data.description);
       formData.append("location", data.location);
-      if (selectedFile) formData.append("file", selectedFile);
+    
+    if (selectedFile) {
+      // ✅ user uploaded new image
+      formData.append("file", selectedFile);
+    } else if (data?.logoUrl) {
+      // ✅ user kept existing image
+      formData.append("file", data.logoUrl);
+    }
 
       const response = await apiClient.put(`/company/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      if (response.status === 200) {
+      if (
+        (response as any).status === 200 ||
+        (response as any).status === 201
+      ) {
         toast.success(response.data.message);
-        onUpdate(response.data.company);
+        onUpdate(response.data.updatedCompany );
         setIsFirstDialogOpen(false);
+        reset()
       } else {
         toast.success(response.data.message);
       }
@@ -120,39 +145,42 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
       icon={<Pencil />}
     >
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2" >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid gap-5 sm:grid-cols-2"
+        >
           <FormItem className="gap-2 grid sm:col-span-2">
-            <FormLabel className="text-fontPrimary">Upload Logo</FormLabel>
+            <FormLabel className="text-fontPrimary">Logo</FormLabel>
             <FormControl>
               <div className="flex items-center gap-4">
                 <div
-                  className="flex flex-col items-center justify-center p-6 border-2 border-dashed  rounded-lg cursor-pointer hover:border-gray-400 "
+                  className="flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-gray-400"
                   onClick={() =>
-                    document.getElementById("company-file-upload-edit")?.click()
+                    document.getElementById("company-file-upload")?.click()
                   }
                 >
-                  <UploadCloud size={24} className="text-subtext/70 mb-2" />
-                  <p className="text-sm text-subtext text-center">
-                    Click to upload
+                  <UploadCloud className="w-8 h-8 mb-2 text-fontPrimary" />
+                  <p className="text-fontPrimary">
+                    Click to upload or drag & drop
                   </p>
-                  <p className="text-xs text-subtext/70">JPEG (max. 500kb)</p>
                   <input
-                    id="company-file-upload-edit"
+                    id="company-file-upload"
                     type="file"
-                    accept="image/jpeg"
+                     accept="image/*"
                     className="hidden"
                     onChange={handleFileChange}
                   />
                   {selectedFile && (
-                    <p className="mt-2 text-sm text-green-600">
+                    <p className="text-fontPrimary">
                       {selectedFile.name} selected
                     </p>
                   )}
                 </div>
+
                 {previewUrl && (
-                  <Image
-                    src={previewUrl}
-                    alt="Product image preview"
+                  <img
+                    src={`${BASE_URL}${previewUrl}`}
+                    alt="Selected image preview"
                     width={150}
                     height={150}
                     className="object-cover rounded-md w-full max-w-36 h-36"
@@ -160,6 +188,7 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
                 )}
               </div>
             </FormControl>
+            <FormMessage />
           </FormItem>
 
           <InputField

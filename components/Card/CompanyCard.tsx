@@ -7,11 +7,13 @@ import Actions from "../Others/Actions";
 
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
+import { BASE_URL } from "@/config";
 
 const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
   ({ data, isSelected, onCardSelect, onDelete, onUpdate, onClick }, ref) => {
-
-    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCheckboxChange = (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
       event.stopPropagation(); // Prevent row click when clicking checkbox
       onCardSelect(data.id, event.target.checked);
     };
@@ -40,24 +42,29 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       event.stopPropagation(); // Prevent row click when clicking links
     };
 
-
     // Helper function to ensure URL has protocol
     const formatUrl = (url: string | null | undefined) => {
       if (!url) return null;
-      if (url.startsWith('http://') || url.startsWith('https://')) {
+      if (url.startsWith("http://") || url.startsWith("https://")) {
         return url;
       }
       return `https://${url}`;
     };
 
     // Helper component for URL links
-    const UrlLink = ({ url, label }: { url: string | null | undefined; label?: string }) => {
+    const UrlLink = ({
+      url,
+      label,
+    }: {
+      url: string | null | undefined;
+      label?: string;
+    }) => {
       const formattedUrl = formatUrl(url);
-      
+
       if (!formattedUrl) {
         return <span className="text-subtext text-sm">NA</span>;
       }
-        return (
+      return (
         <a
           href={formattedUrl}
           target="_blank"
@@ -71,58 +78,62 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
         </a>
       );
     };
-
+    console.log(data);
+    console.log(`${BASE_URL}${data.logoUrl}`, "baseeeeeeeeeeeeee");
 
     return (
       <div
         ref={ref}
         onClick={handleRowClick}
         className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_2.4fr_2.4fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
-          isSelected
-            ? "bg-secondary hover:bg-secondary border-border rounded-xl"
+          isSelected ? "bg-secondary hover:bg-amber-800 border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
-        }`} 
+        }`}
       >
         <div onClick={(e) => e.stopPropagation()}>
-          <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
+          <CheckBox
+            checked={isSelected}
+            handleCheckboxChange={handleCheckboxChange}
+          />
         </div>
-         <div className="grid grid-cols-[50px_1fr] gap-2 items-center">
-  {/* Avatar - Always present to maintain grid structure */}
-  {data?.logoUrl ? (
-    <Image
-      className="w-[100px] h-[50px] rounded-lg object-contain bg-white border"
-      src={data.logoUrl}
-      alt={data.name && data.name}
-      width={50}
-      height={50}
-    />
-  ) : (
-    <div className="w-[50px] h-[50px] rounded-lg bg-gray-400 flex items-center justify-center text-white font-bold text-xl">
-      {data?.name?.charAt(0).toUpperCase() || "N"}
-    </div>
-  )}
+        <div className="grid grid-cols-[100px_1fr] gap-2 items-center">
+          {/* Avatar - Always present to maintain grid structure */}
+          {data?.logoUrl ? (
+            <img
+              className="w-[100px] h-[50px] rounded-lg object-contain bg-white border"
+              src={`${BASE_URL}${data.logoUrl || "/"}`}
+              alt={data?.name?.charAt(0).toUpperCase() || "N"}
+              width={100}
+              height={100}
+            />
+          ) : (
+            <div className="w-[100px] h-[50px] rounded-lg bg-gray-400 flex items-center justify-center text-white font-bold text-xl">
+              {data?.name?.charAt(0).toUpperCase() || "N"}
+            </div>
+          )}
 
-  {/* Name */}
-  <h4 className="font-medium text-text line-clamp-2">
-    {data?.name || "NA"}
-  </h4>
-</div>
-        
+          {/* Name */}
+          <h4 className="font-medium text-text line-clamp-2">
+            {data?.name || "NA"}
+          </h4>
+        </div>
+
         {/* <span className="text-subtext line-clamp-1">{data.websiteUrl || "NA"}</span> */}
-         <div className="overflow-hidden truncate">
+        <div className="overflow-hidden truncate">
           <UrlLink url={data.websiteUrl} label={data.websiteUrl} />
         </div>
-         {/* Career Page URL */}
+        {/* Career Page URL */}
         <div className="overflow-hidden truncate">
           <UrlLink url={data.careerPageUrl} label={data.careerPageUrl} />
         </div>
         <h4 className="font-medium text-text line-clamp-2">
-    {data?.location || "NA"}
-  </h4>
-          {/* Logo URL */}
-     
+          {data?.location || "NA"}
+        </h4>
+        {/* Logo URL */}
 
-        <span className="text-sm line-clamp-2 text-clip">{data.description || "NA"}</span>
+        <span className="text-sm line-clamp-2 text-clip">
+          {data.description || "NA"}
+        </span>
         <div onClick={handleActionClick}>
           <Actions
             id={data.id}

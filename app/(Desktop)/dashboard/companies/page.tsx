@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import apiClient from "@/lib/axiosInterceptor";
@@ -24,6 +24,7 @@ const headersOptions = [
 
 const CompanyRoute = () => {
   const { data: session } = useSession();
+   const searchParams = useSearchParams();
   const router = useRouter();
 
   const [allCompanies, setAllCompanies] = useState<CompanyProps[]>([]);
@@ -31,10 +32,12 @@ const CompanyRoute = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  
 
   const [searchQuery, setSearchQuery] = useState("");
   const [serverSearchQuery, setServerSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(serverSearchQuery, 500);
+    const selectedRole = searchParams?.get("role") || "";
 
   const allCards = useMemo(() => allCompanies.map((c) => c.id), [allCompanies]);
 
@@ -57,7 +60,7 @@ const CompanyRoute = () => {
     setAllCompanies([]);
     setPage(1);
     setHasMore(true);
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, selectedRole]);
 
   useEffect(() => {
     if (!session || (page > 1 && !hasMore)) return;
@@ -68,14 +71,24 @@ const CompanyRoute = () => {
         const params = new URLSearchParams();
         params.append("page", page.toString());
         params.append("limit", "10");
+         let url: string;
         if (debouncedSearchQuery){ 
           
               const params = new URLSearchParams();
-          params.append("query", debouncedSearchQuery);}
+          params.append("query", debouncedSearchQuery);
 
-        const url = debouncedSearchQuery ? `/company/search?${params}` : `/company?${params}`;
+         url =`/company/search?${params.toString()}`;
+        }else {
+          if (selectedRole && selectedRole !== "All") {
+            params.append("role", selectedRole);
+          }
+          url = `/company`;
+        }
         const response = await apiClient.get<CompanyListProps>(url);
-        const newCompanies = response.data.companies;
+        const newCompanies = response.data.companies.map((company: any) => ({
+          ...company,
+
+        }))
 
         if (page === 1) setAllCompanies(newCompanies);
         else setAllCompanies((prev) => [...prev, ...newCompanies]);
@@ -90,7 +103,7 @@ const CompanyRoute = () => {
       } finally {
         setLoading(false);
       }
-    };
+    }
     fetchData();
   }, [page, debouncedSearchQuery, session]);
 
@@ -110,12 +123,16 @@ const CompanyRoute = () => {
   };
 
   const handleUpdate = (updatedData: CompanyProps) => {
-    if (!updatedData) return;
-    setAllCompanies((prev) =>
-      prev.some((c) => c.id === updatedData.id)
-        ? prev.map((c) => (c.id === updatedData.id ? updatedData : c))
-        : [updatedData, ...prev]
-    );
+    if (updatedData) 
+    // setAllCompanies((prev) =>
+    //   prev.some((c) => c.id === updatedData.id)
+    //     ? prev.map((c) => (c.id === updatedData.id ? updatedData : c))
+    //     : [updatedData, ...prev]
+    // );
+
+    setAllCompanies((prev) => (
+      prev.map((data)=> (data.id === updatedData.id ? updatedData : data))
+    ))
   };
 
   // NEW: Handle company click to navigate to detail page
@@ -126,7 +143,7 @@ const CompanyRoute = () => {
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Companies" }]} />
-      <section className="bg-white sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
+      <section className="bg-white sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-110px)] flex flex-col">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-5">
           <Operations
             filterProps={{

@@ -89,7 +89,7 @@ const EditGroups: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
           <Button
             type="submit"
             disabled={isClicked || methods.formState.isSubmitting}
-            className="mt-4 w-fit"
+             className="sm:col-span-2 w-fit justify-self-end" 
           >
             {methods.formState.isSubmitting || isClicked ? "Updating..." : "Update Group"}
           </Button>

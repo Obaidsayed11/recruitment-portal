@@ -1,396 +1,4 @@
-// "use client";
-// import React, {
-//   useEffect,
-//   useState,
-//   useRef,
-//   useCallback,
-//   useMemo,
-// } from "react";
-// import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
-// import { z } from "zod";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { Plus, Trash2, Pencil, ChevronDown } from "lucide-react";
-// import apiClient from "@/lib/axiosInterceptor";
-// import { toast } from "sonner";
 
-// // UI & Type Imports
-// import { UserProps } from "@/types/usertypes"; // Adjust path if needed
-// import { TenantAssignment } from "@/types/UserTabs";
-// import {
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormControl,
-//   FormMessage,
-// } from "@/components/ui/form";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import {
-//   AlertDialog,
-//   AlertDialogAction,
-//   AlertDialogCancel,
-//   AlertDialogContent,
-//   AlertDialogDescription,
-//   AlertDialogFooter,
-//   AlertDialogHeader,
-//   AlertDialogTitle,
-// } from "@/components/ui/alert-dialog";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import Button from "@/components/Others/Button";
-// import { Combobox } from "@/components/Others/ComoboboxDemo";
-// import EditTenantAssignment from "../../Modals/EditModals/EditTenantManagement";
-// import { useParams, usePathname, useSearchParams } from "next/navigation";
-
-// // --- Types ---
-// interface CompanyOption {
-//   id: string;
-//   name: string;
-// }
-// // --- Zod Schema for validation ---
-// // const assignmentSchema = z.object({
-// //   clientId: z.string().min(1, "Please select a client."),
-// //   userId: z.string().min(1, "Please select a user."),
-// // });
-// // --- Zod Schema for validation ---
-// const assignmentSchema = z.object({
-//   companyId: z.string().min(1, "Please select a company."),
-// });
-
-// type AssignmentFormValues = z.infer<typeof assignmentSchema>;
-// interface ManageTenantAssignmentsProps {
-//   userId?: string;
-// }
-
-// // --- The Main Component ---
-// const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = ({
-//   userId: propUserId
-// }) => {
-//   const params = useParams();
-//   const pathname = usePathname();
-//   const searchParams = useSearchParams();
-
-//   const userId = useMemo(() => {
-//     const idFromParams = params?.id as string;
-//     const uidFromParams = params?.uid as string;
-
-//     // Priority 1: If an 'id' is in the URL, always use it.
-//     if (idFromParams) {
-//       return idFromParams;
-//     }
-
-//     // Priority 2: If no 'id', check for 'uid' in the URL.
-//     if (uidFromParams) {
-//       return uidFromParams;
-//     }
-
-//     // Priority 3: If no ID is in the URL, check if the path is for user management
-//     // and fall back to localStorage (for the create-then-assign flow).
-//     if (pathname?.startsWith("/admin/users")) {
-//       if (typeof window !== "undefined") {
-//         return searchParams?.get("userId");
-//       }
-//     }
-
-//     // Default to null if no ID can be found
-//     return null;
-//   }, [params?.id, params?.uid, pathname, searchParams]); // Add params.uid to the dependency array
-
-//   const [assignments, setAssignments] = useState<TenantAssignment[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-//   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-//   const [selectedAssignment, setSelectedAssignment] =
-//     useState<TenantAssignment | null>(null);
-//       const [hasMore, setHasMore] = useState(true);
-//   const [page, setPage] = useState(1);
-//   // State for the create form
-//   const [isCreateFormVisible, setIsCreateFormVisible] = useState(false);
-// //   const [clients, setClients] = useState<ClientProps[]>([]);
-//   const [users, setUsers] = useState<UserProps[]>([]);
-//   // Company search state
-//   const [companies, setCompanies] = useState<CompanyOption[]>([]);
-//   const [companySearchQuery, setCompanySearchQuery] = useState("");
-//   const [isSearchingCompanies, setIsSearchingCompanies] = useState(false);
-
-//   const methods = useForm<AssignmentFormValues>({
-//     resolver: zodResolver(assignmentSchema),
-//   defaultValues: {
-//       companyId: "",
-//     },
-//   });
-//   const {
-//     control,
-//     handleSubmit,
-//     reset,
-//     formState: { isSubmitting },
-//   } = methods;
-
-//   const observer = useRef<IntersectionObserver | null>(null);
-//     const lastUserElementRef = useCallback(
-//       (node: HTMLDivElement) => {
-//         if (loading) return;
-//         if (observer.current) observer.current.disconnect();
-//         observer.current = new IntersectionObserver((entries) => {
-//           if (entries[0].isIntersecting && hasMore) {
-//             setPage((prevPage) => prevPage + 1);
-//           }
-//         });
-//         if (node) observer.current.observe(node);
-//       },
-//       [loading, hasMore]
-//     );
-//   // --- Data Fetching ---
-
-//   // **FIX 1**: This useEffect now ONLY fetches clients.
-//   // It runs once when the component mounts.
-//   useEffect(() => {
-//     const fetchCompanies = async () => {
-//       try {
-//          setIsSearchingCompanies(true);
-//         const response = await apiClient.get(`/company/filter?name=${encodeURIComponent(companySearchQuery)}`);
-//           const companiesData = response.data.companies || response.data.data || response.data || [];
-//         setCompanies(companiesData);
-//       } catch (error) {
-//         toast.error("Failed to fetch clients.");
-//       } finally {
-//         setIsSearchingCompanies(false);
-//       }
-//     };
-
-//     // Debounce the search for companieessss
-//     const timeoutId = setTimeout(fetchCompanies, 300);
-//     return () => clearTimeout(timeoutId);
-//   }, []); // Empty dependency array [] means it runs once.
-
-//   // **FIX 2**: This useEffect is now ONLY for fetching assignments.
-//   // It runs only when `userId` has a value.
-//   useEffect(() => {
-//     // Guard clause: Only proceed if userId is available.
-//     if (!userId) {
-//       setAssignments([]); // Clear previous assignments if userId is lost
-//       return;
-//     }
-
-//     const fetchAssignments = async () => {
-//       setLoading(true);
-//       const params = new URLSearchParams();
-//        params.append("page", page.toString());
-//          params.append("limit", "10");
-//       try {
-
-//         const response = await apiClient.get(
-//           `/assignment/assignments?userId=${userId}`
-//         );
-//         // check for bothhh
-//          const assignmentsData = response.data.data || response.data.assignments || response.data || [];
-//         setAssignments(assignmentsData);
-//       } catch (error) {
-//         toast.error("Failed to fetch assignments for the user.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchAssignments();
-//   }, [userId]); // This hook correctly depends only on userId.
-//   console.log("Tenetttt" ,assignments)
-
-//   const onCreateSubmit: SubmitHandler<AssignmentFormValues> = async (data) => {
-//     try {
-//     const response = await apiClient.post("/assignment/assignment", {
-//         companyId: data.companyId,
-//         userId: userId,
-//       });
-//        console.log("Create Assignment Response:", response.data);
-//       if (response.status === 201 || response.status === 200) {
-//         toast.success("Assignment created successfully!");
-//           // Add the new assignment to the list
-//         const newAssignment = response.data.data || response.data;
-//         setAssignments((prev) => [newAssignment, ...prev]);
-//         reset();
-//          setCompanySearchQuery("");
-//         setCompanies([]);
-//         setIsCreateFormVisible(false);
-//       }
-//     } catch (error: any) {
-//       toast.error(error.response?.data?.message || "Creation failed.");
-//     }
-//   };
-
-//   // UPDATE
-//   const handleEditClick = (assignment: TenantAssignment) => {
-//     setSelectedAssignment(assignment);
-//     setIsEditDialogOpen(true);
-//   };
-//   const handleUpdateSuccess = (updatedAssignment: TenantAssignment) => {
-//     setAssignments((prev) =>
-//       prev.map((a) => (a.id === updatedAssignment.id ? updatedAssignment : a))
-//     );
-//   };
-
-//   // DELETE
-//  // DELETE
-//   const handleDeleteClick = (assignment: TenantAssignment) => {
-//     setSelectedAssignment(assignment);
-//     setIsDeleteDialogOpen(true);
-//   };
-
-//  const confirmDelete = async () => {
-//     if (!selectedAssignment) return;
-
-//     try {
-//       await apiClient.delete(`/assignment/assignments/${selectedAssignment.id}`);
-//       toast.success("Assignment deleted successfully.");
-
-//       setAssignments((prev) =>
-//         prev.filter((a) => a.id !== selectedAssignment.id)
-//       );
-//     } catch (error: any) {
-//       console.error("Failed to delete assignment:", error);
-//       toast.error("Failed to delete assignment.");
-//     } finally {
-//       setIsDeleteDialogOpen(false);
-//       setSelectedAssignment(null);
-//     }
-//   };
-
-//   // if (loading) {
-//   //   return <div className="p-4">Loading Assignments...</div>;
-//   // }
-//   // console.log(assignments);
-//   return (
-//     <div className="">
-//       <Card className="bg-secondary shadow-none gap-2 py-4">
-//         <CardHeader className="p-3 py-0">
-//           <FormProvider {...methods}>
-//             <form
-//               onSubmit={(e) => {
-//                 e.preventDefault();
-//                 handleSubmit(onCreateSubmit);
-//               }}
-//               className="grid mb-4 grid-cols-[1fr_200px] gap-5 items-end w-full"
-//             >
-//               <FormField
-//                 control={control}
-//                name="companyId"
-//                 render={({ field }) => (
-//                   <FormItem>
-//                     <FormLabel className="text-text text-base">
-//                       Select Company
-//                     </FormLabel>
-//                     <FormControl>
-//                       <Combobox
-//                         className="w-full"
-//                         placeholder="Search clients..."
-//                         options={companies.map((c) => ({
-//                           value: c.id,
-//                           label: c.name,
-//                         }))}
-//                         value={field.value}
-//                          onSelect={field.onChange;}
-//                         // onSearchChange={setCompanySearchQuery}
-//                         // searchQuery={companySearchQuery}
-//                         // loading={isSearchingCompanies}
-//                       />
-//                     </FormControl>
-//                     <FormMessage />
-//                   </FormItem>
-//                 )}
-//               />
-//               <Button
-//                 type="submit"
-//                 disabled={isSubmitting}
-//                 className="w-fit"
-//                 onClick={handleSubmit(onCreateSubmit)}
-//               >
-//                 {isSubmitting ? "Creating..." : "Create Assignment"}
-//               </Button>
-//             </form>
-//           </FormProvider>
-
-//           <CardTitle className="text-text text-lg">
-//             Existing Tenant Assignments
-//           </CardTitle>
-//         </CardHeader>
-//         <CardContent className="p-3 py-0">
-//           <Table>
-//             <TableHeader className="bg-gray-200">
-//               <TableRow>
-//                 <TableHead>Company Nam/components/Modals/EditModals/EditTenantManagement";e</TableHead>
-
-//                 <TableHead className="text-right">Actions</TableHead>
-//               </TableRow>
-//             </TableHeader>
-//             <TableBody className="bg-white">
-//               {assignments.map((assignment) => (
-//                 <TableRow key={assignment.id}>
-
-//                   <TableCell>{assignment.Company?.name || "N/A"}</TableCell>
-//                   <TableCell className="text-right mx-auto flex gap-2 justify-end">
-//                     <button
-//                       className="bg-secondary px-4 py-2 rounded-md cursor-pointer border"
-//                       onClick={() => handleEditClick(assignment)}
-//                     >
-//                       <Trash2 className="h-4 w-4 text-red-500" />
-//                     </button>
-//                     <button
-//                       className="bg-secondary px-4 py-2 rounded-md cursor-pointer border"
-//                       onClick={() => handleDeleteClick(assignment)}
-//                     >
-//                       <Trash2 className="h-4 w-4 text-red-500" />
-//                     </button>
-//                   </TableCell>
-//                 </TableRow>
-//               ))}
-//             </TableBody>
-//           </Table>
-//         </CardContent>
-//       </Card>
-
-//       <EditTenantAssignment
-//         isOpen={isEditDialogOpen}
-//         onOpenChange={setIsEditDialogOpen}
-//         assignment={selectedAssignment}
-//         onUpdateSuccess={handleUpdateSuccess}
-//         // clients={clients}
-//       />
-
-//       <AlertDialog
-//         open={isDeleteDialogOpen}
-//         onOpenChange={setIsDeleteDialogOpen}
-//       >
-//         <AlertDialogContent>
-//           <AlertDialogHeader>
-//             <AlertDialogTitle className="text-text">
-//               Confirm Deletion
-//             </AlertDialogTitle>
-//             <AlertDialogDescription className="text-subtext">
-//               This action is permanent. Are you sure you want to delete this
-//               assignment?
-//             </AlertDialogDescription>
-//           </AlertDialogHeader>
-//           <AlertDialogFooter>
-//             <AlertDialogCancel>Cancel</AlertDialogCancel>
-//             <AlertDialogAction
-//               className="bg-red-500 hover:bg-red-600"
-//               onClick={confirmDelete}
-//             >
-//               Delete
-//             </AlertDialogAction>
-//           </AlertDialogFooter>
-//         </AlertDialogContent>
-//       </AlertDialog>
-//     </div>
-//   );
-// };
-
-// export default ManageTenantAssignments;
 
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
@@ -434,6 +42,7 @@ import Button from "@/components/Others/Button"; // Assuming a default export fo
 import { Combobox } from "@/components/Others/ComoboboxDemo"; // Assuming Combobox component
 import EditTenantAssignment from "@/components/Modals/EditModals/EditTenantManagement"; // Assuming this modal
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { BiTrash } from "react-icons/bi";
 
 // --- Types ---
 interface CompanyOption {
@@ -533,6 +142,8 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
       const assignRes = await apiClient.get(
         `/assignment/assignments?userId=${currentUserId}`
       );
+
+      console.log(assignRes.data,"assssssiggggg");
       // Assuming the assignments list is in assignRes.data.data or assignRes.data
       const data = assignRes.data.data || assignRes.data;
       setAssignments(Array.isArray(data) ? data : []);
@@ -580,6 +191,9 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
       toast.error(error.response?.data?.message || "Creation failed.");
     }
   };
+
+
+  console.log(assignments,"asssssiiiiiddfff")
 
   // --- CRUD Handlers (Update/Delete) ---
 
@@ -716,19 +330,18 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
                     {/* Displaying User name */}
                     <TableCell>{assignment.User?.fullName || "N/A"}</TableCell>
                     <TableCell className="text-right mx-auto flex gap-2 justify-end">
-                      <button
-                        className="bg-secondary px-4 py-2 rounded-md cursor-pointer border"
+                     <button className="w-fit rounded-md transition-all ease-linear text-primary hover:text-white bg-white p-2 text-2xl hover:bg-primary"
                         onClick={() => handleEditClick(assignment)}
                         title="Edit Assignment"
                       >
-                        <Pencil className="h-4 w-4 text-blue-500" />
+                        <Pencil />
                       </button>
                       <button
-                        className="bg-secondary px-4 py-2 rounded-md cursor-pointer border"
+                       className="rounded-md cursor-pointer transition-all ease-linear text-red-500 hover:text-white bg-transparent p-2 text-2xl hover:bg-red-500"
                         onClick={() => handleDeleteClick(assignment)}
                         title="Delete Assignment"
                       >
-                        <Trash2 className="h-4 w-4 text-red-500" />
+                       <BiTrash className=" text-2xl " />
                       </button>
                     </TableCell>
                   </TableRow>

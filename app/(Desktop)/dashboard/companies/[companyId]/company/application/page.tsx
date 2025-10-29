@@ -186,7 +186,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
 
      <section
      className="bg-white sm:rounded-xl 
-        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-280px)] w-full"
+        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-308px)] w-full"
     >
       {/* --- Header Section --- */}
       <div

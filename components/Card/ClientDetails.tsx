@@ -9,6 +9,7 @@ import ReportsSvg from "../Svgs/ReportsSvg";
 import DarkStoreSvg from "../Svgs/DarkStore";
 import VendorSvg from "../Svgs/VendorSvg";
 import ClientL2Card from "./ClientL2Card";
+import { BASE_URL } from "@/config";
 
 interface CompanyData {
   company: {
@@ -19,6 +20,11 @@ interface CompanyData {
     logoUrl?: string;
     createdAt?: string;
     updatedAt?: string;
+    _count?: {
+            Department: number,
+            Jobs: number,
+            Applications: number
+        }
   };
 }
 
@@ -45,34 +51,9 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
       fetchData();
     }
   }, [session]);
+  
 
-  const overViewStats = [
-    {
-      
-      label: "Companies",
-      className: "bg-[#FEF1F3] border border-[#FFCDD4]",
-      className2: "bg-[#FF4560] h-[36px] w-[36px] grid place-content-center rounded-lg",
-      className3: "text-[#FF4560]",
-      number: dashboardData?.companies ?? "-",
-    },
-    {
-    
-      label: "Job Description",
-      className: "bg-[#FDF2E7] border border-[#FFDDB8]",
-      className2: "bg-[#FF9C2F] h-[36px] w-[36px] grid place-content-center rounded-lg",
-      className3: "text-[#FF9C2F]",
-      number: dashboardData?.jobs ?? "-",
-    },
-    {
-      
-      label: "Applications",
-      className: "bg-[#F1F1F1] border border-[#A3A3A3]",
-      className2: "bg-[#888] h-[36px] w-[36px] grid place-content-center rounded-lg",
-      className3: "text-[#888]",
-      number: dashboardData?.applications ?? "-",
-    },
-  ];
-
+ 
   if (!companyData) {
     return (
       <section className="p-3 bg-secondary border rounded-xl">
@@ -82,26 +63,56 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
   }
 
   const { company } = companyData;
+  console.log(company,"companyyyyyyyyyyyyyyyyyyyyyy")
+
+ const overViewStats = [
+    {
+      
+      label: "Job Description",
+      className: "bg-[#FEF1F3] border border-[#FFCDD4]",
+      className2: "bg-[#FF4560] h-[36px] w-[36px] grid place-content-center rounded-lg",
+      className3: "text-[#FF4560]",
+      number: company._count?.Jobs ?? "-",
+    },
+    {
+    
+      label: "Application",
+      className: "bg-[#FDF2E7] border border-[#FFDDB8]",
+      className2: "bg-[#FF9C2F] h-[36px] w-[36px] grid place-content-center rounded-lg",
+      className3: "text-[#FF9C2F]",
+      number: company._count?.Applications ?? "-",
+    },
+    {
+      
+      label: "Department",
+      className: "bg-[#F1F1F1] border border-[#A3A3A3]",
+      className2: "bg-[#888] h-[36px] w-[36px] grid place-content-center rounded-lg",
+      className3: "text-[#888]",
+      number: company._count?.Department  ?? "-",
+    },
+  ];
+
+
 
   return (
     <section className="w-full">
       {/* --- Top Info Section --- */}
      {/* --- Top Info Section --- */}
-<div className="border border-[#A3A3A3] bg-secondary rounded-lg p-4 mb-6 flex flex-col lg:flex-row items-center lg:items-stretch gap-4">
+<div className="border  bg-white rounded-lg p-4 mb-6 flex flex-col lg:flex-row items-center lg:items-stretch gap-4">
   {/* --- Left 50%: Company Info --- */}
-  <div className="flex flex-col lg:flex-row items-center lg:items-start w-full lg:w-1/2 gap-6">
+  <div className="flex flex-col lg:flex-row items-center lg:items-center w-full lg:w-1/2 gap-6">
     {/* --- Logo & Name --- */}
     <div className="flex items-center gap-3 w-[50%]">
       {company.logoUrl ? (
-        <Image
-          src={company.logoUrl}
+        <img
+         src={`${BASE_URL}${company.logoUrl || "/"}`}
           alt={company.name || "Logo"}
-          width={60}
+          width={120}
           height={60}
-          className="rounded-lg object-contain bg-white border w-[60px] h-[60px]"
+         className="w-[100px] h-[50px] rounded-lg object-contain bg-white border"
         />
       ) : (
-        <div className="w-[60px] h-[60px] bg-gray-400 text-white rounded-lg flex items-center justify-center text-2xl font-bold">
+        <div className="w-[120px] h-[60px] bg-gray-400 text-white rounded-lg flex items-center justify-center text-2xl font-bold">
           {company.name?.charAt(0).toUpperCase() || "N"}
         </div>
       )}
@@ -153,7 +164,7 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
         key={index}
         className={`p-3 rounded-lg border text-center ${card.className}`}
       >
-        <div className="text-[12px] text-gray-500">{card.label}</div>
+        <div className="text-medium text-gray-500">{card.label}</div>
         <div className={`font-semibold text-lg ${card.className3}`}>{card.number}</div>
       </div>
     ))}

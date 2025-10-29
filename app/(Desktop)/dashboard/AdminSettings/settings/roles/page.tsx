@@ -32,7 +32,7 @@ const headersOptions = [
   {value: "Role Name"},
   {value: "Role Code"},
   { value: "Description" },
-  {value: "Role Type"},
+
   
   
   { value: "Action" },
@@ -115,26 +115,30 @@ const SettingRoles = () => {
         params.append("page", page.toString());
         params.append("limit","10")
 
-        let response;
+        let url : string;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
            params.append("query", debouncedSearchQuery);
           params.append("query", debouncedSearchQuery);
-          response = await apiClient.get<RoleListProps>(
-            `/roles/search?${params.toString()}`
-          );
+          url = `/roles/search?${params.toString()}`
+          
         } else {
           // --- Paginated Role Filter Logic ---
           if (selectedRole && selectedRole !== "All") {
             
             params.append("role", selectedRole);
           }
-          response = await apiClient.get<RoleListProps>(
-            `/roles/search?${params.toString()}`
-          );
+          url = `roles`
+          // response = await apiClient.get<RoleListProps>(
+          //   `/roles/search?${params.toString()}`
+          // );
         }
-        console.log(response);
-        const newRoles = response.data.roles || [];
+   const response = await apiClient.get<RoleListProps>(
+            `/roles?${params.toString()}`
+          );
+        const newRoles = response.data.roles.map((role: any) => ({
+          ...role,
+        })) || [];
 
         // If it's the first page, we are starting a new list.
         // For all subsequent pages, we append to the existing list.
@@ -143,7 +147,10 @@ const SettingRoles = () => {
         } else {
           setRoles((prev) => [...prev, ...newRoles]);
         }
-
+ const currentPage = response.data.page || page;
+        const totalPages = response.data.totalPages || response.data.totalPages || 1;
+        
+        console.log("Pagination info:", { currentPage, totalPages, hasMore: currentPage < totalPages });
         // Update pagination status based on the API response.
         setHasMore(response.data.currentPage < response.data.totalPages);
       } catch (error: any) {
@@ -227,7 +234,7 @@ const SettingRoles = () => {
         {/* Header */}
         <Header
           checkBox={true}
-         className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+         className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={

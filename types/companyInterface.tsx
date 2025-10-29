@@ -8,6 +8,11 @@ export interface CompanyProps {
   description?: string;
   location? : string;
   logoUrl?: string;
+  _count?: {
+            Department: number,
+            Jobs: number,
+            Applications: number
+        }
 }
 
 export interface CompanyListProps {
@@ -15,6 +20,11 @@ export interface CompanyListProps {
   company : CompanyProps,
   name: string
     totalPages: string;
+     _count: {
+            Department: number,
+            Jobs: number,
+            Applications: number
+        }
   page: string;
 }
 
@@ -36,6 +46,7 @@ export interface UpdateCompanyProps {
   onUpdate: (company: CompanyProps) => void;
   data: CompanyProps;
   id: string;
+  logoUrl?: string; // ✅ Add this line
 }
 
 

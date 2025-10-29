@@ -19,7 +19,7 @@ const addRoleSchema = z.object({
   // id: z.string().optional(), // add this line
   name: z.string().min(1, "Name is required"),
   code: z.string().min(1, "Code is required"),
-  roleType: z.string().min(1, "Role Type is required"),
+  // roleType: z.string().min(1, "Role Type is required"),
   description: z.string().optional(),
 });
 
@@ -77,13 +77,13 @@ const AddRoles: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
             name="description"
             placeholder="description"
           />
-          <InputField
+          {/* <InputField
             label="Role type"
             name="roleType"
             placeholder="description"
-          />
-          <Button type="submit" disabled={isClicked}>
-            {isClicked ? "Adding..." : "Add Group"}
+          /> */}
+          <Button type="submit" disabled={isClicked} className="sm:col-span-2 w-fit justify-self-end">
+            {isClicked ? "Adding..." : "Add Roles"}
           </Button>
         </form>
       </FormProvider>

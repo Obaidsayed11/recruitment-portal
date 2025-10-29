@@ -30,7 +30,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
 
     const handleDelete = async () => {
       try {
-        const response = await apiClient.delete(`/admin/application/${data.id}`);
+        const response = await apiClient.delete(`/application/${data.id}`);
         toast.success(response.data.message);
         onDelete(data.id);
       } catch (error: any) {

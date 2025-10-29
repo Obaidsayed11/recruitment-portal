@@ -30,7 +30,7 @@ const Settings = () => {
   const tabButtons = [
     { label: "Groups", value: "groups" },
     { label: "Roles", value: "roles" },
-    { label: "Permission", value: "permission" }
+    // { label: "Permission", value: "permission" }
   ];
 
   // Sync activeTab with URL and ensure valid tab is set

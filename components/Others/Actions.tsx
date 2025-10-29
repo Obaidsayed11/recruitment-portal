@@ -69,12 +69,12 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     // }
     if (pathname.includes("/dashboard/users")) {
       return (
-     <Button 
+     <button 
   onClick={handleEditClick} 
-  className="w-fit rounded-md transition-all ease-linear text-primary hover:text-white bg-white p-2 hover:bg-primary"
+  className="w-fit rounded-md transition-all ease-linear text-primary hover:text-white bg-white p-2 text-2xl hover:bg-primary"
 >
-  <Pencil size={18} className="stroke-current text-primary hover:text-white" />
-</Button>
+  <Pencil size={18}  />
+</button>
       );
     }
     else if (

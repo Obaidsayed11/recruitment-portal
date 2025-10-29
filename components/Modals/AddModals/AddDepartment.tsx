@@ -83,7 +83,7 @@ description: ""
           {/* <SelectField label="Role" name="role" placeholder="Select Role" options={rolesOptions.map(v => ({ label: v, value: v }))} /> */}
           <InputField label="Enter Description" name="description" placeholder="Enter Description" />
           
-          <Button type="submit" className="sm:col-span-2" disabled={isClicked}>
+          <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
             {isClicked ? "Adding..." : "Add Department"}
           </Button>
         </form>
