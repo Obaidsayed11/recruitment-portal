@@ -65,9 +65,9 @@ export const ProfileIcon: React.FC = () => {
               "User"}
           </h2>
           <span className="text-xs text-fontSecondary">
-            {userData.user.role
-              ? userData.user.role.charAt(0).toUpperCase() +
-                userData.user.role.slice(1).toLowerCase()
+            {userData.user.Role?.code
+              ? userData.user.Role?.code.charAt(0).toUpperCase() +
+                userData.user.Role?.code.slice(1).toLowerCase()
               : ""}
           </span>
         </div>

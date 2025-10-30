@@ -16,8 +16,9 @@ import { useSession } from "next-auth/react";
 import { useParams, useSearchParams } from "next/navigation";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
+import TextareaField from "@/components/Form_Fields/TextareaField";
 
-const employmentOptions = ["FULL_TIME", "Contract", "Internship"] as const;
+const employmentOptions = ["FULL_TIME", "CONTRACT", "INTERNSHIP"] as const;
 
 const addJobSchema = z.object({
   // companyId: z.string().min(1, "Company ID is required."),
@@ -78,7 +79,7 @@ const companyId = params.companyId;
     console.log(response.data,"afh")
     toast.success(response.data.message || "Job added successfully!");
   
-    onAdd(response.data);
+    onAdd(response.data.job);
     setIsOpen(false);
     reset();
   } catch (error: any) {
@@ -176,7 +177,7 @@ useEffect(() => {
             placeholder="Select Type"
             options={employmentOptions.map((v) => ({ label: v.split("_").join(" "), value: v}))}
           />
-          <InputField
+          {/* <InputField
             label="Description"
             name="description"
             placeholder="Job Description"
@@ -190,7 +191,28 @@ useEffect(() => {
             label="Requirements"
             name="requirements"
             placeholder="Requirements"
-          />
+          /> */}
+   <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Description"
+                name={"description"}
+                placeholder={"Enter Your Description"}
+              />
+
+
+           <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Responsibilities"
+                name={"responsibilities"}
+                placeholder={"Enter Your Description"}
+              />
+
+              <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Requirements"
+                name={"requirements"}
+                placeholder={"Enter Requirements"}
+              />
 
           <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
             {isClicked ? "Adding..." : "Add Job"}

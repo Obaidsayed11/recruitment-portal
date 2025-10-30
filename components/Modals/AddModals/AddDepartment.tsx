@@ -14,6 +14,7 @@ import Button from "@/components/Others/Button";
 import { useParams } from "next/navigation";
 import { description } from "@/components/Charts/DeliveryTimeChart";
 import { useDepartments } from "@/context/DepartmentContext";
+import TextareaField from "@/components/Form_Fields/TextareaField";
 
 
 
@@ -81,7 +82,13 @@ description: ""
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
           <InputField label="Enter Department Name" name="name" placeholder="Enter Department Name" />
           {/* <SelectField label="Role" name="role" placeholder="Select Role" options={rolesOptions.map(v => ({ label: v, value: v }))} /> */}
-          <InputField label="Enter Description" name="description" placeholder="Enter Description" />
+          {/* <InputField label="Enter Description" name="description" placeholder="Enter Description" /> */}
+            <TextareaField
+                 formItemClassName="sm:col-span-2"
+                   label="Description"
+                          name={"description"}
+                          placeholder={"Enter Your Description"}
+                        />
           
           <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
             {isClicked ? "Adding..." : "Add Department"}

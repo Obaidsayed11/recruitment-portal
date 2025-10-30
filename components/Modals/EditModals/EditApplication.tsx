@@ -226,16 +226,19 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormField,
 } from "@/components/ui/form";
 import Button from "@/components/Others/Button";
 import DialogModal from "@/components/Others/DialogModal";
 import InputField from "@/components/Form_Fields/InputField";
 import { UpdateApplicationProps } from "@/types/companyInterface";
 import { BASE_URL } from "@/config";
+import { Combobox } from "@/components/Others/ComoboboxDemo";
+import { useParams } from "next/navigation";
 
 const EditApplicationSchema = z.object({
-  // jobId: z.string().min(1, "Job ID is required."),
-  // companyId: z.string().min(1, "Company ID is required."),
+  jobId: z.string().min(1, "Job ID is required."),
+  companyId: z.string().min(1, "Company ID is required."),
   candidateName: z.string().min(1, "Candidate Name is required."),
   email: z.string().email("Invalid email address."),
   phone: z.string().min(10, "Phone number must be at least 10 digits."),
@@ -243,8 +246,9 @@ const EditApplicationSchema = z.object({
   noticePeriod: z.string().optional(),
   status: z.string().optional(),
   source: z.string().optional(),
-  resumeUrl: z.any().optional(),
+  resume: z.any().optional(),
 });
+
 
 type EditApplicationFormValues = z.infer<typeof EditApplicationSchema>;
 
@@ -257,10 +261,16 @@ const EditApplication: React.FC<UpdateApplicationProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [description, setDescription] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+ 
+  const params = useParams() as { companyId: string };
+  const companyId = params.companyId;;
 
   const methods = useForm<EditApplicationFormValues>({
     resolver: zodResolver(EditApplicationSchema),
     defaultValues: {
+        jobId: "",
       candidateName: "",
       email: "",
       phone: "",
@@ -268,44 +278,47 @@ const EditApplication: React.FC<UpdateApplicationProps> = ({
       noticePeriod: "",
       status: "",
       source: "",
-      resumeUrl: undefined,
+      resume: undefined,
     },
   });
 
-  const { handleSubmit, setValue, reset } = methods;
-
+   // 🧩 1️⃣ Fetch job list (same as AddApplication)
   useEffect(() => {
-    if (data && isModalOpen) {
-      // setValue("jobId", data.jobId);
-      // setValue("companyId", data.companyId);
-      // setValue("candidateName", data.candidateName);
-      // setValue("email", data.email);
-      // setValue("phone", data.phone);
-      // setValue("currentCTC", data.currentCTC || "");
-      // setValue("noticePeriod", data.noticePeriod || "");
-      // setValue("status", data.status || "");
-      // setValue("source", data.source || "");
+    if (!companyId) return;
 
-      reset({
-        candidateName: data.candidateName || "",
-        email: data.email,
-        phone: data.phone,
-        currentCTC: data.currentCTC,
-        noticePeriod: data.noticePeriod,
-        status: data.status,
-        source: data.source,
-        
-      });
-
-      if (data.resumeUrl) {
-        setPreviewUrl(data.resumeUrl);
-      } else {
-        setPreviewUrl(null);
+    const fetchDescription = async () => {
+      try {
+        const res = await apiClient.get(`/job/filter?companyId=${companyId}`);
+        setDescription(res.data.data || []);
+      } catch (error) {
+        toast.error("Failed to fetch jobs");
       }
+    };
 
-      setSelectedFile(null);
-    }
-  }, [data, isModalOpen, setValue]);
+    fetchDescription();
+  }, [companyId]);
+
+
+  const { handleSubmit, setValue, reset, control } = methods;
+
+ useEffect(() => {
+  if (data && isModalOpen) {
+    reset({
+      jobId: data.jobId,
+      companyId: data.companyId,
+      candidateName: data.candidateName || "",
+      email: data.email,
+      phone: data.phone,
+      currentCTC: data.currentCTC,
+      noticePeriod: data.noticePeriod,
+      status: data.status,
+      source: data.source,
+    });
+
+    setPreviewUrl(data.resumeUrl || null);
+    setSelectedFile(null);
+  }
+}, [data, isModalOpen, reset]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -317,7 +330,7 @@ const EditApplication: React.FC<UpdateApplicationProps> = ({
       }
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
-      setValue("resumeUrl", file);
+      setValue("resume", file);
     }
   };
 
@@ -327,24 +340,18 @@ const EditApplication: React.FC<UpdateApplicationProps> = ({
     try {
       console.log("hirrrrirriri")
       setIsClicked(true);
-      const payload = new FormData();
-      // payload.append("jobId", formData.jobId);
-      // payload.append("companyId", formData.companyId);
-      payload.append("candidateName", formData.candidateName);
-      payload.append("email", formData.email);
-      payload.append("phone", formData.phone);
-      if (formData.currentCTC)
-        payload.append("currentCTC", formData.currentCTC);
-      if (formData.noticePeriod)
-        payload.append("noticePeriod", formData.noticePeriod);
-      if (formData.status) payload.append("status", formData.status);
-      if (formData.source) payload.append("source", formData.source);
+    const payload = new FormData();
+payload.append("jobId", formData.jobId);
+payload.append("companyId", formData.companyId);
+payload.append("candidateName", formData.candidateName);
+payload.append("email", formData.email);
+payload.append("phone", formData.phone);
+if (formData.currentCTC) payload.append("currentCTC", formData.currentCTC);
+if (formData.noticePeriod) payload.append("noticePeriod", formData.noticePeriod);
+if (formData.status) payload.append("status", formData.status);
+if (formData.source) payload.append("source", formData.source);
+if (selectedFile) payload.append("resume", selectedFile);
 
-      if (selectedFile) {
-        payload.append("resumeUrl", selectedFile);
-      } else if (data?.resumeUrl) {
-        payload.append("resumeUrl", data.resumeUrl);
-      }
 
       const response = await apiClient.put(`/application/${id}`, payload, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -382,6 +389,30 @@ const EditApplication: React.FC<UpdateApplicationProps> = ({
           onSubmit={handleSubmit(onSubmit)}
           className="grid gap-5 sm:grid-cols-2"
         >
+         <FormField
+  control={control}
+  name="jobId"
+  render={({ field }) => (
+    <FormItem className="sm:col-span-1">
+      <FormLabel className="text-fontPrimary">Job Title</FormLabel>
+      <FormControl>
+        <Combobox
+          placeholder="Select Job"
+          options={description.map((job) => ({
+            value: job.id,
+            label: job.title,
+          }))}
+          value={field.value}
+          onSelect={field.onChange}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+<input type="hidden" {...methods.register("companyId")} />
+
           <InputField
             label="Candidate Name"
             name="candidateName"

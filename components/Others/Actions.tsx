@@ -13,8 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ActionsProps } from "@/types/interface";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import EditUser from "../Modals/EditModals/EditUser";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+// import EditUser from "../Modals/EditModals/EditUser";
 import EditCompany from "../Modals/EditModals/EditCompany";
 import EditJobDescription from "../Modals/EditModals/EditJobDescription";
 import EditApplication from "../Modals/EditModals/EditApplication";
@@ -26,6 +26,8 @@ import Button from "./Button";
 
 const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
   const pathname = usePathname();
+   const params = useParams() as { companyId: string };
+        const companyId = params.companyId;
    const router = useRouter();
   
 
@@ -48,6 +50,20 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     // For other pages, the edit button will open the modal (handled by renderModal)
   };
 
+   const handleEditAppClick = () => {
+    console.log("Actions - pathname:", pathname);
+    console.log("Actions - tabsParam:", tabParam);
+    console.log("Actions - id:", id);
+    console.log("Actions - companyId:", companyId);
+    
+    // If we're on the company applications tab, navigate to the edit page
+    if (pathname?.includes("/dashboard/companies") && tabParam === "application") {
+       router.push(`/dashboard/companies/${companyId}/company/application/${id}/update-application`);
+      return;
+    }
+    
+    // For other pages, the edit button will open the modal (handled by renderModal)
+  };
 
   const renderModal = () => {
     if (!pathname) return null;
@@ -87,7 +103,14 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
       /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
       tabParam === "application"
     ) {
-      return <EditApplication id={id} onUpdate={onUpdate} data={data} />;
+      return (
+     <button 
+  onClick={handleEditAppClick} 
+  className="w-fit rounded-md transition-all ease-linear text-primary hover:text-white bg-white p-2 text-2xl hover:bg-primary"
+>
+  <Pencil size={18}  />
+</button>
+      );
     } 
     else if (
       /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&

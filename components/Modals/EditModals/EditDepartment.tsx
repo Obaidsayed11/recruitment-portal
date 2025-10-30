@@ -12,6 +12,7 @@ import InputField from "@/components/Form_Fields/InputField";
 import SelectField from "@/components/Form_Fields/SelectField";
 import Button from "@/components/Others/Button";
 import { UpdateDepartmentProps } from "@/types/companyInterface";
+import TextareaField from "@/components/Form_Fields/TextareaField";
 
 // Roles enum
 const rolesOptions = ["WAREHOUSE", "DRIVER", "OUTLET", "DISPATCHER"] as const;
@@ -112,7 +113,14 @@ const EditDepartment: React.FC<UpdateDepartmentProps> = ({
             name="name"
             placeholder="Enter Full Name"
           />
-          <InputField label="Description" name="description" placeholder="Enter Description" />
+          {/* <InputField label="Description" name="description" placeholder="Enter Description" /> */}
+             <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Description"
+                name={"description"}
+                placeholder={"Enter Your Description"}
+              />
+
           <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
             {isClicked ? "Updating..." : "Update Department"}
           </Button>

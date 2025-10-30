@@ -15,6 +15,7 @@ import Image from "next/image";
 import { FormControl } from "@/components/ui/form";
 import { BASE_URL } from "@/config";
 import { log } from "console";
+import TextareaField from "@/components/Form_Fields/TextareaField";
 
 const editCompanySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -167,7 +168,7 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
                     id="company-file-upload"
                     type="file"
                      accept="image/*"
-                    className="hidden"
+                    className="hidden object-contain"
                     onChange={handleFileChange}
                   />
                   {selectedFile && (
@@ -207,7 +208,7 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
             name="careerPageUrl"
             placeholder="https://careers.example.com"
           />
-          <InputField
+          {/* <InputField
             label="Description"
             name="description"
             placeholder="Short description"
@@ -218,8 +219,19 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
             name="location"
             placeholder="Your Address"
             formItemClassName="sm:col-span-2"
-          />
-
+          /> */}
+    <TextareaField
+         formItemClassName="sm:col-span-2 text-fontPrimary" 
+         label="Description"
+                name={"description"}
+                placeholder={"Enter Your Description"}
+              />
+              <TextareaField
+         formItemClassName="sm:col-span-2 text-fontPrimary" 
+         label="Address"
+                name={"location"}
+                placeholder={"Enter Your Description"}
+              />
           <Button
             type="submit"
             disabled={isClicked || methods.formState.isSubmitting}

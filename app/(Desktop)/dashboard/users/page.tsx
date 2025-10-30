@@ -94,19 +94,25 @@ const UserRoute = () => {
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
 useEffect(() => {
-  if (!session || (page > 1 && !hasMore)) {
-    return;
-  }
-  
+    const PAGE_SIZE = 20;
+
+    // Guard clause to prevent fetching if not ready.
+    if (!session) {
+      return;
+    }
 
     const fetchData = async () => {
+       if (page > 1 && !hasMore) {
+        return;
+      }
       setLoading(true);
       console.log("Starting fetch for page:", page);
       
       try {
         const params = new URLSearchParams();
         params.append("page", page.toString());
-        params.append("limit", "10");
+        params.append("limit", PAGE_SIZE.toString());
+
 
         let url: string;
         if (debouncedSearchQuery) {

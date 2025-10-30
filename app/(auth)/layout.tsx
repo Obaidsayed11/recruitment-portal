@@ -1,4 +1,4 @@
-export default function RegisterLayout({
+  export default function RegisterLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

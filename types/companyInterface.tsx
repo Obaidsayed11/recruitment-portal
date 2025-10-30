@@ -10,7 +10,7 @@ export interface CompanyProps {
   logoUrl?: string;
   _count?: {
             Department: number,
-            Jobs: number,
+            Jobs: number
             Applications: number
         }
 }
@@ -181,7 +181,7 @@ export type ApplicationSource =
 export interface Experience {
   company: string;
   role: string;
-  years: number;
+  years: string ;
 }
 
 // Main Add Application form interface

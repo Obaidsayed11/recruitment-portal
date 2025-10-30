@@ -7,7 +7,11 @@ export interface AdminProfileData {
     gender: string;
     phone: string;
     dob: Date;
-    role: string;
+    Role: 
+    {
+
+     code:  string;
+    }
     photo: string;
   };
 }

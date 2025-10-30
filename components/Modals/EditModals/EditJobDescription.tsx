@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { UpdateJobDescriptionProps } from "@/types/companyInterface";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
+import TextareaField from "@/components/Form_Fields/TextareaField";
 
 const employmentOptions = [
   "FULL_TIME",
@@ -106,6 +107,7 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
       }
 
       setValue("description", data.description ?? "");
+         setValue("experience", data.experience ?? "");
       setValue("responsibilities", data.responsibilities ?? "");
       setValue("requirements", data.requirements ?? "");
       // setValue("createdBy", data.created_by ?? "");
@@ -170,7 +172,7 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
       // payload.append("jobTitle", formData.title);
       // if (formData.departmentId ) payload.append("departmentId", formData.departmentId);
       // if (formData.location) payload.append("location", formData.location);
-      // if (formData.experience) payload.append("experienceRequired", formData.experience);
+      // if (formData.experience) payload.append("experience", formData.experience);
       // if (formData.salaryRange) payload.append("salaryRange", formData.salaryRange);
       // if (formData.employmentType) payload.append("employmentType", formData.employmentType);
       // if (formData.description) payload.append("description", formData.description);
@@ -184,7 +186,7 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
         title: formData.title,
         departmentId: formData.departmentId,
         location: formData.location,
-        experienceRequired: formData.experience,
+        experience: formData.experience,
         salaryRange: formData.salaryRange,
         employmentType: formData.employmentType,
         description: formData.description,
@@ -203,7 +205,7 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
         toast.success(
           (response as any).data?.message || "Job updated successfully"
         );
-        onUpdate((response as any).data?.job ?? response.data);
+        onUpdate((response as any).data?.updatedJob ?? response.data);
         setIsFirstDialogOpen(false);
         reset();
         setSelectedFile(null);
@@ -272,7 +274,7 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
 
           <InputField
             label="Experience Required"
-            name="experienceRequired"
+            name="experience"
             placeholder="Experience e.g. 3-5 years"
           />
           <InputField
@@ -306,13 +308,20 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
             <FormMessage />
           </FormItem> */}
 
-          <InputField
+          {/* <InputField
             label="Description"
             name="description"
             placeholder="Short Description"
             formItemClassName="sm:col-span-2"
-          />
-          <InputField
+          /> */}
+
+          <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Description"
+                name={"description"}
+                placeholder={"Enter Your Description"}
+              />
+          {/* <InputField
             label="Responsibilities"
             name="responsibilities"
             placeholder="Responsibilities"
@@ -321,7 +330,21 @@ const EditJobDescription: React.FC<UpdateJobDescriptionProps> = ({
             label="Requirements"
             name="requirements"
             placeholder="Requirements"
-          />
+          /> */}
+
+           <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Responsibilities"
+                name={"responsibilities"}
+                placeholder={"Enter Your Description"}
+              />
+
+              <TextareaField
+       formItemClassName="sm:col-span-2"
+         label="Requirements"
+                name={"requirements"}
+                placeholder={"Enter Requirements"}
+              />
 
           {/* <SelectField label="Published" name="published" placeholder="Published?" options={publishedSelect} /> */}
           {/* <SelectField label="Status" name="status" placeholder="Status" options={statusSelect} /> */}

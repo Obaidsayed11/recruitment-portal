@@ -21,7 +21,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
 const addApplicationSchema = z.object({
   jobId: z.string(),
-  // companyId: z.string(),
+  companyId: z.string().optional(),
   candidateName: z.string().min(1, "Candidate Name is required."),
   email: z.string().email("Invalid email."),
   phone: z.string().min(10, "Phone must be at least 10 digits."),
@@ -88,6 +88,7 @@ const AddApplication: React.FC<{ onAdd: (data: any) => void }> = ({
     try {
       setIsClicked(true);
       const formData = new FormData();
+     
 
       formData.append("candidateName", data.candidateName);
       formData.append("email", data.email);
@@ -141,7 +142,7 @@ const AddApplication: React.FC<{ onAdd: (data: any) => void }> = ({
   useEffect(() => {
     if (!companyId) return;
 
-    const fetchDepartments = async () => {
+    const fetchDescription = async () => {
       try {
         const res = await apiClient.get(`/job/filter?companyId=${companyId}`);
         setDescription(res.data.data || []);
@@ -150,7 +151,7 @@ const AddApplication: React.FC<{ onAdd: (data: any) => void }> = ({
       }
     };
 
-    fetchDepartments();
+    fetchDescription();
   }, [companyId]);
   // console.log(description, "dwdwdwd");
 

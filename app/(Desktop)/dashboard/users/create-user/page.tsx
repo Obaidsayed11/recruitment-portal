@@ -16,7 +16,7 @@ import DateInputField from "@/components/Form_Fields/DateField";
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
 import AssignPermissionsTab from "@/components/Tabs/UserTabs/PermissionsTab";
 import AssignGroupsTab from "@/components/Tabs/UserTabs/AssignGroupsTab";
-import AssignTenantTab from "@/components/Tabs/UserTabs/AssignTenantTab";
+// import AssignTenantTab from "@/components/Tabs/UserTabs/AssignTenantTab";
 import apiClient from "@/lib/axiosInterceptor";
 import ManageTenantAssignments from "@/components/Tabs/UserTabs/TenantAssignmentTab";
 import { FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form";

@@ -48,7 +48,7 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
       fullName: userData?.user.fullName || "",
       email: userData?.user.email || "",
       phone: userData?.user.phone || "",
-      role: userData?.user.role || "",
+      role: userData?.user.Role?.code || "",
     },
   });
 
@@ -200,7 +200,7 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
                   <FormItem>
                     <FormLabel>Role</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Role" disabled />
+                      <Input {...field} placeholder={userData?.user.Role?.code} disabled />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -168,7 +168,7 @@ function LoginForm() {
             type="submit"
             disabled={isLoading || form.formState.isSubmitting} // Ensure button is disabled
           >
-            {isLoading ? "Please wait..." : "Send OTP"}
+            {isLoading ? "Please wait..." : "Login"}
           </Button>
         </form>
       </Form>

@@ -13,6 +13,8 @@ import { UploadCloud } from "lucide-react";
 import DialogModal from "@/components/Others/DialogModal";
 import InputField from "@/components/Form_Fields/InputField";
 import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
+import TextareaField from "@/components/Form_Fields/TextareaField";
 
 const companySchema = z.object({
   name: z.string().min(1, "Name is required."),
@@ -144,9 +146,20 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
           <InputField label="Name" name="name" placeholder="Enter company name" formItemClassName="sm:col-span-2" />
           <InputField label="Website URL" name="websiteUrl" placeholder="Enter website URL" />
           <InputField label="Career Page URL" name="careerPageUrl" placeholder="Enter career page URL" />
-          <InputField label="Description" name="description" placeholder="Enter description" formItemClassName="sm:col-span-2 text-fontPrimary" />
-           <InputField label="Adress" name="location" placeholder="Enter Company Address" formItemClassName="sm:col-span-2" />
-      
+          {/* <InputField label="Description" name="description" placeholder="Enter description" formItemClassName="sm:col-span-2 text-fontPrimary" /> */}
+         <TextareaField
+         formItemClassName="sm:col-span-2 text-fontPrimary" 
+         label="Description"
+                name={"description"}
+                placeholder={"Enter Your Description"}
+              />
+           {/* <InputField label="Address" name="location" placeholder="Enter Company Address" formItemClassName="sm:col-span-2" /> */}
+                               <TextareaField
+         formItemClassName="sm:col-span-2 text-fontPrimary" 
+         label="Description"
+                name={"location"}
+                placeholder={"Enter Company Address"}
+              />
 
           <Button type="submit" disabled={isClicked} className="sm:col-span-2 w-fit justify-self-end">
             {isClicked ? "Adding..." : "Add Company"}

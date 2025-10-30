@@ -21,6 +21,11 @@ import { AxiosResponse } from "axios";
 import AddApplication from "@/components/Modals/AddModals/AddApplication";
 import { ApplicationListProps, ApplicationProps } from "@/types/companyInterface";
 import ApplicationCard from "@/components/Card/ApplicationCard";
+import Button from "@/components/Others/Button";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+
 
 const headersOptions = [
   { value: "Candidate Name" },
@@ -52,6 +57,8 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
   // --- Core Hooks ---
   const { data: session } = useSession();
   console.log(session,"swessio")
+  const router = useRouter();
+  
   const searchParams = useSearchParams();
 
   // --- State Declarations ---
@@ -180,6 +187,11 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
   const handleDeleteSelected = async () => {
     /* ... */
   };
+
+
+    const handleCreateUser = () => {
+  router.push(`/dashboard/companies/${companyId}/company/application/create-application`);
+};
   return (
   <>
     {/* <DynamicBreadcrumb links={[{ label: "Applications" }]} /> */}
@@ -220,8 +232,18 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
         />
 
         {/* <div className="w-full sm:w-auto"> */}
-          <AddApplication onAdd={handleAddApplication} />
+          {/* <AddApplication onAdd={handleAddApplication} /> */}
         {/* </div> */}
+
+
+               <Button
+  onClick={handleCreateUser}
+  className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
+    icon={<Plus />}
+>
+  Add Application
+  
+</Button>
       </div>
 
       {/* --- Scrollable Table Section --- */}

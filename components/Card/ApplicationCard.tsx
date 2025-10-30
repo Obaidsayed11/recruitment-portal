@@ -1,6 +1,6 @@
 import apiClient from "@/lib/axiosInterceptor";
 import { ApplicationCardProps } from "@/types/companyInterface";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { forwardRef, useState } from "react";
 import { toast } from "sonner";
 import CheckBox from "../Others/CheckBox";
@@ -20,6 +20,8 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
   "HIRED",
   "REJECTED"
     ]
+     const params = useParams() as { companyId: string };
+        const companyId = params.companyId;
 
 
     const handleCheckboxChange = (
@@ -38,9 +40,25 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
       }
     };
 
+     // its is the handler for each detail whole dataa
+     const handleRowClick = (e: React.MouseEvent) => {
+  // Don't navigate if clicking on interactive elements
+  const target = e.target as HTMLElement;
+  if (
+    target.closest('button') || 
+    target.closest('a') || 
+    target.closest('[role="checkbox"]')
+  ) {
+    return;
+  }
+  
+  router.push(`/dashboard/companies/${companyId}/company/application/${data.id}`);
+};
+
   return (
       <div
         ref={ref}
+         onClick={handleRowClick} // this is the click handlerr
          className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
           grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
@@ -100,44 +118,62 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
 
 
  {/* Resume URL with Dialog */}
-        <div className="text-left">
-          {data.resumeUrl ? (
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <button className="text-blue-600 text-sm underline hover:text-blue-800">
-                  View Resume
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl w-full">
-                <DialogHeader>
-                  <DialogTitle>{data.candidateName}'s Resume</DialogTitle>
-                </DialogHeader>
-                <iframe
-                  src={data.resumeUrl}
-                  className="w-full h-[600px] border"
-                  title="Resume Preview"
-                ></iframe>
-                <DialogFooter className="flex justify-between mt-2">
-                  <a
-                    href={data.resumeUrl}
-                    download
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  >
-                    Download
-                  </a>
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                    onClick={() => setIsDialogOpen(false)}
-                  >
-                    Close
-                  </button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <span className="text-subtext text-sm">NA</span>
-          )}
-        </div>
+   {/* Resume URL with Dialog */}
+<div className="text-left">
+  {data.resumeUrl ? (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogTrigger asChild>
+        <button
+          className="text-blue-600 text-sm underline hover:text-blue-800"
+          onClick={(e) => {
+            e.stopPropagation(); // stop row click
+            setIsDialogOpen(true);
+          }}
+        >
+          View Resume
+        </button>
+      </DialogTrigger>
+
+      <DialogContent
+        className="max-w-4xl w-full"
+        onClick={(e) => e.stopPropagation()} // prevent dialog click bubbling
+      >
+        <DialogHeader>
+          <DialogTitle>{data.candidateName}'s Resume</DialogTitle>
+        </DialogHeader>
+
+        <iframe
+          src={data.resumeUrl}
+          className="w-full h-[600px] border"
+          title="Resume Preview"
+        ></iframe>
+
+        <DialogFooter className="flex justify-between mt-2">
+          <a
+            href={data.resumeUrl}
+            download
+            onClick={(e) => e.stopPropagation()} // also stop bubbling here
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Download
+          </a>
+          <button
+            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDialogOpen(false);
+            }}
+          >
+            Close
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  ) : (
+    <span className="text-subtext text-sm">NA</span>
+  )}
+</div>
+
 
         {/* Experience */}
         <div className="text-left">

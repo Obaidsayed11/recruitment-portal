@@ -16,7 +16,7 @@ import { UpdateGroupProps } from "@/types/settingsinterface";
 
 // --- Schema ---
 const EditGroupSchema = z.object({
-    // id: z.string().min(1,"id is required"),
+    id: z.string().optional(),
   name: z.string().min(1, "Group Name is required"),
 });
 
@@ -30,9 +30,13 @@ const EditGroups: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
   const methods = useForm<EditGroupFormValues>({
     resolver: zodResolver(EditGroupSchema),
     defaultValues: {
+     id: "",
       name: "",
     },
   });
+  console.log(data,"dataaaaaaaaaa")
+
+ 
 
   const { handleSubmit, setValue, reset } = methods;
 
@@ -47,7 +51,7 @@ const EditGroups: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
     try {
       setIsClicked(true);
       const payload = new FormData();
-      // payload.append("id", formData.id)
+      payload.append("id", id)
       payload.append("name", formData.name)
 
       const response = await apiClient.put(`/groups/${id}`, formData);

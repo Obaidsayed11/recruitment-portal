@@ -21,7 +21,7 @@ const EditRoleschema = z.object({
   name: z.string().min(1, "Role Name is required"),
   code: z.string(),
   description: z.string(),
-  roleType: z.string()
+  // roleType: z.string()
 });
 
 type EditGroupFormValues = z.infer<typeof EditRoleschema>;
@@ -37,7 +37,7 @@ const EditRoles: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
       name: "",
       code: "",
       description: "",
-  roleType: ""
+  // roleType: ""
 
     },
   });
@@ -50,7 +50,7 @@ const EditRoles: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
       setValue("name", data.name);
       setValue("code", data.code);
         setValue("description", data.description);
-          setValue("roleType", data.roleType)
+          
     }
   }, [data, isModalOpen, setValue]);
 
@@ -62,7 +62,7 @@ const EditRoles: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
       payload.append("name", formData.name)
       payload.append("name", formData.code);
       payload.append("name", formData.description);
-      payload.append("name", formData.roleType);
+      // payload.append("name", formData.roleType);
       const id = data?.id
 
       const response = await apiClient.put(`/roles/${id}`, formData);
@@ -110,11 +110,11 @@ const EditRoles: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
             name="description"
             placeholder="description"
           />
-          <InputField
+          {/* <InputField
             label="Role type"
             name="roleType"
             placeholder="description"
-          />
+          /> */}
           <Button
             type="submit"
             disabled={isClicked || methods.formState.isSubmitting}
