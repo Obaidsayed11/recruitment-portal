@@ -10,6 +10,7 @@ export interface GroupProps {
       companyId: string,
       code: string,
       name: string,
+      permissionIds: string[]
       roleType: string,
       description: string,
       createdAt: string,

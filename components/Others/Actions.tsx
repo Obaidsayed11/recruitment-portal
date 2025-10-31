@@ -65,6 +65,18 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
     // For other pages, the edit button will open the modal (handled by renderModal)
   };
 
+
+
+ const handleEditJobClick = () => {
+
+
+  if (pathname?.includes("/dashboard/companies") && tabParam === "job-description") {
+  
+    router.push(`/dashboard/companies/${companyId}/company/job-descriptions/${id}/update-jobs`);
+  }
+};
+
+
   const renderModal = () => {
     if (!pathname) return null;
       console.log("Actions - pathname:", pathname);
@@ -93,12 +105,7 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
 </button>
       );
     }
-    else if (
-      /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
-      tabParam === "job-description"
-    ) {
-      return <EditJobDescription id={id} onUpdate={onUpdate} data={data} />;
-    } 
+  
     else if (
       /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
       tabParam === "application"
@@ -112,6 +119,19 @@ const Actions: React.FC<ActionsProps> = ({ onUpdate, id, data, onDelete }) => {
 </button>
       );
     } 
+       else if (
+      /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
+      tabParam === "job-description"
+    ) {
+     return (
+     <button 
+  onClick={handleEditJobClick} 
+  className="w-fit rounded-md transition-all ease-linear text-primary hover:text-white bg-white p-2 text-2xl hover:bg-primary"
+>
+  <Pencil size={18}  />
+</button>
+      );
+    }
     else if (
       /^\/dashboard\/companies\/[^/]+$/.test(pathname) &&
       tabParam === "department"

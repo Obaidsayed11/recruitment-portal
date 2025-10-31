@@ -575,7 +575,7 @@ const CreateApplicationRoute = () => {
       formData.append("email", data.email);
       formData.append("phone", data.phone);
       formData.append("jobId", data.jobId);
-      formData.append("companyId", companyId);
+      // formData.append("companyId", companyId);
 
       if (data.currentCTC) formData.append("currentCTC", data.currentCTC);
       if (data.expectedCTC) formData.append("expectedCTC", data.expectedCTC);
@@ -592,7 +592,7 @@ const CreateApplicationRoute = () => {
         formData.append(`experience[${index}][years]`, exp.years);
       });
 
-      const response = await apiClient.post("/application/submit", formData, {
+      const response = await apiClient.post(`/application/submit?companyId=${companyId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -659,8 +659,9 @@ const CreateApplicationRoute = () => {
 
             {/* Resume Upload */}
             <FormItem className="gap-2 grid mt-4">
-              <FormLabel>Resume / Attachment</FormLabel>
+              <FormLabel className="text-fontPrimary">Resume / Attachment</FormLabel>
               <FormControl>
+                
                 <div
                   className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400"
                   onClick={() => document.getElementById("application-image-upload")?.click()}

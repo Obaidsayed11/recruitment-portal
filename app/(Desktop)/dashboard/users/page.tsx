@@ -208,11 +208,25 @@ return rolees
 
 
   
-  
   const handleDeleteSelected = async () => {
-    /* ... */
+    if (selectedCards.length > 0) {
+      try {
+        const response = await apiClient.delete("/user/bulk", {
+          data: { ids: selectedCards },
+        });
+        toast.success(response.data.message);
+        setAllUsers((prevData) =>
+          prevData.filter((data) => !selectedCards.includes(data.id))
+        );
+        setSelectedCards([]);
+      } catch (error: any) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete selected locations"
+        );
+        console.error("Delete error:", error);
+      }
+    }
   };
-
 
 const uniqueRoles = [...new Set(
   allUsers

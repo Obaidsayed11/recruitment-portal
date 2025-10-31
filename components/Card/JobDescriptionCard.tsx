@@ -15,6 +15,7 @@
       const handleCheckboxChange = (
         event: React.ChangeEvent<HTMLInputElement>
       ) => {
+         event.stopPropagation();
         onCardSelect(data.id, event.target.checked);
       };
 
@@ -31,6 +32,7 @@
       };
   // its is the handler for each detail whole dataa
       const handleRowClick = () => {
+       
         router.push(`/dashboard/companies/${companyId}/company/job-descriptions/${data.id}`);
       };
 
@@ -50,11 +52,13 @@
           }`}
         >
           {/* Checkbox (1st column) */}
+          <div onClick={(e) => e.stopPropagation()}>
           <CheckBox
-          onClick={(e : any) => e.stopPropagation()}
+        
             checked={isSelected}
             handleCheckboxChange={handleCheckboxChange}
           />
+          </div>
 
           {/* Job Title (2nd column) */}
           <span className="text-subtext font-medium line-clamp-1 text-left truncate overflow-hidden">

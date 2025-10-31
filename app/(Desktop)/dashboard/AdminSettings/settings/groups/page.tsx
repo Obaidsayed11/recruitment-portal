@@ -95,6 +95,7 @@ const SettingGroups = () => {
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
   useEffect(() => {
+     const PAGE_SIZE = 20;
     // Stop if the session isn't ready or if we're on a later page and know there's no more data.
     if (!session || (page > 1 && !hasMore)) {
       return;
@@ -106,7 +107,7 @@ const SettingGroups = () => {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
-        params.append("limit","10")
+        params.append("limit", PAGE_SIZE.toString())
 
         let response;
         if (debouncedSearchQuery) {
@@ -168,8 +169,24 @@ const SettingGroups = () => {
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
   };
-  const handleDeleteSelected = async () => {
-    /* ... */
+    const handleDeleteSelected = async () => {
+    if (selectedCards.length > 0) {
+      try {
+        const response = await apiClient.delete("/job/bulk", {
+          data: { ids: selectedCards },
+        });
+        toast.success(response.data.message);
+        setGroups((prevData) =>
+          prevData.filter((data) => !selectedCards.includes(data.id))
+        );
+        setSelectedCards([]);
+      } catch (error: any) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete selected locations"
+        );
+        console.error("Delete error:", error);
+      }
+    }
   };
  return (
   <>

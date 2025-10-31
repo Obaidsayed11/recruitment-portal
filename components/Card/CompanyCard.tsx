@@ -10,7 +10,7 @@ import { ExternalLink } from "lucide-react";
 import { BASE_URL } from "@/config";
 
 const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
-  ({ data, isSelected, onCardSelect, onDelete, onUpdate, onClick }, ref) => {
+  ({ data, isSelected, onCardSelect, onDelete, onUpdate, onClick  }, ref) => {
     const handleCheckboxChange = (
       event: React.ChangeEvent<HTMLInputElement>
     ) => {

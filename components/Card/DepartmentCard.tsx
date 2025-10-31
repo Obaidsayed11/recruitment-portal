@@ -38,7 +38,10 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
           }`}
       >
         {/* Checkbox */}
+          <div onClick={(e) => e.stopPropagation()}>
+
         <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
+          </div>
 
         {/* Full Name */}
         <span className="text-subtext font-medium line-clamp-1">

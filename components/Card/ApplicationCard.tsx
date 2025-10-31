@@ -72,7 +72,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
         }`}
       >
         {/* Checkbox */}
-        <div >
+        <div onClick={(e) => e.stopPropagation()}>
           <CheckBox
             checked={isSelected}
             handleCheckboxChange={handleCheckboxChange}

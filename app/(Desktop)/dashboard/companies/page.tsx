@@ -62,15 +62,23 @@ const CompanyRoute = () => {
     setHasMore(true);
   }, [debouncedSearchQuery, selectedRole]);
 
-  useEffect(() => {
-    if (!session || (page > 1 && !hasMore)) return;
+  
 
+  useEffect(() => {
+     const PAGE_SIZE = 20;
+
+    // Guard clause to prevent fetching if not ready.
+    if (!session) {
+      return;
+    }
+    
     const fetchData = async () => {
+      if (!session || (page > 1 && !hasMore)) return;
       setLoading(true);
       try {
         const params = new URLSearchParams();
         params.append("page", page.toString());
-        params.append("limit", "10");
+        params.append("limit", PAGE_SIZE.toString());
          let url: string;
         if (debouncedSearchQuery){ 
           
@@ -135,6 +143,26 @@ const CompanyRoute = () => {
     ))
   };
 
+   const handleDeleteSelected = async () => {
+    if (selectedCards.length > 0) {
+      try {
+        const response = await apiClient.delete("/company/bulk", {
+          data: { ids: selectedCards },
+        });
+        toast.success(response.data.message);
+        setAllCompanies((prevData) =>
+          prevData.filter((data) => !selectedCards.includes(data.id))
+        );
+        setSelectedCards([]);
+      } catch (error: any) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete selected locations"
+        );
+        console.error("Delete error:", error);
+      }
+    }
+  };
+
   // NEW: Handle company click to navigate to detail page
   const handleCompanyClick = (companyId: string) => {
     router.push(`/dashboard/companies/${companyId}`);
@@ -159,7 +187,7 @@ const CompanyRoute = () => {
             isAllSelected={allCards.length > 0 && selectedCards.length === allCards.length}
             selectedCount={selectedCards.length}
             handleSelectAll={handleSelectAll}
-            onDeleteSelected={() => {}}
+              onDeleteSelected={handleDeleteSelected}
             searchQuery={searchQuery}
             handleSearchQueryChange={(e) => setSearchQuery(e.target.value)}
             serverSearchQuery={serverSearchQuery}
@@ -186,6 +214,7 @@ const CompanyRoute = () => {
               return (
                 <div ref={isLast ? lastCompanyRef : null} key={company.id}>
                   <CompanyCard
+                  
                     data={company}
                     isSelected={selectedCards.includes(company.id)}
                     onCardSelect={handleCardSelect}

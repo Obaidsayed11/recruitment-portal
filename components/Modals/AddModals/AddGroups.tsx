@@ -3,7 +3,7 @@
 
 import apiClient from "@/lib/axiosInterceptor";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Plus, Check, ChevronsUpDown } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
@@ -12,7 +12,10 @@ import DialogModal from "@/components/Others/DialogModal";
 import InputField from "@/components/Form_Fields/InputField";
 import Button from "@/components/Others/Button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-// REMOVED: import { Combobox } from "@/components/Others/ComoboboxDemo";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Badge } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // ✅ Schema updated: permissionIds is now an array
 const addGroupSchema = z.object({
@@ -25,6 +28,7 @@ type AddGroupFormValues = z.infer<typeof addGroupSchema>;
 const AddGroup: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const [permissions, setPermissions] = useState<{ id: string; name: string }[]>([]);
 
   const methods = useForm<AddGroupFormValues>({
@@ -36,7 +40,7 @@ const AddGroup: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
   });
 
   const { handleSubmit, reset, control, setValue, watch } = methods;
-  // const selectedPermissions = watch("permissionIds"); // Not strictly needed
+  const selectedPermissions = watch("permissionIds");
 
   // ✅ Fetch permissions list
   useEffect(() => {
@@ -57,8 +61,7 @@ const AddGroup: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
       setIsClicked(true);
       const payload = {
         name: data.name,
-        // The permissionIds array is already correctly formatted by the HTML select element handler
-        permissionIds: data.permissionIds, 
+        permissionIds: data.permissionIds,
       };
 
       const response = await apiClient.post("/group", payload);
@@ -73,6 +76,22 @@ const AddGroup: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
     }
   };
 
+  // Toggle permission selection
+  const togglePermission = (permissionId: string, currentValues: string[]) => {
+    if (currentValues.includes(permissionId)) {
+      return currentValues.filter((id) => id !== permissionId);
+    } else {
+      return [...currentValues, permissionId];
+    }
+  };
+
+  // Get selected permission names for display
+  const getSelectedNames = () => {
+    return permissions
+      .filter((perm) => selectedPermissions.includes(perm.id))
+      .map((perm) => perm.name.replace(/_/g, " "));
+  };
+
   return (
     <DialogModal
       open={isOpen}
@@ -83,38 +102,75 @@ const AddGroup: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
       className="bg-secondary absolute top-5 right-5"
     >
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-1">
           {/* Group Name */}
           <InputField label="Group Name" name="name" placeholder="Enter Group Name" />
 
-          {/* Permissions Multi-Select using native <select multiple> */}
+          {/* Permissions Multi-Select with Checkboxes */}
           <FormField
             control={control}
             name="permissionIds"
             render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel className="text-fontPrimary">Permissions (Hold Ctrl/Cmd to select multiple)</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    multiple // Key attribute for multi-selection
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" // Basic styling
-                    // Set a size to make the multiple selections visible
-                    size={Math.min(permissions.length, 6)} 
-                    // React Hook Form handles the onChange for multiple select automatically
-                    onChange={(e) => {
-                        // This converts the HTML collection of selected options into a string array
-                        const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value);
-                        field.onChange(selectedValues);
-                    }}
-                  >
-                    {permissions.map((perm) => (
-                      <option key={perm.id} value={perm.id}>
-                        {perm.name.replace(/_/g, " ")}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
+              <FormItem className="sm:col-span-2">
+                <FormLabel className="text-fontPrimary">Permissions</FormLabel>
+                <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex h-auto min-h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+                          !field.value?.length && "text-muted-foreground"
+                        )}
+                      >
+                        <div className="flex flex-wrap gap-1">
+                          {field.value?.length > 0 ? (
+                            getSelectedNames().map((name) => (
+                              <h1 key={name}  className="mr-1">
+                                {name},
+                              </h1>
+                            ))
+                          ) : (
+                            <span>Select permissions...</span>
+                          )}
+                        </div>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search permissions..." />
+                      <CommandEmpty>No permission found.</CommandEmpty>
+                      <CommandGroup className="max-h-64 overflow-auto">
+                        {permissions.map((permission) => {
+                          const isSelected = field.value?.includes(permission.id);
+                          return (
+                            <CommandItem
+                              key={permission.id}
+                              onSelect={() => {
+                                const newValue = togglePermission(permission.id, field.value || []);
+                                field.onChange(newValue);
+                              }}
+                            >
+                              <div
+                                className={cn(
+                                  "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                  isSelected
+                                    ? " text-white"
+                                    : "opacity-50 [&_svg]:invisible"
+                                )}
+                              >
+                                <Check className="h-4 w-4" />
+                              </div>
+                              <span>{permission.name.replace(/_/g, " ")}</span>
+                            </CommandItem>
+                          );
+                        })}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 <FormMessage />
               </FormItem>
             )}

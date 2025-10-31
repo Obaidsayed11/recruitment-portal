@@ -42,10 +42,12 @@ const UserCard = forwardRef<HTMLDivElement, UserCardProps>(
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
         }`}
       >
+          <div onClick={(e) => e.stopPropagation()}>
         <CheckBox
           checked={isSelected}
           handleCheckboxChange={handleCheckboxChange}
         />
+        </div>
         <div className="grid grid-cols-[50px_1fr] gap-2 items-center">
           {/* {data.photo ? (
             <Image

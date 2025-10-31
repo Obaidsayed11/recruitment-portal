@@ -19,7 +19,7 @@ import Header from "@/components/Others/Header";
 import AddUser from "@/components/Modals/AddModals/AddUser";
 import UserCard from "@/components/Card/UserCard";
 import { AxiosResponse } from "axios";
-import AddApplication from "@/components/Modals/AddModals/AddApplication";
+
 import AddDepartment from "@/components/Modals/AddModals/AddDepartment";
 import DepartmentCard from "@/components/Card/DepartmentCard";
 import { DepartmentListProps, DepartmentProps } from "@/types/companyInterface";
@@ -92,12 +92,13 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
     }
 
     const fetchData = async () => {
+      const PAGE_SIZE = 20;
       setLoading(true);
       try {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
-         params.append("limit", "10");
+         params.append("limit", PAGE_SIZE.toString());
 
         let response;
         if (debouncedSearchQuery) {
@@ -158,8 +159,24 @@ const CompanyDepartment: React.FC<Props> = ({ companyId }) => {
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
   };
-  const handleDeleteSelected = async () => {
-    /* ... */
+    const handleDeleteSelected = async () => {
+    if (selectedCards.length > 0) {
+      try {
+        const response = await apiClient.delete("/department/bulk", {
+          data: { ids: selectedCards },
+        });
+        toast.success(response.data.message);
+        setDepartments((prevData) =>
+          prevData.filter((data) => !selectedCards.includes(data.id))
+        );
+        setSelectedCards([]);
+      } catch (error: any) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete selected locations"
+        );
+        console.error("Delete error:", error);
+      }
+    }
   };
   return (
     <>

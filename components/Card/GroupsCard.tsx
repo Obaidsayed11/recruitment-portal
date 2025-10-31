@@ -40,8 +40,12 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
               : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
           }`}
       >
+          <div onClick={(e) => e.stopPropagation()}>
+
         <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
+          </div>
         <span className="text-subtext font-medium line-clamp-1">{data.name}</span>
+        
    
         <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
       </div>

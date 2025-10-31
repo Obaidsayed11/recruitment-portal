@@ -40,7 +40,9 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
               : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
           }`}
       >
+          <div onClick={(e) => e.stopPropagation()}>
         <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
+        </div>
         <span className="text-subtext font-medium line-clamp-1">{data.name}</span>
          <span className="text-subtext font-medium line-clamp-1">{data.code}</span>
         <span className="text-subtext text-sm line-clamp-1">{data.description?.split("T")[0] || "NA"}</span>

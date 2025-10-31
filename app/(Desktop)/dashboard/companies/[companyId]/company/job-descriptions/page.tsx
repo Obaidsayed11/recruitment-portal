@@ -22,6 +22,9 @@
   import AddJobDescription from "@/components/Modals/AddModals/AddJobDescription";
   import { AddJobModalProps, JobDescriptionProps, UpdateJobDescriptionProps ,JobDescriptionListProps} from "@/types/companyInterface";
   import JobDescriptionCard from "@/components/Card/JobDescriptionCard";
+import { useRouter } from "next/navigation";
+import Button from "@/components/Others/Button";
+import { Plus } from "lucide-react";
 
   const headersOptions = [
     { value: "Job Title" },
@@ -50,6 +53,7 @@
     const { data: session } = useSession();
     const searchParams = useSearchParams();
     console.log(session,"sesdsion")
+      const router = useRouter();
 
   // const companyId = session?.user?.companyId || null
   //  const { companyId } = useParams();
@@ -104,7 +108,7 @@
     // --- 2. Main effect for ALL data fetching ---
     // This single, robust hook handles fetching for new queries and pagination.
     useEffect(() => {
-      
+      const PAGE_SIZE = 20;
       // Stop if the session isn't ready or if we're on a later page and know there's no more data.
       if (!session || (page > 1 && !hasMore)) {
         return;
@@ -117,7 +121,7 @@
   try {
       const params = new URLSearchParams();
         params.append("page", page.toString());
-      params.append("limit","10")
+      params.append("limit",PAGE_SIZE.toString())
     let response;
 
     if (debouncedSearchQuery) {
@@ -180,9 +184,34 @@
         );
     };
     console.log(description,"desccccccccccc")
-    const handleDeleteSelected = async () => {
-      /* ... */
-    };
+
+    
+   const handleDeleteSelected = async () => {
+    if (selectedCards.length > 0) {
+      try {
+        const response = await apiClient.delete("/job/bulk", {
+          data: { ids: selectedCards },
+        });
+        toast.success(response.data.message);
+        setDescription((prevData) =>
+          prevData.filter((data) => !selectedCards.includes(data.id))
+        );
+        setSelectedCards([]);
+      } catch (error: any) {
+        toast.error(
+          error.response?.data?.message || "Failed to delete selected locations"
+        );
+        console.error("Delete error:", error);
+      }
+    }
+  };
+
+
+ const handleCreateUser = () => {
+  router.push(`/dashboard/companies/${companyId}/company/job-descriptions/create-jobs`);
+
+ }
+
   return (
     <>
       {/* <DynamicBreadcrumb links={[{ label: "Job Description" }]} /> */}
@@ -223,8 +252,17 @@
           />
 
           {/* <div className="w-full sm:w-auto"> */}
-            <AddJobDescription onAdd={handleAddDescription} />
+            {/* <AddJobDescription onAdd={handleAddDescription} /> */}
           {/* </div> */}
+
+             <Button
+  onClick={handleCreateUser}
+  className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
+    icon={<Plus />}
+>
+  Add Job Description
+  
+</Button>
         </div>
 
         {/* Scrollable User List */}
