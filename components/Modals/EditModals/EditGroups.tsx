@@ -88,11 +88,12 @@ const EditGroups: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
 
       console.log("Submitting payload:", payload);
 
-      const response = await apiClient.put(`/group/${id}`, payload);
+      const response = await apiClient.put(`/groups/${id}`, payload);
 
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data?.message || "Group updated successfully");
-        onUpdate(response.data?.group ?? response.data);
+
+        onUpdate(response.data?.updatedGroup ?? response.data?.updatedGroup);
         setIsModalOpen(false);
         reset();
       } else {

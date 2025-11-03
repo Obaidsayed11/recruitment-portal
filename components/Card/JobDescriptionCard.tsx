@@ -35,6 +35,9 @@
        
         router.push(`/dashboard/companies/${companyId}/company/job-descriptions/${data.id}`);
       };
+      const stripHtml = (html: string = "") =>
+      html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
 
   return (
         <div

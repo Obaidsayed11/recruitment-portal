@@ -15,14 +15,12 @@ import { useParams } from "next/navigation";
 import { description } from "@/components/Charts/DeliveryTimeChart";
 import { useDepartments } from "@/context/DepartmentContext";
 import TextareaField from "@/components/Form_Fields/TextareaField";
-
-
+import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 
 const addDepartmentSchema = z.object({
   name: z.string(),
   // role: z.enum(rolesOptions),
-  description: z.string()
-
+  description: z.string(),
 });
 
 type AddDepartmentFormValues = z.infer<typeof addDepartmentSchema>;
@@ -30,12 +28,12 @@ type AddDepartmentFormValues = z.infer<typeof addDepartmentSchema>;
 const AddDepartment: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-   const { departments } = useDepartments();
-    const [selectedDept, setSelectedDept] = useState("");
-   const params = useParams() as { companyId: string };
-const companyId = params.companyId;
+  const { departments } = useDepartments();
+  const [selectedDept, setSelectedDept] = useState("");
+  const params = useParams() as { companyId: string };
+  const companyId = params.companyId;
 
-const deptOptions = departments.map((d) => ({
+  const deptOptions = departments.map((d) => ({
     label: d.name,
     value: d.id,
   }));
@@ -44,19 +42,32 @@ const deptOptions = departments.map((d) => ({
     resolver: zodResolver(addDepartmentSchema),
     defaultValues: {
       name: "",
-description: ""
-    }
+      description: "",
+    },
   });
 
   const { handleSubmit, reset } = methods;
 
   const onSubmit: SubmitHandler<AddDepartmentFormValues> = async (data) => {
     try {
-
       setIsClicked(true);
+      // Function to remove HTML tags from rich text fields
+      // const stripHtml = (html: string = "") =>
+      //   html
+      //     .replace(/<[^>]+>/g, "")
+      //     .replace(/\s+/g, " ")
+      //     .trim();
 
-      const response = await apiClient.post(`/department?companyId=${companyId}`, data);
-      console.log(response.data)
+      const payload = {
+        ...data,
+        description:data.description ,
+      };
+
+      const response = await apiClient.post(
+        `/department?companyId=${companyId}`,
+        payload
+      );
+      console.log(response.data);
       toast.success(response.data.message || "Department added successfully!");
       onAdd(response.data.department);
       setIsOpen(false);
@@ -79,18 +90,33 @@ description: ""
       icon={<Plus />}
     >
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 sm:grid-cols-2">
-          <InputField label="Enter Department Name" name="name" placeholder="Enter Department Name" />
+        <form onSubmit={handleSubmit(onSubmit)} className=" sm:grid-cols-2">
+          <InputField
+            label="Enter Department Name"
+            name="name"
+            placeholder="Enter Department Name"
+            className="mb-4"
+          />
           {/* <SelectField label="Role" name="role" placeholder="Select Role" options={rolesOptions.map(v => ({ label: v, value: v }))} /> */}
           {/* <InputField label="Enter Description" name="description" placeholder="Enter Description" /> */}
-            <TextareaField
+          {/* <TextareaField
                  formItemClassName="sm:col-span-2"
                    label="Description"
                           name={"description"}
                           placeholder={"Enter Your Description"}
-                        />
-          
-          <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
+                        /> */}
+          <div className="sm:col-span-2 text-text font-medium text-sm mb-4">
+            <h1 className="mb-2">
+              Description <span className="text-red-500 ml-1">*</span>
+            </h1>
+            <CustomEditorWrapper control={methods.control} name="description" />
+          </div>
+
+          <Button
+            type="submit"
+            className="sm:col-span-2 w-fit justify-self-end"
+            disabled={isClicked}
+          >
             {isClicked ? "Adding..." : "Add Department"}
           </Button>
         </form>

@@ -29,7 +29,7 @@ const UserCreateSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email").optional(),
   phone: z.string().min(10, "Phone must be valid"),
-  role: z.string().min(1,"Please select a Role")
+  roleId: z.string().min(1,"Please select a Role")
 });
 
 type AddUserFormValues = z.infer<typeof UserCreateSchema>;
@@ -63,7 +63,7 @@ const pathname = usePathname(); // 2. Get the current URL path
       fullName: "",
       email: "",
       phone: "",
-      role:""
+      roleId:""
     },
   });
 
@@ -120,7 +120,7 @@ const pathname = usePathname(); // 2. Get the current URL path
               fullName: fetchedUser.fullName || fetchedUser.full_name || "",
               email: fetchedUser.email || "",
               phone: fetchedUser.phone || fetchedUser.phoneNumber || "",
-              role: fetchedUser.role || fetchedUser.role || "",
+              roleId: fetchedUser.roleId || fetchedUser.roleId || "",
             });
           } else {
             toast.error("User data not found in response");
@@ -140,7 +140,7 @@ const pathname = usePathname(); // 2. Get the current URL path
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
-        role: userData.role || "",
+        roleId: userData.roleId || "",
       });
     } else {
       // Reset form when no userId (creating new user)
@@ -149,7 +149,7 @@ const pathname = usePathname(); // 2. Get the current URL path
         fullName: "",
         email: "",
         phone: "",
-        role: "",
+        roleId: "",
       });
     }
   }, [userId, reset]);
@@ -164,7 +164,12 @@ const pathname = usePathname(); // 2. Get the current URL path
       //   toast.success(response.data.message || "User updated successfully");
       // } else {
         // Creating new user
-        const response = await apiClient.post("/auth/register", data);
+        const response = await apiClient.post("/auth/register", data, {
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
         toast.success(response.data.message || "User created successfully");
         const newUserId = response.data.user.id;
 const createdUser = response.data.user;
@@ -174,7 +179,7 @@ setUserData(createdUser);
           fullName: createdUser.fullName ,
           email: createdUser.email || "",
           phone: createdUser.phone || "",
-          role: createdUser.role || "",
+          roleId: createdUser.roleId || "",
         });
 
        const searchParams = new URLSearchParams(window.location.search);
@@ -230,7 +235,7 @@ router.replace(`/dashboard/users/create-user?${searchParams.toString()}`, { scro
                 <InputField label="Email" name="email" placeholder="Enter email" />
                 <FormField
                 control={control}
-                name="role"
+                name="roleId"
                 render={({ field }) => (
                   <FormItem className="sm:col-span-1">
                     <FormLabel className="text-fontPrimary">Roles</FormLabel>

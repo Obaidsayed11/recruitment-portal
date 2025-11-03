@@ -26,6 +26,9 @@ import TextareaField from "@/components/Form_Fields/TextareaField";
 import { useRouter } from "next/navigation";
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import dynamic from "next/dynamic";
+import CustomEditorWrapper from "@/components/CustomEditorWrapper";
+import { parseJSON } from "date-fns";
+import { parseHtml } from "ckeditor5";
 
 
 
@@ -101,7 +104,9 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
     try {
       setIsClicked(true);
 
-      const payload = { ...data, companyId };
+    // Function to remove HTML tags from rich text fields
+    
+      const payload = { ...data,  description: data.description , companyId };
       const response = await apiClient.post(
         `/job?companyId=${companyId}`,
         payload
@@ -114,7 +119,8 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
       setIsOpen(false);
       reset();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message);
+      // toast.error(error.response?.data?.message || error.message);
+      console.log(error.response?.data?.message || error.message,"data error")
     } finally {
       setIsClicked(false);
     }
@@ -167,6 +173,8 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
               label="Job Title"
               name="title"
               placeholder="Enter Job Title"
+              
+              
             />
             {/* <InputField
             label="Department"
@@ -179,8 +187,10 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
               name="department"
               render={({ field }) => (
                 <FormItem className="sm:col-span-1">
-                  <FormLabel className="text-fontPrimary">Department</FormLabel>
+                  <FormLabel className="text-fontPrimary">Department <span className="text-red-500 ml-1">*</span></FormLabel>
+                  
                   <FormControl>
+                    
                     <Combobox
                       placeholder="Select Department"
                       options={departments.map((dep) => ({
@@ -212,6 +222,7 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
             />
             <SelectField
               label="Employment Type"
+              
               name="employmentType"
               placeholder="Select Type"
               options={employmentOptions.map((v) => ({
@@ -234,12 +245,22 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
             name="requirements"
             placeholder="Requirements"
           /> */}
-            <TextareaField
+            {/* <TextareaField
               formItemClassName="sm:col-span-2"
               label="Description"
               name={"description"}
               placeholder={"Enter Your Description"}
-            />
+            /> */}
+
+          <div className="sm:col-span-2 text-text font-medium text-sm">
+                              <h1 className="mb-2">
+                                      Description <span className="text-red-500 ml-1">*</span>
+                                    </h1>
+                                <CustomEditorWrapper
+                                  control={methods.control}
+                                  name="description"
+                                />
+                              </div>
 
             <TextareaField
               formItemClassName="sm:col-span-2"
@@ -256,7 +277,7 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
             />
 
                  {/* <CustomEditor control={methods.control} name="content" /> */}
-
+                
             <Button
               type="submit"
               className="sm:col-span-2 w-fit justify-self-end"

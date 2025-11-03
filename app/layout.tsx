@@ -13,8 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Foodland",
-  description: "The Supply Chain Solutions Specialist - Foodland",
+  title: "Recruitment-Portal",
+  description: "One Stop Solution for all CMS - Recruitment-Portal",
 };
 
 export default function RootLayout({

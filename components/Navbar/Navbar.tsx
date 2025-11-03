@@ -6,7 +6,7 @@ import Logo from "./Logo";
 import { LogOut } from "lucide-react";
 
 const roleRoutes: Record<string, string> = {
-  ADMIN: "/admin/dashboard",
+  ADMIN: "/dashboard",
   WAREHOUSE: "/warehouse",
   OUTLET: "/outlet",
   DRIVER: "/driver",
@@ -23,9 +23,9 @@ const Navbar: React.FC = () => {
     <nav className="grid gap-3 content-start relative h-screen p-3 my-auto bg-[#FAFAFA] ">
       <Link href={basePath} className="pb-2 border-b pt-5 flex flex-col gap-2">
         <Logo
-          className="justify-self-start w-full h-[90px]"
-          logo={"/foodland-logo.png"}
-          companyName="Foodland"
+          className="justify-self-start w-full h-[60px]"
+          logo={"/gridfill-log-new.png"}
+          companyName="Recruitement-Portal"
         />
       
       </Link>

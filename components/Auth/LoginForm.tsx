@@ -109,8 +109,8 @@ function LoginForm() {
     <div className="bg-white grid gap-5 rounded-3xl p-5 sm:min-w-[450px] sm:p-8">
       <div className="grid justify-center gap-2">
         <Logo
-          logo={"/foodland-logo.png"}
-          companyName={"Foodland"}
+          logo={"/gridfill-log-new.png"}
+          companyName={"Recruitement-Portal"}
           className="w-[150px] h-[100px]"
         />
         <h1 className="text-center text-xl font-medium leading-5 text-nowrap text-text">

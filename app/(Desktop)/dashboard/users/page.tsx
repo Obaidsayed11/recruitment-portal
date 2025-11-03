@@ -36,13 +36,14 @@ const headersOptions = [
 const UserRoute = () => {
   // --- Core Hooks ---
   const { data: session } = useSession();
-  console.log(session,"wduio")
+  console.log(session, "wduio");
   const searchParams = useSearchParams();
   const router = useRouter();
 
-
   // --- State Declarations ---
   const [allUsers, setAllUsers] = useState<UserProps[]>([]);
+
+  const [roles, setRoles] = useState<{ id: string; name: string }[]>([]);
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -58,8 +59,8 @@ const UserRoute = () => {
   const allCards = useMemo(() => allUsers.map((data) => data.id), [allUsers]);
 
   const handleCreateUser = () => {
-  router.push("/dashboard/users/create-user");
-};
+    router.push("/dashboard/users/create-user");
+  };
 
   // --- Refs and Callbacks for Infinite Scroll ---
   const observer = useRef<IntersectionObserver | null>(null);
@@ -77,10 +78,6 @@ const UserRoute = () => {
     [loading, hasMore]
   );
 
-
-
-  
-
   // --- Effects ---
 
   // --- 1. Effect to RESET state on a new query (search or filter change) ---
@@ -93,8 +90,76 @@ const UserRoute = () => {
 
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
-useEffect(() => {
-    const PAGE_SIZE = 20;
+  // useEffect(() => {
+  //   const PAGE_SIZE = 20;
+
+  //   // Guard clause to prevent fetching if not ready.
+  //   if (!session) {
+  //     return;
+  //   }
+
+  //   const fetchData = async () => {
+  //     if (page > 1 && !hasMore) {
+  //       return;
+  //     }
+  //     setLoading(true);
+
+  //     try {
+  //       const params = new URLSearchParams();
+  //       params.append("page", page.toString());
+  //       params.append("limit", PAGE_SIZE.toString());
+
+  //     let response;
+  //       if (debouncedSearchQuery) {
+  //         const params = new URLSearchParams();
+  //         params.append("query", debouncedSearchQuery);
+  //         response = `/user/search?${params.toString()}`;
+  //       } else {
+  //         if (selectedRole && selectedRole !== "All") {
+  //           params.append("role", selectedRole);
+
+  //         }
+  //            response = await apiClient.get<UserListProps>(
+  //           `/user?${params.toString()}`)
+  //           console.log(response,"csdfasd")
+  //       }
+  //       const newUsers = response.data.users.map((user: any) => ({
+  //         ...user,
+  //         role: user.Role?.code || "N/A", // convert Role.code → role
+  //       }));
+  //       console.log("New users count:", newUsers.length);
+
+  //       if (page === 1) {
+  //         setAllUsers(newUsers);
+  //       } else {
+  //         setAllUsers((prev) => [...prev, ...newUsers]);
+  //       }
+
+  //       // Handle pagination - note your API returns "tatalPages" (typo)
+  //       const currentPage = response.data.page || page;
+  //       const totalPages =
+  //         response.data.totalPages || response.data.totalPages || 1;
+
+  //       console.log("Pagination info:", {
+  //         currentPage,
+  //         totalPages,
+  //         hasMore: currentPage < totalPages,
+  //       });
+  //       setHasMore(currentPage < totalPages);
+  //     } catch (error: any) {
+  //       console.error("Error fetching users:", error);
+  //       toast.error("Failed to fetch users");
+  //       setHasMore(false);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [page, debouncedSearchQuery, selectedRole, session]);
+
+  useEffect(() => {
+    const PAGE_SIZE = 10;
 
     // Guard clause to prevent fetching if not ready.
     if (!session) {
@@ -102,42 +167,46 @@ useEffect(() => {
     }
 
     const fetchData = async () => {
-       if (page > 1 && !hasMore) {
+      if (page > 1 && !hasMore) {
         return;
       }
       setLoading(true);
-      console.log("Starting fetch for page:", page);
-      
+
       try {
         const params = new URLSearchParams();
         params.append("page", page.toString());
         params.append("limit", PAGE_SIZE.toString());
+        let response;
 
-
-        let url: string;
         if (debouncedSearchQuery) {
-              const params = new URLSearchParams();
+          // Search query case
+
           params.append("query", debouncedSearchQuery);
-          url = `/user/search?${params.toString()}`;
+          // searchParams.append("page", page.toString());
+          // searchParams.append("limit", PAGE_SIZE.toString());
+
+          response = await apiClient.get<UserListProps>(
+            `/user/search?${params.toString()}`
+          );
         } else {
+          // Regular list case
+
           if (selectedRole && selectedRole !== "All") {
             params.append("role", selectedRole);
           }
-          url = `/user`;
+
+          response = await apiClient.get<UserListProps>(
+            `/user?${params.toString()}`
+          );
         }
 
-        console.log("Fetching URL:", url);
-        console.log("With params:", Object.fromEntries(params));
+        console.log(response, "response data");
 
-        const response = await apiClient.get<UserListProps>(url);
-        console.log(response.data.users,"response")
-        // console.log(response.data.users[Role],"response")
-
-        console.log("API Response:", response.data);
         const newUsers = response.data.users.map((user: any) => ({
-      ...user,
-      role: user.Role?.code || "N/A", // convert Role.code → role
-    }));
+          ...user,
+          role: user.Role?.code || "N/A", // convert Role.code → role
+        }));
+
         console.log("New users count:", newUsers.length);
 
         if (page === 1) {
@@ -146,14 +215,22 @@ useEffect(() => {
           setAllUsers((prev) => [...prev, ...newUsers]);
         }
 
-        // Handle pagination - note your API returns "tatalPages" (typo)
-        const currentPage = response.data.page || page;
-        const totalPages = response.data.totalPages || response.data.totalPages || 1;
-        
-        console.log("Pagination info:", { currentPage, totalPages, hasMore: currentPage < totalPages });
+        // Handle pagination
+        const currentPage = response.data.page
+          ? parseInt(response.data.page)
+          : page;
+        const totalPages = response.data.totalPages
+          ? parseInt(response.data.totalPages)
+          : 1;
+
+        console.log("Pagination info:", {
+          currentPage,
+          totalPages,
+          hasMore: currentPage < totalPages,
+        });
+
         setHasMore(currentPage < totalPages);
       } catch (error: any) {
-      
         console.error("Error fetching users:", error);
         toast.error("Failed to fetch users");
         setHasMore(false);
@@ -168,46 +245,43 @@ useEffect(() => {
   // --- Event Handlers ---
   const handleSelectAll = (isChecked: boolean) =>
     setSelectedCards(isChecked ? allCards : []);
-    
+
   const handleCardSelect = (cardId: string, isChecked: boolean) =>
     setSelectedCards((prev) =>
       isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
     );
-    
+
   const handleDelete = (id: string) =>
     setAllUsers((prev) => prev.filter((data) => data.id !== id));
-    
+
   const handleAdd = (newData: UserProps) => {
     if (newData) setAllUsers((prev) => [newData, ...prev]);
   };
-  
- const handleUpdate = (updatedData: UserProps) => {
-  if (!updatedData) return;
 
-  setAllUsers((prev) => {
-    const exists = prev.some((data) => data.id === updatedData.id);
+  const handleUpdate = (updatedData: UserProps) => {
+    if (!updatedData) return;
 
-    if (exists) {
-      // Replace existing user
-      return prev.map((data) => (data.id === updatedData.id ? updatedData : data));
-    } else {
-      // Append new user if not found
-      return [updatedData, ...prev];
-    }
-  });
-};
+    setAllUsers((prev) => {
+      const exists = prev.some((data) => data.id === updatedData.id);
 
-allUsers.map((user,index)=> {
-  console.log(user.role,"dqyfdddddddddddddddddddddddddddddd")
-const rolees =  user.role
-return rolees
-}
+      if (exists) {
+        // Replace existing user
+        return prev.map((data) =>
+          data.id === updatedData.id ? updatedData : data
+        );
+      } else {
+        // Append new user if not found
+        return [updatedData, ...prev];
+      }
+    });
+  };
 
-)
+  // allUsers.map((user, index) => {
+  //   console.log(user.Role?.name, "dqyfdddddddddddddddddddddddddddddd");
+  //   const rolees = user.role;
+  //   return rolees;
+  // });
 
-
-
-  
   const handleDeleteSelected = async () => {
     if (selectedCards.length > 0) {
       try {
@@ -227,29 +301,49 @@ return rolees
       }
     }
   };
+  useEffect(() => {
+    if (!session) return;
+    const fetchRoles = async () => {
+      try {
+        const res = await apiClient.get(`/user/filter`);
+        console.log(res, "res of des");
 
-const uniqueRoles = [...new Set(
-  allUsers
-    .map(user => (user.role as any)?.name || user.role)
-    .filter(Boolean)
-)] as string[];
-  // --- Render Logic ---
+        setRoles(res.data.data || []);
+
+        // Optionally pre-select department from `data.department`:
+      } catch (error) {
+        toast.error("Failed to fetch departments");
+      }
+    };
+
+    fetchRoles();
+  }, [session]);
+
+  const uniqueRoles = roles.map((role) => ({
+    
+    label:`${role.name}`,
+    value: role.name
+  }));
+  console.log(uniqueRoles, "uniqyueee");
+
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Users" }]} />
       <section className="bg-white  sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5">
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center 
+        justify-between gap-3 sm:gap-4 pb-5"
+        >
           <Operations
-          filterProps={{
-  filter: true,
-  filters: [
-    {
-      queryKey: "role",
-      options: uniqueRoles,
-    },
-  ],
-}}
+            filterProps={{
+              filter: true,
+              filters: [
+                {
+                  queryKey: "role",
+                  options: uniqueRoles,
+                },
+              ],
+            }}
             checkBox
             isAllSelected={
               allCards.length > 0 && selectedCards.length === allCards.length
@@ -266,15 +360,12 @@ const uniqueRoles = [...new Set(
             serverSearchPlaceholder="Search all users..."
           />
           <Button
-  onClick={handleCreateUser}
-  className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
-    icon={<Plus />}
->
-  Create User
-  
-</Button>
-
-
+            onClick={handleCreateUser}
+            className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
+            icon={<Plus />}
+          >
+            Create User
+          </Button>
         </div>
         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header
@@ -325,4 +416,3 @@ const uniqueRoles = [...new Set(
 };
 
 export default UserRoute;
-

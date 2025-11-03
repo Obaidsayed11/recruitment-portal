@@ -1,6 +1,6 @@
 {
-  "name": "Foodland",
-  "short_name": "Foodland",
+  "name": "Recruitment-Portal",
+  "short_name": "Recruitment-Portal",
   "theme_color": "#F2EB18",
   "background_color": "#ffffff",
   "display": "standalone",
@@ -9,17 +9,17 @@
   "start_url": "/",
   "icons": [
     {
-      "src": "/icon/foodland-logo.png",
+      "src": "/icon/favicon.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/icon/foodland-logo.png",
+      "src": "/icon/favicon.png",
       "type": "image/png",
       "sizes": "256x256"
     },
     {
-      "src": "/icon/foodland-logo.png",
+      "src": "/icon/favicon.png",
       "type": "image/png",
       "sizes": "512x512"
     }

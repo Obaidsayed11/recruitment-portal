@@ -23,7 +23,7 @@ export interface UserProps {
   phone: string;
   companyId?: string;
   Role?: UserRole;  // API returns this
-  role?: UserRole;  // just for internal consistency
+  // role?: UserRole;  // just for internal consistency
   token?: string;
 }
 

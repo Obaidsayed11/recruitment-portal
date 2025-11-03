@@ -47,7 +47,7 @@ const ApplicationDetails = () => {
       <DynamicBreadcrumb
         links={[
           { label: "Companies", href: "/dashboard/companies" },
-          { label: "Applications", href: `/dashboard/companies/${companyId}?tab=applications` },
+          { label: "Applications", href: `/dashboard/companies/${companyId}?tab=application` },
           { label: "Application Details" },
         ]}
       />
@@ -125,13 +125,13 @@ const ApplicationDetails = () => {
                 </div>
 
                 {/* Experience */}
-                <div className="mt-5">
+                {/* <div className="mt-5">
                   <h3 className="text-lg font-semibold mb-2 text-gray-700">Experience</h3>
                   {application.experience && application.experience.length > 0 ? (
                     <ul className="list-disc pl-6 space-y-1">
                       {application.experience.map((exp: any, i: number) => (
                         <li key={i} className="text-gray-800">
-                          {exp.role} at{" "}
+                          {exp.role} at
                           <span className="font-medium">{exp.company}</span> — {exp.years} years
                         </li>
                       ))}
@@ -139,7 +139,41 @@ const ApplicationDetails = () => {
                   ) : (
                     <p className="text-gray-600">No experience details provided.</p>
                   )}
-                </div>
+                </div> */}
+                <div className="mt-5">
+  <h3 className="text-lg font-semibold mb-2 text-gray-700">Experience</h3>
+
+  {application.experience && application.experience.length > 0 ? (
+    application.experience.some(
+      (exp: any) => exp.role?.trim() || exp.company?.trim() || exp.years?.trim()
+    ) ? (
+      <ul className="list-disc pl-6 space-y-1">
+        {application.experience.map((exp: any, i: number) => {
+          const hasData =
+            exp.role?.trim() || exp.company?.trim() || exp.years?.trim();
+          if (!hasData) return null;
+
+          return (
+            <li key={i} className="text-gray-800">
+              {exp.role?.trim() || "N/A"}{" "}
+              {exp.company?.trim() && (
+                <>
+                  at <span className="font-medium">{exp.company}</span>
+                </>
+              )}
+              {exp.years?.trim() && ` — ${exp.years} years`}
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <p className="text-gray-600">N/A</p>
+    )
+  ) : (
+    <p className="text-gray-600">N/A</p>
+  )}
+</div>
+
 
                 {/* Resume */}
                 {application.resumeUrl && (

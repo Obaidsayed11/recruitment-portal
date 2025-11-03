@@ -136,7 +136,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
 
       <DialogContent
         className="max-w-4xl w-full"
-        onClick={(e) => e.stopPropagation()} // prevent dialog click bubbling
+        onClick={(e: any) => e.stopPropagation()} // prevent dialog click bubbling
       >
         <DialogHeader>
           <DialogTitle>{data.candidateName}'s Resume</DialogTitle>
@@ -176,24 +176,44 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
 
 
         {/* Experience */}
-        <div className="text-left">
-          {data.experience && data.experience.length > 0 ? (
-            <div className="space-y-1">
-              {data.experience.map((exp, index) => (
-                <div key={index} className="text-xs text-subtext">
-                  <span className="font-medium">{exp.role}</span>
+      <div className="text-left">
+  {data.experience && data.experience.length > 0 ? (
+    data.experience.some(
+      (exp) => exp.role?.trim() || exp.company?.trim() || exp.years?.trim()
+    ) ? (
+      <div className="space-y-1">
+        {data.experience.map((exp, index) => {
+          const hasData =
+            exp.role?.trim() || exp.company?.trim() || exp.years?.trim();
+          if (!hasData) return null;
+
+          return (
+            <div key={index} className="text-xs text-subtext">
+              <span className="font-medium">
+                {exp.role?.trim() || "N/A"}
+              </span>
+              {(exp.company?.trim() || exp.years?.trim()) && (
+                <>
                   <br />
                   <span className="text-gray-500">
-                    {exp.company} • {exp.years} yr
-                    {/* {exp.years !== "1" && exp.years !== 1 ? "s" : ""} */}
+                    {exp.company?.trim() && <>{exp.company}</>}
+                    {exp.company?.trim() && exp.years?.trim() && " • "}
+                    {exp.years?.trim() && `${exp.years} yr`}
                   </span>
-                </div>
-              ))}
+                </>
+              )}
             </div>
-          ) : (
-            <span className="text-subtext text-sm">NA</span>
-          )}
-        </div>
+          );
+        })}
+      </div>
+    ) : (
+      <span className="text-subtext text-sm">N/A</span>
+    )
+  ) : (
+    <span className="text-subtext text-sm">N/A</span>
+  )}
+</div>
+
 
         {/* Skills */}
         {/* <div className="text-left">

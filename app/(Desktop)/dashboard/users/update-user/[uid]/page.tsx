@@ -128,7 +128,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
               fullName: fetchedUser.fullName || fetchedUser.full_name || "",
               email: fetchedUser.email || "",
               phone: fetchedUser.phone || fetchedUser.phoneNumber || "",
-               role: fetchedUser.role || fetchedUser.role || "",
+               role: fetchedUser.Role?.name || "", // ✅ use id for Combobox value
             });
           } else {
             toast.error("User data not found in response");
@@ -147,7 +147,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
-        role: userData.role?.name || userData.role?.id || "", // Use role's string property
+        role: userData.Role?.name || "", // ✅ again use id // Use role's string property
       });
     } else {
       // Reset form when no userId (creating new user)
@@ -308,6 +308,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
                                     <Combobox
                                     className="mt-2"
                                       placeholder="Select Role"
+                                  
                                       options={roles.map((dep) => ({
                                         value: dep.id,
                                         label: dep.name.split("_").join(" "),

@@ -458,16 +458,16 @@ const addApplicationSchema = z.object({
   resume: z.instanceof(File).optional(),
   experiences: z.array(
     z.object({
-      company: z.string().min(1, "Company required"),
-      role: z.string().min(1, "Role required"),
-      years: z.string().min(1, "Years required"),
+      company: z.string(),
+      role: z.string(),
+      years: z.string(),
     })
-  ).min(1, "At least one experience required"),
+  ).optional(),
   skills: z.string().optional(),
   currentCTC: z.string().optional(),
   expectedCTC: z.string().optional(),
   noticePeriod: z.string().optional(),
-  status: z.string().optional(),
+  // status: z.string().optional(),
   source: z.string().optional(),
 });
 
@@ -484,7 +484,7 @@ const CreateApplicationRoute = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [applicationData, setApplicationData] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [description, setDescription] = useState<{ id: string; title: string }[]>([]);
+  const [description, setDescription] = useState<{ id: string; name: string }[]>([]);
   const [experiences, setExperiences] = useState([{ company: "", role: "", years: "" }]);
 
   const companyId = params?.companyId as string;
@@ -501,7 +501,7 @@ const CreateApplicationRoute = () => {
       currentCTC: "",
       expectedCTC: "",
       noticePeriod: "",
-      status: "",
+      // status: "",
       source: "",
     },
   });
@@ -534,6 +534,7 @@ const CreateApplicationRoute = () => {
     };
     fetchDescription();
   }, [companyId]);
+  console.log(description,"filter desc")
 
   const addExperience = () => {
     setExperiences([...experiences, { company: "", role: "", years: "" }]);
@@ -580,13 +581,13 @@ const CreateApplicationRoute = () => {
       if (data.currentCTC) formData.append("currentCTC", data.currentCTC);
       if (data.expectedCTC) formData.append("expectedCTC", data.expectedCTC);
       if (data.noticePeriod) formData.append("noticePeriod", data.noticePeriod);
-      if (data.status) formData.append("status", data.status);
+      // if (data.status) formData.append("status", data.status);
       if (data.source) formData.append("source", data.source);
       if (data.skills) formData.append("skills", data.skills);
 
       if (selectedFile) formData.append("resume", selectedFile);
 
-      data.experiences.forEach((exp, index) => {
+      data?.experiences?.forEach((exp, index) => {
         formData.append(`experience[${index}][company]`, exp.company);
         formData.append(`experience[${index}][role]`, exp.role);
         formData.append(`experience[${index}][years]`, exp.years);
@@ -637,7 +638,7 @@ const CreateApplicationRoute = () => {
                         placeholder="Select Job"
                         options={description.map((dep) => ({
                           value: dep.id,
-                          label: dep.title,
+                          label: dep.name,
                         }))}
                         value={field.value}
                         onSelect={field.onChange}
@@ -731,7 +732,7 @@ const CreateApplicationRoute = () => {
             </div>
 
             <div className="grid sm:grid-cols-2 gap-5 mt-4">
-              <InputField label="Status" name="status" placeholder="Enter status" />
+              {/* <InputField label="Status" name="status" placeholder="Enter status" /> */}
               <InputField label="Source" name="source" placeholder="Enter source" />
             </div>
 

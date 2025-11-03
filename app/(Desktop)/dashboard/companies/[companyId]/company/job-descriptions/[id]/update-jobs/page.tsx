@@ -14,10 +14,22 @@ import InputField from "@/components/Form_Fields/InputField";
 import SelectField from "@/components/Form_Fields/SelectField";
 import TextareaField from "@/components/Form_Fields/TextareaField";
 import apiClient from "@/lib/axiosInterceptor";
-import { FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form";
+import {
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormField,
+} from "@/components/ui/form";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
+import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 
-const employmentOptions = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"] as const;
+const employmentOptions = [
+  "FULL_TIME",
+  "PART_TIME",
+  "CONTRACT",
+  "INTERNSHIP",
+] as const;
 
 const statusOptions = ["ACTIVE", "CLOSED", "DRAFT"] as const;
 
@@ -31,7 +43,7 @@ const EditJobSchema = z.object({
   description: z.string().optional(),
   responsibilities: z.string().optional(),
   requirements: z.string().optional(),
-    status: z.enum(statusOptions),
+  status: z.enum(statusOptions),
 });
 
 type EditJobDescriptionFormValues = z.infer<typeof EditJobSchema>;
@@ -44,10 +56,12 @@ const UpdateJobRoute = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [jobData, setJobData] = useState<any>(null);
-  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+  const [departments, setDepartments] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   const companyId = params?.companyId as string;
-  const jobId = params?.id as string || params?.uid as string;
+  const jobId = (params?.id as string) || (params?.uid as string);
 
   const methods = useForm<EditJobDescriptionFormValues>({
     resolver: zodResolver(EditJobSchema),
@@ -61,7 +75,7 @@ const UpdateJobRoute = () => {
       description: "",
       responsibilities: "",
       requirements: "",
-       status: "ACTIVE",
+      status: "ACTIVE",
     },
   });
 
@@ -75,7 +89,9 @@ const UpdateJobRoute = () => {
 
     const fetchDepartments = async () => {
       try {
-        const res = await apiClient.get(`/department/filter?companyId=${companyId}`);
+        const res = await apiClient.get(
+          `/department/filter?companyId=${companyId}`
+        );
         setDepartments(res.data.data || []);
         console.log("Departments:", res.data.data);
       } catch (error) {
@@ -94,7 +110,8 @@ const UpdateJobRoute = () => {
       try {
         setIsLoading(true);
         const response = await apiClient.get(`/job/${jobId}`);
-        const fetchedJob = response.data?.job || response.data?.data || response.data;
+        const fetchedJob =
+          response.data?.job || response.data?.data || response.data;
 
         console.log("Full API Response:", response.data);
         console.log("Extracted job data:", fetchedJob);
@@ -105,15 +122,18 @@ const UpdateJobRoute = () => {
           // Populate form with fetched data
           const formData = {
             title: fetchedJob.title || "",
-            departmentId: fetchedJob.departmentId || fetchedJob.Department?.id || "",
+            departmentId:
+              fetchedJob.departmentId || fetchedJob.Department?.id || "",
             location: fetchedJob.location || "",
             experience: fetchedJob.experience || "",
             salaryRange: fetchedJob.salaryRange || "",
-            employmentType: (fetchedJob.employmentType || "FULL_TIME") as typeof employmentOptions[number],
+            employmentType: (fetchedJob.employmentType ||
+              "FULL_TIME") as (typeof employmentOptions)[number],
             description: fetchedJob.description || "",
             responsibilities: fetchedJob.responsibilities || "",
             requirements: fetchedJob.requirements || "",
-               status: (fetchedJob.status || "ACTIVE") as typeof statusOptions[number],
+            status: (fetchedJob.status ||
+              "ACTIVE") as (typeof statusOptions)[number],
           };
 
           console.log("Populating form with:", formData);
@@ -132,10 +152,14 @@ const UpdateJobRoute = () => {
     fetchJob();
   }, [jobId, companyId, reset]);
 
-  const onSubmit: SubmitHandler<EditJobDescriptionFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<EditJobDescriptionFormValues> = async (
+    formData
+  ) => {
     try {
       console.log("Submitting form data:", formData);
       setIsSubmitting(true);
+      // Function to remove HTML tags from rich text fields
+      
 
       const payload = {
         title: formData.title,
@@ -145,6 +169,7 @@ const UpdateJobRoute = () => {
         salaryRange: formData.salaryRange,
         employmentType: formData.employmentType,
         description: formData.description,
+        status: formData.status,
         responsibilities: formData.responsibilities,
         requirements: formData.requirements,
       };
@@ -161,7 +186,9 @@ const UpdateJobRoute = () => {
       // Navigate back to jobs list
       router.push(`/dashboard/companies/${companyId}?tab=job`);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message || "An error occurred");
+      toast.error(
+        error.response?.data?.message || error.message || "An error occurred"
+      );
       console.error("Submit error:", error);
     } finally {
       setIsSubmitting(false);
@@ -173,8 +200,7 @@ const UpdateJobRoute = () => {
     value: v,
   }));
 
-
-    const statusSelect = statusOptions.map((v) => ({
+  const statusSelect = statusOptions.map((v) => ({
     label: v,
     value: v,
   }));
@@ -185,7 +211,7 @@ const UpdateJobRoute = () => {
       <DynamicBreadcrumb
         links={[
           { label: "Jobs", href: `/dashboard/companies/${companyId}?tab=job` },
-          { label: "Edit Job" }
+          { label: "Edit Job" },
         ]}
       />
 
@@ -214,7 +240,9 @@ const UpdateJobRoute = () => {
                       name="departmentId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-fontPrimary">Department</FormLabel>
+                          <FormLabel className="text-fontPrimary">
+                            Department
+                          </FormLabel>
                           <FormControl>
                             <Combobox
                               placeholder="Select Department"
@@ -233,7 +261,11 @@ const UpdateJobRoute = () => {
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-5 mt-4">
-                    <InputField label="Location" name="location" placeholder="Enter location" />
+                    <InputField
+                      label="Location"
+                      name="location"
+                      placeholder="Enter location"
+                    />
                     <InputField
                       label="Experience Required"
                       name="experience"
@@ -254,7 +286,7 @@ const UpdateJobRoute = () => {
                       options={employmentSelect}
                     />
                   </div>
-                    {/* ✅ Status Dropdown Added */}
+                  {/* ✅ Status Dropdown Added */}
                   <div className="grid sm:grid-cols-1 gap-5 mt-4">
                     <SelectField
                       label="Job Status"
@@ -265,11 +297,20 @@ const UpdateJobRoute = () => {
                   </div>
 
                   <div className="mt-4">
-                    <TextareaField
+                    {/* <TextareaField
                       label="Description"
                       name="description"
                       placeholder="Enter job description"
-                    />
+                    /> */}
+                    <div className="sm:col-span-2 text-text font-medium text-sm mb-4">
+                    <h1 className="mb-2">
+                            Description <span className="text-red-500 ml-1">*</span>
+                          </h1>
+                      <CustomEditorWrapper
+                        control={methods.control}
+                        name="description"
+                      />
+                    </div>
                   </div>
 
                   <div className="mt-4">

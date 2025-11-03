@@ -4,8 +4,8 @@ const HomeRoute = () => {
   return (
     <div className="grid place-content-center h-screen">
       <img
-        src="/foodland-logo.png"
-        alt="Foodland - The supply chain solutions specialist"
+        src="/gridfill-log-new.png"
+        alt="Recruitement Portal - One Stop Solution for CMS"
         width={400}
         height={300}
         className="h-auto max-w-full p-3"

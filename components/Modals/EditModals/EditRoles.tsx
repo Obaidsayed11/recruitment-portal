@@ -70,7 +70,7 @@ const EditRoles: React.FC<UpdateGroupProps> = ({ id, data, onUpdate }) => {
       toast.success(response.data.message || "Group updated successfully!");
      if ((response as any).status === 200 || (response as any).status === 201) {
            toast.success((response as any).data?.message || "Groups updated successfully");
-           onUpdate((response as any).data?.groups ?? response.data);
+           onUpdate((response as any).data?.role ?? response.data);
            setIsModalOpen(false);
            reset();
           

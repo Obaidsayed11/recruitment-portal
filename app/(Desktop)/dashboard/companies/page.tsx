@@ -174,15 +174,15 @@ const CompanyRoute = () => {
       <section className="bg-white sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-110px)] flex flex-col">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-5">
           <Operations
-            filterProps={{
-              filter: true,
-              filters: [
-                {
-                  queryKey: "role",
-                  options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
-                },
-              ],
-            }}
+            // filterProps={{
+            //   filter: true,
+            //   filters: [
+            //     {
+            //       queryKey: "role",
+            //       options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
+            //     },
+            //   ],
+            // }}
             checkBox
             isAllSelected={allCards.length > 0 && selectedCards.length === allCards.length}
             selectedCount={selectedCards.length}

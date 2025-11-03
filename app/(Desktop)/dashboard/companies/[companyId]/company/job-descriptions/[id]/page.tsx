@@ -161,6 +161,9 @@ const JobDescriptionDetails = () => {
       </div>
     );
   }
+  const stripHtml = (html: string = "") =>
+      html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
 
   return (
     <>
@@ -251,7 +254,7 @@ const JobDescriptionDetails = () => {
                     Description
                   </h3>
                   <p className="text-gray-800 whitespace-pre-line">
-                    {job.description || "No description provided."}
+                    {stripHtml(job.description || "No description provided.")}
                   </p>
                 </div>
 

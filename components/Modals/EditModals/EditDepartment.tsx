@@ -13,6 +13,7 @@ import SelectField from "@/components/Form_Fields/SelectField";
 import Button from "@/components/Others/Button";
 import { UpdateDepartmentProps } from "@/types/companyInterface";
 import TextareaField from "@/components/Form_Fields/TextareaField";
+import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 
 // Roles enum
 const rolesOptions = ["WAREHOUSE", "DRIVER", "OUTLET", "DISPATCHER"] as const;
@@ -26,8 +27,6 @@ const editDepartmentSchema = z.object({
 });
 
 type EditDepartmentFormValues = z.infer<typeof editDepartmentSchema>;
-
-
 
 const EditDepartment: React.FC<UpdateDepartmentProps> = ({
   id,
@@ -60,19 +59,23 @@ const EditDepartment: React.FC<UpdateDepartmentProps> = ({
     value: v,
   }));
 
-  const onSubmit: SubmitHandler<EditDepartmentFormValues> = async (
-    data
-  ) => {
+  const onSubmit: SubmitHandler<EditDepartmentFormValues> = async (data) => {
     try {
       setIsClicked(true);
-       const payload = {
-      name: data.name,
-      description: data.description,
-    };
 
-    const response = await apiClient.put(`/department/${id}`, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
+      // const stripHtml = (html: string = "") =>
+      //   html
+      //     .replace(/<[^>]+>/g, "")
+      //     .replace(/\s+/g, " ")
+      //     .trim();
+      const payload = {
+        name: data.name,
+        description: data.description,
+      };
+
+      const response = await apiClient.put(`/department/${id}`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (
         (response as any).status === 200 ||
@@ -104,24 +107,33 @@ const EditDepartment: React.FC<UpdateDepartmentProps> = ({
       icon={<Pencil size={18} />}
     >
       <FormProvider {...methods}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid gap-4 sm:grid-cols-2"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className=" sm:grid-cols-2">
           <InputField
             label="Department Name"
             name="name"
             placeholder="Enter Full Name"
+            className="mb-4"
           />
           {/* <InputField label="Description" name="description" placeholder="Enter Description" /> */}
-             <TextareaField
+          {/* <TextareaField
        formItemClassName="sm:col-span-2"
          label="Description"
                 name={"description"}
                 placeholder={"Enter Your Description"}
-              />
+              /> */}
 
-          <Button type="submit" className="sm:col-span-2 w-fit justify-self-end" disabled={isClicked}>
+          <div className="sm:col-span-2 text-text font-medium text-sm mb-4">
+            <h1 className="mb-2">
+              Description <span className="text-red-500 ml-1">*</span>
+            </h1>
+            <CustomEditorWrapper control={methods.control} name="description" />
+          </div>
+
+          <Button
+            type="submit"
+            className="sm:col-span-2 w-fit justify-self-end"
+            disabled={isClicked}
+          >
             {isClicked ? "Updating..." : "Update Department"}
           </Button>
         </form>

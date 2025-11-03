@@ -6,8 +6,8 @@ const loading = () => {
     <div className="bg-white w-screen h-[calc(100vh-80px)] grid place-content-center">
       <Logo
         className="animate-pulse w-[250px]"
-        logo="/foodland-logo.png"
-        companyName="Foodland"
+        logo="/gridfill-log-new.png"
+        companyName="Recruitment-portal"
       />
     </div>
   );

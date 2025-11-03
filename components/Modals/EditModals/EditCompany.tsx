@@ -16,6 +16,7 @@ import { FormControl } from "@/components/ui/form";
 import { BASE_URL } from "@/config";
 import { log } from "console";
 import TextareaField from "@/components/Form_Fields/TextareaField";
+import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 
 const editCompanySchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -101,6 +102,7 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
   const onSubmit: SubmitHandler<EditCompanyFormValues> = async (data) => {
     try {
       setIsClicked(true);
+      
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("websiteUrl", data.websiteUrl);
@@ -220,12 +222,19 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
             placeholder="Your Address"
             formItemClassName="sm:col-span-2"
           /> */}
-    <TextareaField
+    {/* <TextareaField
          formItemClassName="sm:col-span-2 text-fontPrimary" 
          label="Description"
                 name={"description"}
                 placeholder={"Enter Your Description"}
-              />
+              /> */}
+
+                <div className="sm:col-span-2 text-text font-medium text-sm">
+                          <h1 className="mb-2">
+                            Description <span className="text-red-500 ml-1">*</span>
+                          </h1>
+                          <CustomEditorWrapper control={methods.control} name="description" />
+                        </div>
               <TextareaField
          formItemClassName="sm:col-span-2 text-fontPrimary" 
          label="Address"

@@ -41,7 +41,7 @@ const AddRoles: React.FC<{ onAdd: (data: any) => void }> = ({ onAdd }) => {
       setIsClicked(true);
       const response = await apiClient.post("/roles/role", data);
       toast.success(response.data.message || "Group added successfully!");
-      onAdd(response.data);
+      onAdd(response.data.role);
       setIsOpen(false);
       reset();
       setIsClicked(false);

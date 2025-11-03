@@ -142,8 +142,8 @@ function Otp({ dispatch }: DispatchType) {
           <IoIosArrowBack />
         </p>
         <Logo
-          logo={"/foodland-logo.png"}
-          companyName={"Foodland"}
+          logo={"/gridfill-log-new.png"}
+          companyName={"Recruitement-Portal"}
           className="w-[150px] h-[100px]"
         />
         <h1 className="text-center text-xl font-medium leading-5 text-nowrap text-text">

@@ -59,6 +59,8 @@ const SettingRoles = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [filterRoles,setFilterRoles] = useState<{ id: string; name: string }[]>([])
+
 
   // Search and Filter State
   const [searchQuery, setSearchQuery] = useState(""); // For client-side filtering
@@ -102,7 +104,7 @@ const SettingRoles = () => {
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
   useEffect(() => {
-    const PAGE_SIZE = 20;
+    const PAGE_SIZE = 10;
     // Stop if the session isn't ready or if we're on a later page and know there's no more data.
     if (!session || (page > 1 && !hasMore)) {
       return;
@@ -116,30 +118,33 @@ const SettingRoles = () => {
         params.append("page", page.toString());
         params.append("limit",PAGE_SIZE.toString())
 
-        let url : string;
+            let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
+           const params = new URLSearchParams();
            params.append("query", debouncedSearchQuery);
-          params.append("query", debouncedSearchQuery);
-          url = `/roles/search?${params.toString()}`
+        
+          response = await apiClient.get<RoleListProps>(
+            `/roles/search?${params.toString()}`)
+          
           
         } else {
           // --- Paginated Role Filter Logic ---
+        
           if (selectedRole && selectedRole !== "All") {
             
             params.append("role", selectedRole);
           }
-          url = `roles`
+         
           // response = await apiClient.get<RoleListProps>(
           //   `/roles/search?${params.toString()}`
           // );
-        }
-   const response = await apiClient.get<RoleListProps>(
+            response = await apiClient.get<RoleListProps>(
             `/roles?${params.toString()}`
           );
-        const newRoles = response.data.roles.map((role: any) => ({
-          ...role,
-        })) || [];
+        }
+  
+        const newRoles = response.data.roles
 
         // If it's the first page, we are starting a new list.
         // For all subsequent pages, we append to the existing list.
@@ -202,6 +207,31 @@ const SettingRoles = () => {
       }
     }
   };
+
+
+useEffect(()=> { 
+    if (!session) return;
+  const fetchRoles = async () => {
+    try {
+      const res = await apiClient.get(`/roles/filter`);
+      console.log(res,"res of des")
+      
+      setFilterRoles(res.data.data || []);
+      
+      // Optionally pre-select department from `data.department`:
+      
+    } catch (error) {
+      toast.error("Failed to fetch departments");
+    }
+  };
+
+  fetchRoles()
+},[session])
+
+
+  const uniqueRoles = filterRoles.map((role) => (role.name))
+  console.log(uniqueRoles,"uniqyueee")
+
  return (
   <>
     {/* <DynamicBreadcrumb links={[{ label: "Groups" }]} /> */}
@@ -221,7 +251,7 @@ const SettingRoles = () => {
             filters: [
               {
                 queryKey: "role",
-                options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
+                options: uniqueRoles,
               },
             ],
           }}

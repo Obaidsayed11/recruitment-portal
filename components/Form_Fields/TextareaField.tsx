@@ -32,6 +32,7 @@ const TextareaField: React.FC<InputFieldProps> = ({
             className={`${formLabelClassName} text-text font-medium text-sm`}
           >
             {label}
+             <span className="text-red-500 ml-1">*</span>
           </FormLabel>
           <FormControl>
             <Textarea

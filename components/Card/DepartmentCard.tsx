@@ -23,6 +23,13 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
       }
     };
 
+     const stripHtml = (html: string = "") =>
+        html
+          .replace(/<[^>]+>/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+
+
     return (
       <div
         ref={ref}
@@ -34,7 +41,7 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
           gap-10 transition-all cursor-pointer items-center text-left ${
             isSelected
               ? "bg-secondary hover:bg-secondary border-border rounded-xl"
-              : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
+              : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl "
           }`}
       >
         {/* Checkbox */}
@@ -50,7 +57,7 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
 
         {/* Role / Head of Department */}
         <span className="text-subtext line-clamp-1">
-          {data.description || "NA"}
+          {stripHtml(data.description || "NA")}
         </span>
 
         

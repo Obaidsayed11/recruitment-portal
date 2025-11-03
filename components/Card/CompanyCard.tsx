@@ -38,6 +38,12 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       event.stopPropagation(); // Prevent row click when clicking actions
     };
 
+    const stripHtml = (html: string = "") =>
+        html
+          .replace(/<[^>]+>/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+
     const handleLinkClick = (event: React.MouseEvent) => {
       event.stopPropagation(); // Prevent row click when clicking links
     };
@@ -132,7 +138,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
         {/* Logo URL */}
 
         <span className="text-sm line-clamp-2 text-clip">
-          {data.description || "NA"}
+          {stripHtml(data.description || "NA")}
         </span>
         <div onClick={handleActionClick}>
           <Actions

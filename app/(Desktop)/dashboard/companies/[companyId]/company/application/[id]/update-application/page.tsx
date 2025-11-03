@@ -69,7 +69,6 @@
 //   const [description, setDescription] = useState<
 //     { id: string; title: string }[]
 //   >([]);
-  
 
 //   const companyId = params?.companyId as string;
 //   const applicationId = (params?.id as string) || (params?.uid as string);
@@ -304,7 +303,6 @@
 //   );
 // };
 
-
 //   return (
 //     <>
 //       <DynamicBreadcrumb
@@ -477,7 +475,12 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -488,11 +491,27 @@ import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Button from "@/components/Others/Button";
 import InputField from "@/components/Form_Fields/InputField";
 import apiClient from "@/lib/axiosInterceptor";
-import { FormItem, FormLabel, FormControl, FormMessage, FormField } from "@/components/ui/form";
+import {
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormField,
+} from "@/components/ui/form";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
 import { Plus, UploadCloud } from "lucide-react";
 import { BASE_URL } from "@/config";
 import { useFieldArray } from "react-hook-form";
+import SelectField from "@/components/Form_Fields/SelectField";
+
+const statusOptions = [
+  "APPLIED",
+  "SHORTLIST",
+  "INTERVIEW",
+  "OFFERED",
+  "HIRED",
+  "REJECTED",
+] as const;
 
 const EditApplicationSchema = z.object({
   jobId: z.string().min(1, "Job ID is required."),
@@ -503,7 +522,7 @@ const EditApplicationSchema = z.object({
   currentCTC: z.string().optional(),
   expectedCTC: z.string().optional(),
   noticePeriod: z.string().optional(),
-  status: z.string().optional(),
+  status: z.enum(statusOptions),
   source: z.string().optional(),
   resume: z.any().optional(),
   skills: z.array(z.string()).optional(),
@@ -532,10 +551,12 @@ const UpdateApplicationRoute = () => {
   const [applicationData, setApplicationData] = useState<any>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [description, setDescription] = useState<{ id: string; title: string }[]>([]);
+  const [description, setDescription] = useState<
+    { id: string; title: string }[]
+  >([]);
 
   const companyId = params?.companyId as string;
-  const applicationId = params?.id as string || params?.uid as string;
+  const applicationId = (params?.id as string) || (params?.uid as string);
 
   const methods = useForm<EditApplicationFormValues>({
     resolver: zodResolver(EditApplicationSchema),
@@ -548,7 +569,7 @@ const UpdateApplicationRoute = () => {
       currentCTC: "",
       expectedCTC: "",
       noticePeriod: "",
-      status: "",
+      status: "APPLIED",
       source: "",
       resume: undefined,
       skills: [],
@@ -567,7 +588,7 @@ const UpdateApplicationRoute = () => {
     companyId,
     isLoading,
     applicationData,
-    formValues: methods.watch()
+    formValues: methods.watch(),
   });
 
   // Fetch jobs for dropdown
@@ -594,14 +615,15 @@ const UpdateApplicationRoute = () => {
       try {
         setIsLoading(true);
         const response = await apiClient.get(`/application/${applicationId}`);
-        const fetchedApplication = response.data?.application || response.data?.data || response.data;
+        const fetchedApplication =
+          response.data?.application || response.data?.data || response.data;
 
         console.log("Full API Response:", response.data);
         console.log("Extracted application data:", fetchedApplication);
 
         if (fetchedApplication) {
           setApplicationData(fetchedApplication);
-          
+
           // Populate form with fetched data
           const formData = {
             jobId: fetchedApplication.jobId || "",
@@ -610,14 +632,14 @@ const UpdateApplicationRoute = () => {
             email: fetchedApplication.email || "",
             phone: fetchedApplication.phone || "",
             currentCTC: fetchedApplication.currentCTC || "",
-            expectedCTC : fetchedApplication.expectedCTC || "",
+            expectedCTC: fetchedApplication.expectedCTC || "",
             noticePeriod: fetchedApplication.noticePeriod || "",
-            status: fetchedApplication.status || "",
+            status: fetchedApplication.status || "APPLIED",
             skills: fetchedApplication.skills || "",
-             experience: fetchedApplication.experience || "",
+            experience: fetchedApplication.experience || "",
             source: fetchedApplication.source || "",
           };
-          
+
           console.log("Populating form with:", formData);
           reset(formData);
 
@@ -658,7 +680,9 @@ const UpdateApplicationRoute = () => {
     }
   };
 
-  const onSubmit: SubmitHandler<EditApplicationFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<EditApplicationFormValues> = async (
+    formData
+  ) => {
     try {
       console.log("Submitting form data:", formData);
       setIsSubmitting(true);
@@ -669,89 +693,103 @@ const UpdateApplicationRoute = () => {
       payload.append("candidateName", formData.candidateName);
       payload.append("email", formData.email);
       payload.append("phone", formData.phone);
-      
-      if (formData.currentCTC) payload.append("currentCTC", formData.currentCTC);
-      if (formData.noticePeriod) payload.append("noticePeriod", formData.noticePeriod);
+
+      if (formData.currentCTC)
+        payload.append("currentCTC", formData.currentCTC);
+      if (formData.noticePeriod)
+        payload.append("noticePeriod", formData.noticePeriod);
       if (formData.status) payload.append("status", formData.status);
       if (formData.source) payload.append("source", formData.source);
       if (selectedFile) payload.append("resume", selectedFile);
 
       console.log("Sending PUT request to:", `/application/${applicationId}`);
-      
-      const response = await apiClient.put(`/application/${applicationId}`, payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+
+      const response = await apiClient.put(
+        `/application/${applicationId}`,
+        payload,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       console.log("Update response:", response.data);
-      toast.success(response.data.message || "Application updated successfully!");
-      
+      toast.success(
+        response.data.message || "Application updated successfully!"
+      );
+
       // Navigate back to applications list
       router.push(`/dashboard/companies/${companyId}?tab=application`);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || error.message || "An error occurred");
+      toast.error(
+        error.response?.data?.message || error.message || "An error occurred"
+      );
       console.error("Submit error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
-    const ResumePreviewModal = ({ previewUrl }: { previewUrl: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const statusSelect = statusOptions.map((v) => ({
+    label: v,
+    value: v,
+  }));
 
-  return (
-    <>
-      {/* Small preview thumbnail */}
-      <div
-        className="flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
-        onClick={() => setIsOpen(true)}
-      >
-        {previewUrl.toLowerCase().endsWith(".pdf") ? (
-          <div className="w-36 h-32 border border-gray-200 rounded-md overflow-hidden bg-gray-50">
-            <iframe
-              src={previewUrl}
-              className="w-full h-full pointer-events-none"
-              title="Resume Preview"
-            />
-          </div>
-        ) : (
-          <img
-            src={previewUrl}
-            alt="Resume Preview"
-            className="object-contain rounded-md w-36 h-32 border border-gray-200"
-          />
-        )}
-      </div>
+  const ResumePreviewModal = ({ previewUrl }: { previewUrl: string }) => {
+    const [isOpen, setIsOpen] = useState(false);
 
-      {/* Fullscreen Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-          <div className="relative bg-white rounded-lg shadow-lg max-w-5xl w-full max-h-[90vh] overflow-hidden">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-3 right-4 text-gray-600 hover:text-black text-2xl font-bold z-10"
-            >
-              &times;
-            </button>
-
-            {previewUrl.toLowerCase().endsWith(".pdf") ? (
+    return (
+      <>
+        {/* Small preview thumbnail */}
+        <div
+          className="flex-shrink-0 cursor-pointer transition-transform hover:scale-105"
+          onClick={() => setIsOpen(true)}
+        >
+          {previewUrl.toLowerCase().endsWith(".pdf") ? (
+            <div className="w-36 h-32 border border-gray-200 rounded-md overflow-hidden bg-gray-50">
               <iframe
                 src={previewUrl}
-                className="w-full h-[90vh]"
-                title="Full Resume"
+                className="w-full h-full pointer-events-none"
+                title="Resume Preview"
               />
-            ) : (
-              <img
-                src={previewUrl}
-                alt="Full Resume"
-                className="w-full h-auto object-contain"
-              />
-            )}
-          </div>
+            </div>
+          ) : (
+            <img
+              src={previewUrl}
+              alt="Resume Preview"
+              className="object-contain rounded-md w-36 h-32 border border-gray-200"
+            />
+          )}
         </div>
-      )}
-    </>
-  );
-};
+
+        {/* Fullscreen Modal */}
+        {isOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div className="relative bg-white rounded-lg shadow-lg max-w-5xl w-full max-h-[90vh] overflow-hidden">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="absolute top-3 right-4 text-gray-600 hover:text-black text-2xl font-bold z-10"
+              >
+                &times;
+              </button>
+
+              {previewUrl.toLowerCase().endsWith(".pdf") ? (
+                <iframe
+                  src={previewUrl}
+                  className="w-full h-[90vh]"
+                  title="Full Resume"
+                />
+              ) : (
+                <img
+                  src={previewUrl}
+                  alt="Full Resume"
+                  className="w-full h-auto object-contain"
+                />
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <>
@@ -761,7 +799,7 @@ const UpdateApplicationRoute = () => {
             label: "Applications",
             href: `/dashboard/companies/${companyId}?tab=application`,
           },
-          { label: "Edit Application" }
+          { label: "Edit Application" },
         ]}
       />
 
@@ -775,9 +813,11 @@ const UpdateApplicationRoute = () => {
             <h2 className="text-xl font-bold text-text">
               Edit Application Details
             </h2>
-            
+
             {isLoading ? (
-              <div className="text-center py-4">Loading application data...</div>
+              <div className="text-center py-4">
+                Loading application data...
+              </div>
             ) : (
               <>
                 <div className="gap-5">
@@ -787,7 +827,9 @@ const UpdateApplicationRoute = () => {
                       name="jobId"
                       render={({ field }) => (
                         <FormItem className="sm:col-span-1">
-                          <FormLabel className="text-fontPrimary">Job Position</FormLabel>
+                          <FormLabel className="text-fontPrimary">
+                            Job Position
+                          </FormLabel>
                           <FormControl>
                             <Combobox
                               placeholder="Select Job"
@@ -812,8 +854,16 @@ const UpdateApplicationRoute = () => {
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-5 mt-4">
-                    <InputField label="Email" name="email" placeholder="Enter email" />
-                    <InputField label="Phone" name="phone" placeholder="Enter phone number" />
+                    <InputField
+                      label="Email"
+                      name="email"
+                      placeholder="Enter email"
+                    />
+                    <InputField
+                      label="Phone"
+                      name="phone"
+                      placeholder="Enter phone number"
+                    />
                   </div>
 
                   <div className="grid sm:grid-cols-2 gap-5 mt-4">
@@ -835,18 +885,29 @@ const UpdateApplicationRoute = () => {
                       name="noticePeriod"
                       placeholder="Enter notice period"
                     />
-                    <InputField label="Status" name="status" placeholder="Enter status" />
+                    {/* <InputField label="Status" name="status" placeholder="Enter status" /> */}
+                    <SelectField
+                      label="Status"
+                      name="status"
+                      placeholder="Select Type"
+                      options={statusSelect}
+                    />
                   </div>
 
                   <div className="grid sm:grid-cols-1 gap-5 mt-4">
-                    <InputField label="Source" name="source" placeholder="Enter source" />
+                    <InputField
+                      label="Source"
+                      name="source"
+                      placeholder="Enter source"
+                    />
                   </div>
 
                   {/* Skills */}
                   <div className="mt-4">
-                    <FormLabel className="text-fontPrimary">Skills (comma separated)</FormLabel>
-                    
-                    
+                    <FormLabel className="text-fontPrimary">
+                      Skills (comma separated)
+                    </FormLabel>
+
                     <input
                       type="text"
                       defaultValue={methods.watch("skills")?.join(", ") || ""}
@@ -865,12 +926,16 @@ const UpdateApplicationRoute = () => {
                   {/* Experience */}
                   <div className="mt-4">
                     <div className="flex items-center justify-between mb-3">
-                      <FormLabel className="text-fontPrimary text-base">Experience</FormLabel>
+                      <FormLabel className="text-fontPrimary text-base">
+                        Experience
+                      </FormLabel>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => append({ role: "", years: "", company: "" })}
+                        onClick={() =>
+                          append({ role: "", years: "", company: "" })
+                        }
                       >
                         + Add Experience
                       </Button>
@@ -917,26 +982,34 @@ const UpdateApplicationRoute = () => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-gray-500 mt-2">No experience added yet.</p>
+                      <p className="text-gray-500 mt-2">
+                        No experience added yet.
+                      </p>
                     )}
                   </div>
 
                   {/* Resume Upload with Preview */}
                   <FormItem className="gap-2 grid mt-4">
-                    <FormLabel className="text-fontPrimary">Resume / Attachment</FormLabel>
+                    <FormLabel className="text-fontPrimary">
+                      Resume / Attachment
+                    </FormLabel>
                     <FormControl>
                       <div className="flex items-center gap-4">
                         <div
                           className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 flex-1"
                           onClick={() =>
-                            document.getElementById("application-resume-upload")?.click()
+                            document
+                              .getElementById("application-resume-upload")
+                              ?.click()
                           }
                         >
                           <UploadCloud className="w-8 h-8 text-gray-400 mb-2" />
                           <p className="text-sm text-gray-600">
                             Click to upload or drag & drop
                           </p>
-                          <p className="text-xs text-gray-500">PDF/JPEG (max. 1MB)</p>
+                          <p className="text-xs text-gray-500">
+                            PDF/JPEG (max. 1MB)
+                          </p>
                           <input
                             id="application-resume-upload"
                             type="file"
@@ -951,11 +1024,11 @@ const UpdateApplicationRoute = () => {
                           )}
                         </div>
 
-                   {/* Preview Section */}
-                      {/* Preview Section with Full Modal View */}
- {previewUrl && (
-  <ResumePreviewModal previewUrl={previewUrl} />
-)}
+                        {/* Preview Section */}
+                        {/* Preview Section with Full Modal View */}
+                        {previewUrl && (
+                          <ResumePreviewModal previewUrl={previewUrl} />
+                        )}
                       </div>
                     </FormControl>
                     <FormMessage />

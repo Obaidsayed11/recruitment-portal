@@ -24,6 +24,7 @@ import ApplicationCard from "@/components/Card/ApplicationCard";
 import Button from "@/components/Others/Button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Label } from "recharts";
 
 
 
@@ -73,7 +74,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
   const [searchQuery, setSearchQuery] = useState(""); // For client-side filtering
   const [serverSearchQuery, setServerSearchQuery] = useState(""); // For server-side search
   const debouncedSearchQuery = useDebounce(serverSearchQuery, 500);
-  const selectedRole = searchParams?.get("role") || "";
+  const selectedStatus = searchParams?.get("status") || "";
 
   // --- Memoized Values ---
   const allCards = useMemo(() => applications.map((data) => data.id), [applications]);
@@ -106,7 +107,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
     setApplications([]);
     setPage(1);
     setHasMore(true);
-  }, [debouncedSearchQuery, selectedRole]);
+  }, [debouncedSearchQuery, selectedStatus]);
 
   // --- 2. Main effect for ALL data fetching ---
   // This single, robust hook handles fetching for new queries and pagination.
@@ -129,15 +130,15 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
-           const params = new URLSearchParams();
+        
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<ApplicationListProps>(
             `/application/search?id=${companyId}&${params.toString()}`
           );
         } else {
           // --- Paginated Role Filter Logic ---
-          if (selectedRole && selectedRole !== "All") {
-            params.append("role", selectedRole);
+          if (selectedStatus && selectedStatus !== "All") {
+            params.append("status", selectedStatus);
           }
            response = await apiClient.get<ApplicationListProps>(
           `/application?companyId=${companyId}&${params.toString()}`
@@ -166,7 +167,7 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
 
     fetchData();
     // This dependency array is now correct. It runs when the page or query changes, but will not loop on its own state updates.
-  }, [page, debouncedSearchQuery, selectedRole, session, companyId]);
+  }, [page, debouncedSearchQuery, selectedStatus, session, companyId]);
   // --- Event Handlers ---
   const handleSelectAll = (isChecked: boolean) =>
     setSelectedCards(isChecked ? allCards : []);
@@ -205,6 +206,14 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
     }
   };
 
+  const status = [
+   { label : "APPLIED" , value : "APPLIED"},
+    {label :"SHORTLISTED", value: "SHORTLISTED" },
+   { label:"INTERVIEW" , value: "INTERVIEW" },
+   { label:"OFFERED", value:"OFFERED"},
+    {label:"HIRED", value: "HIRED"},
+   { label: "REJECTED", value: "REJECTED"},
+  ]
 
     const handleCreateUser = () => {
   router.push(`/dashboard/companies/${companyId}/company/application/create-application`);
@@ -227,8 +236,8 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
             filter: true,
             filters: [
               {
-                queryKey: "role",
-                options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
+                queryKey: "status",
+                options: status,
               },
             ],
           }}

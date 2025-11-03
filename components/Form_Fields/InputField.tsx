@@ -19,6 +19,7 @@ const InputField: React.FC<InputFieldProps> = ({
   helpingText,
   formItemClassName,
   formLabelClassName,
+  
 }) => {
   const { control } = useFormContext();
   return (
@@ -31,6 +32,7 @@ const InputField: React.FC<InputFieldProps> = ({
             className={`${formLabelClassName} text-text font-medium text-sm`}
           >
             {label}
+             <span className="text-red-500 ml-1">*</span>
           </FormLabel>
           <FormControl>
             <Input
@@ -39,6 +41,8 @@ const InputField: React.FC<InputFieldProps> = ({
               type={type}
               {...field}
               value={field.value ?? ""}
+              
+              
             />
           </FormControl>
           {helpingText && (

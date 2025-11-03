@@ -56,8 +56,8 @@ export default function RootLayout({
                     >
                       <Logo
                         className="justify-self-start w-full h-[90px]"
-                        logo={"/foodland-logo.png"}
-                        companyName="Foodland"
+                        logo={"/gridfill-log-new.png"}
+                        companyName="Recruitment-Portal"
                       />
                       <p className="text-text text-center text-sm font-medium">
                         LAST MILE{" "}
