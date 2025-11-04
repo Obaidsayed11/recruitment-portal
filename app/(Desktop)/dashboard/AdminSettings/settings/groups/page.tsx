@@ -28,6 +28,8 @@ import AddGroup from "@/components/Modals/AddModals/AddGroups";
 
 const headersOptions = [
   {value: "Group Name"},
+  {value: "Created At"},
+  {value: "Updated At"},
   { value: "Action" },
 
   ];
@@ -202,15 +204,15 @@ const SettingGroups = () => {
         justify-between gap-3 sm:gap-4 pb-5"
       >
         <Operations
-          filterProps={{
-            filter: true,
-            filters: [
-              {
-                queryKey: "role",
-                options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
-              },
-            ],
-          }}
+          // filterProps={{
+          //   filter: true,
+          //   filters: [
+          //     {
+          //       queryKey: "role",
+          //       options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
+          //     },
+          //   ],
+          // }}
           checkBox
           isAllSelected={
             allCards.length > 0 && selectedCards.length === allCards.length
@@ -238,7 +240,7 @@ const SettingGroups = () => {
         {/* Header */}
         <Header
           checkBox={true}
-          className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr] border gap-5 sm:gap-0 text-left"
+          className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={
@@ -249,7 +251,10 @@ const SettingGroups = () => {
         {/* User List */}
        
           {loading && page === 1 ? (
-            <Skeleton2 />
+            <Skeleton2 
+            colsNum={5}
+            gridCols="grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr]"
+            />
           ) : groups.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               No Groups found.

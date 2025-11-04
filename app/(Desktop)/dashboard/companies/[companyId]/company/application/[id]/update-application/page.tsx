@@ -529,9 +529,9 @@ const EditApplicationSchema = z.object({
   experience: z
     .array(
       z.object({
-        role: z.string().min(1, "Role is required"),
+        role: z.string(),
         years: z.union([z.string(), z.number()]),
-        company: z.string().min(1, "Company is required"),
+        company: z.string(),
       })
     )
     .optional(),

@@ -15,7 +15,7 @@ import CompanyCard from "@/components/Card/CompanyCard";
 
 const headersOptions = [
   { value: "company" },
-  { value: "Website" },
+  
   { value: "Career Page" },
     { value: "Address" },
   { value: "Description" },
@@ -199,13 +199,15 @@ const CompanyRoute = () => {
         <div className="overflow-auto h-[calc(100vh-210px)]">
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr]"
+            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px] xl:grid-cols-[40px_1.9fr_1fr_1fr_1fr_1fr]"
+            
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={allCards.length > 0 && selectedCards.length === allCards.length}
           />
           {loading && page === 1 ? (
-            <Skeleton2 />
+            <Skeleton2 colsNum={6} 
+            gridCols="grid-cols-[20px_200px_150px_150px_150px_250px] xl:grid-cols-[40px_1.9fr_1fr_1fr_1fr_1fr]" />
           ) : allCompanies.length === 0 ? (
             <div className="text-center py-10 text-gray-500">No companies found.</div>
           ) : (

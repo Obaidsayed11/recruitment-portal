@@ -113,9 +113,7 @@ function LoginForm() {
           companyName={"Recruitement-Portal"}
           className="w-[150px] h-[100px]"
         />
-        <h1 className="text-center text-xl font-medium leading-5 text-nowrap text-text">
-          LAST MILE
-        </h1>
+       
       </div>
 
       <Form {...form}>

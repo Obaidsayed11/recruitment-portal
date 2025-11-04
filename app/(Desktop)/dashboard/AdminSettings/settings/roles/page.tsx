@@ -229,7 +229,10 @@ useEffect(()=> {
 },[session])
 
 
-  const uniqueRoles = filterRoles.map((role) => (role.name))
+  const uniqueRoles = filterRoles.map((role) => ({
+    label: `${role.name}`,
+    value: role.name,
+  }))
   console.log(uniqueRoles,"uniqyueee")
 
  return (
@@ -281,7 +284,7 @@ useEffect(()=> {
         {/* Header */}
         <Header
           checkBox={true}
-         className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+         className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={
@@ -292,7 +295,10 @@ useEffect(()=> {
         {/* User List */}
       
           {loading && page === 1 ? (
-            <Skeleton2 />
+            <Skeleton2 
+            colsNum={5}
+            gridCols="grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr]"
+            />
           ) : roles.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               No Groups found.

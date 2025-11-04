@@ -66,6 +66,7 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
       setValue("file", file);
+      
     }
   };
 

@@ -19,31 +19,32 @@ import Header from "@/components/Others/Header";
 import UserCard from "@/components/Card/UserCard";
 import { AxiosResponse } from "axios";
 // import AddApplication from "@/components/Modals/AddModals/AddApplication";
-import { ApplicationListProps, ApplicationProps } from "@/types/companyInterface";
+import {
+  ApplicationListProps,
+  ApplicationProps,
+} from "@/types/companyInterface";
 import ApplicationCard from "@/components/Card/ApplicationCard";
 import Button from "@/components/Others/Button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Label } from "recharts";
 
-
-
 const headersOptions = [
   { value: "Candidate Name" },
   { value: "Email" },
   { value: "Phone" },
-  { value: "Resume" },          
-  { value: "Experience" },  
-  // { value: "Skills" },      
-  // { value: "Current CTC" },     
-  // { value: "Expected CTC" },    
-  // { value: "Notice Period" },   
-  { value: "Status" },         
-  // { value: "Source" },          
-  // { value: "Created At" },     
-  // { value: "Updated At" },      
-  // { value: "Notes" },           
-  { value: "Actions" }          
+  { value: "Resume" },
+  { value: "Experience" },
+  // { value: "Skills" },
+  // { value: "Current CTC" },
+  // { value: "Expected CTC" },
+  // { value: "Notice Period" },
+  { value: "Status" },
+  // { value: "Source" },
+  // { value: "Created At" },
+  // { value: "Updated At" },
+  // { value: "Notes" },
+  { value: "Actions" },
   // REMOVED: "History" - not in API response
 ];
 
@@ -52,14 +53,11 @@ type Props = {
 };
 
 const CompanyApplication: React.FC<Props> = ({ companyId }) => {
-
-  
-
   // --- Core Hooks ---
   const { data: session } = useSession();
-  console.log(session,"swessio")
+  console.log(session, "swessio");
   const router = useRouter();
-  
+
   const searchParams = useSearchParams();
 
   // --- State Declarations ---
@@ -77,7 +75,10 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
   const selectedStatus = searchParams?.get("status") || "";
 
   // --- Memoized Values ---
-  const allCards = useMemo(() => applications.map((data) => data.id), [applications]);
+  const allCards = useMemo(
+    () => applications.map((data) => data.id),
+    [applications]
+  );
 
   // --- Refs and Callbacks for Infinite Scroll ---
   const observer = useRef<IntersectionObserver | null>(null);
@@ -94,10 +95,6 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
     },
     [loading, hasMore]
   );
-
-
-
-  
 
   // --- Effects ---
 
@@ -125,12 +122,12 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
         // Build parameters dynamically for every request
         const params = new URLSearchParams();
         params.append("page", page.toString());
-      params.append("limit",PAGE_SIZE.toString())
+        params.append("limit", PAGE_SIZE.toString());
 
         let response;
         if (debouncedSearchQuery) {
           // --- Paginated Server Search Logic ---
-        
+
           params.append("query", debouncedSearchQuery);
           response = await apiClient.get<ApplicationListProps>(
             `/application/search?id=${companyId}&${params.toString()}`
@@ -140,8 +137,8 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
           if (selectedStatus && selectedStatus !== "All") {
             params.append("status", selectedStatus);
           }
-           response = await apiClient.get<ApplicationListProps>(
-          `/application?companyId=${companyId}&${params.toString()}`
+          response = await apiClient.get<ApplicationListProps>(
+            `/application?companyId=${companyId}&${params.toString()}`
           );
         }
         console.log(response);
@@ -177,16 +174,16 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
     );
   const handleDelete = (id: string) =>
     setApplications((prev) => prev.filter((data) => data.id !== id));
- const handleAddApplication = (newApplication: ApplicationProps) => {
-  if (newApplication) setApplications(prev => [newApplication, ...prev]);
-};
+  const handleAddApplication = (newApplication: ApplicationProps) => {
+    if (newApplication) setApplications((prev) => [newApplication, ...prev]);
+  };
   const handleUpdate = (updatedData: ApplicationProps) => {
     if (updatedData)
       setApplications((prev) =>
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
   };
-    const handleDeleteSelected = async () => {
+  const handleDeleteSelected = async () => {
     if (selectedCards.length > 0) {
       try {
         const response = await apiClient.delete("/application/bulk", {
@@ -207,90 +204,93 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
   };
 
   const status = [
-   { label : "APPLIED" , value : "APPLIED"},
-    {label :"SHORTLISTED", value: "SHORTLISTED" },
-   { label:"INTERVIEW" , value: "INTERVIEW" },
-   { label:"OFFERED", value:"OFFERED"},
-    {label:"HIRED", value: "HIRED"},
-   { label: "REJECTED", value: "REJECTED"},
-  ]
+    { label: "APPLIED", value: "APPLIED" },
+    { label: "SHORTLISTED", value: "SHORTLISTED" },
+    { label: "INTERVIEW", value: "INTERVIEW" },
+    { label: "OFFERED", value: "OFFERED" },
+    { label: "HIRED", value: "HIRED" },
+    { label: "REJECTED", value: "REJECTED" },
+  ];
 
-    const handleCreateUser = () => {
-  router.push(`/dashboard/companies/${companyId}/company/application/create-application`);
-};
+  const handleCreateUser = () => {
+    router.push(
+      `/dashboard/companies/${companyId}/company/application/create-application`
+    );
+  };
   return (
-  <>
-    {/* <DynamicBreadcrumb links={[{ label: "Applications" }]} /> */}
+    <>
+      {/* <DynamicBreadcrumb links={[{ label: "Applications" }]} /> */}
 
-     <section
-     className="bg-white sm:rounded-xl 
+      <section
+        className="bg-white sm:rounded-xl 
         p-3 sm:p-5 flex flex-col max-h-[calc(100vh-308px)] w-full"
-    >
-      {/* --- Header Section --- */}
-      <div
-        className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5"
       >
-        <Operations
-          filterProps={{
-            filter: true,
-            filters: [
-              {
-                queryKey: "status",
-                options: status,
-              },
-            ],
-          }}
-          checkBox
-          isAllSelected={
-            allCards.length > 0 && selectedCards.length === allCards.length
-          }
-          selectedCount={selectedCards.length}
-          handleSelectAll={handleSelectAll}
-          onDeleteSelected={handleDeleteSelected}
-          searchQuery={searchQuery}
-          handleSearchQueryChange={(e) => setSearchQuery(e.target.value)}
-          serverSearchQuery={serverSearchQuery}
-          handleServerSearchQueryChange={(e) =>
-            setServerSearchQuery(e.target.value)
-          }
-          serverSearchPlaceholder="Search all Application..."
-        />
+        {/* --- Header Section --- */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center 
+        justify-between gap-3 sm:gap-4 pb-5"
+        >
+          <Operations
+            filterProps={{
+              filter: true,
+              filters: [
+                {
+                  queryKey: "status",
+                  options: status,
+                },
+              ],
+            }}
+            checkBox
+            isAllSelected={
+              allCards.length > 0 && selectedCards.length === allCards.length
+            }
+            selectedCount={selectedCards.length}
+            handleSelectAll={handleSelectAll}
+            onDeleteSelected={handleDeleteSelected}
+            searchQuery={searchQuery}
+            handleSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+            serverSearchQuery={serverSearchQuery}
+            handleServerSearchQueryChange={(e) =>
+              setServerSearchQuery(e.target.value)
+            }
+            serverSearchPlaceholder="Search all Application..."
+          />
 
-        {/* <div className="w-full sm:w-auto"> */}
+          {/* <div className="w-full sm:w-auto"> */}
           {/* <AddApplication onAdd={handleAddApplication} /> */}
-        {/* </div> */}
+          {/* </div> */}
 
+          <Button
+            onClick={handleCreateUser}
+            className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
+            icon={<Plus />}
+          >
+            Add Application
+          </Button>
+        </div>
 
-               <Button
-  onClick={handleCreateUser}
-  className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
-    icon={<Plus />}
->
-  Add Application
-  
-</Button>
-      </div>
+        {/* --- Scrollable Table Section --- */}
+        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw)] sm:w-[calc(100vw-82px)]">
+          {/* Header */}
+          {/* --- Table Header --- */}
+          <Header
+            checkBox={true}
+            className1="w-full xl:w-full grid sticky top-0 xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+            headersall={headersOptions}
+            handleSelectAll={handleSelectAll}
+            isAllSelected={
+              allCards.length > 0 && selectedCards.length === allCards.length
+            }
+          />
 
-      {/* --- Scrollable Table Section --- */}
-      <div
-         className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw)] sm:w-[calc(100vw-82px)]">
-        {/* Header */}
-        {/* --- Table Header --- */}
-        <Header
-          checkBox={true}
-         className1="w-full xl:w-full grid sticky top-0 xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
-          headersall={headersOptions}
-          handleSelectAll={handleSelectAll}
-          isAllSelected={
-            allCards.length > 0 && selectedCards.length === allCards.length
-          }
-        />
+          {/* --- Table Body --- */}
 
-        {/* --- Table Body --- */}
-  
           {loading && page === 1 ? (
-            <Skeleton2 />
+            <Skeleton2 
+            colsNum={8}
+            gridCols="xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
+            
+            />
           ) : applications.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               No Applications found.
@@ -323,11 +323,9 @@ const CompanyApplication: React.FC<Props> = ({ companyId }) => {
             </p>
           )}
         </div>
+      </section>
+    </>
+  );
+};
 
-    </section>
-  </>
-);
-
-}
-
-export default CompanyApplication
+export default CompanyApplication;

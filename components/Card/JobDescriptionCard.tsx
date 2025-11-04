@@ -65,7 +65,7 @@
 
           {/* Job Title (2nd column) */}
           <span className="text-subtext font-medium line-clamp-1 text-left truncate overflow-hidden">
-            {data.title || "NA"}
+            {data.description || "NA"}
             <span className="text-sm line-clamp-6 text-left">
             {data.location || "NA"}
           </span>

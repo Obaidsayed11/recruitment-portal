@@ -370,7 +370,7 @@ const UserRoute = () => {
         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
+            className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={
@@ -379,7 +379,10 @@ const UserRoute = () => {
           />
 
           {loading && page === 1 ? (
-            <Skeleton2 />
+            <Skeleton2 
+            colsNum={6}
+            gridCols="grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr]"
+            />
           ) : allUsers.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               No users found.

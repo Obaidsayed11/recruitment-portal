@@ -35,7 +35,7 @@ const Navbar: React.FC = () => {
         <button
           type="button"
           onClick={() => signOut()}
-          className="flex gap-2 items-center cursor-pointer justify-center py-[12px] px-[14px] bg-background rounded-[20px] w-full mt-auto text-primary"
+          className="flex gap-2 items-center cursor-pointer justify-center py-3 px-3.5 bg-background rounded-[20px] w-full mt-auto text-primary"
         >
           Logout <LogOut size={20} />
         </button>

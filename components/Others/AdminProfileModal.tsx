@@ -207,9 +207,9 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
                 )}
               />
               <div className="mt-4 sm:col-span-2 flex  justify-between w-full gap-3 items-center">
-                <button type="button" onClick={handlePasswordResetClick}>
+                <Button type="submit"   className="rounded-full" onClick={handlePasswordResetClick}>
                   Change Password
-                </button>
+                </Button>
                 <Button type="submit" className="rounded-full">
                   Save Changes
                 </Button>

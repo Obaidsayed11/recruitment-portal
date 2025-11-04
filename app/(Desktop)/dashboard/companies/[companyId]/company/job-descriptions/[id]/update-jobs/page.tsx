@@ -26,7 +26,6 @@ import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 
 const employmentOptions = [
   "FULL_TIME",
-  "PART_TIME",
   "CONTRACT",
   "INTERNSHIP",
 ] as const;
@@ -34,15 +33,15 @@ const employmentOptions = [
 const statusOptions = ["ACTIVE", "CLOSED", "DRAFT"] as const;
 
 const EditJobSchema = z.object({
-  title: z.string().min(1, "Job Title is required."),
+
   departmentId: z.string().min(1, "Department is required."),
   location: z.string().min(1, "Location is required."),
   experience: z.string().optional(),
   salaryRange: z.string().optional(),
   employmentType: z.enum(employmentOptions),
-  description: z.string().optional(),
-  responsibilities: z.string().optional(),
-  requirements: z.string().optional(),
+  description: z.string().min(20, "Description Is required"),
+  content: z.string().min(50, "Content is Required"),
+ 
   status: z.enum(statusOptions),
 });
 
@@ -66,15 +65,14 @@ const UpdateJobRoute = () => {
   const methods = useForm<EditJobDescriptionFormValues>({
     resolver: zodResolver(EditJobSchema),
     defaultValues: {
-      title: "",
+     
       departmentId: "",
       location: "",
       experience: "",
       salaryRange: "",
       employmentType: "FULL_TIME",
       description: "",
-      responsibilities: "",
-      requirements: "",
+     content: "",
       status: "ACTIVE",
     },
   });
@@ -130,8 +128,7 @@ const UpdateJobRoute = () => {
             employmentType: (fetchedJob.employmentType ||
               "FULL_TIME") as (typeof employmentOptions)[number],
             description: fetchedJob.description || "",
-            responsibilities: fetchedJob.responsibilities || "",
-            requirements: fetchedJob.requirements || "",
+            content : fetchedJob.content || "",
             status: (fetchedJob.status ||
               "ACTIVE") as (typeof statusOptions)[number],
           };
@@ -162,16 +159,16 @@ const UpdateJobRoute = () => {
       
 
       const payload = {
-        title: formData.title,
+       
         departmentId: formData.departmentId,
         location: formData.location,
         experience: formData.experience,
         salaryRange: formData.salaryRange,
         employmentType: formData.employmentType,
         description: formData.description,
+        content: formData.content,
         status: formData.status,
-        responsibilities: formData.responsibilities,
-        requirements: formData.requirements,
+       
       };
 
       console.log("Sending PUT request to:", `/job/${jobId}`);
@@ -218,7 +215,7 @@ const UpdateJobRoute = () => {
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col h-[calc(100vh-105px)] overflow-y-auto gap-5"
+         className="flex flex-col h-[calc(100vh-105px)] overflow-y-auto overflow-x-hidden gap-5"
         >
           <section className="bg-white border border-gray-200 rounded-xl p-4 grid gap-5">
             <h2 className="text-xl font-bold text-text">Edit Job Details</h2>
@@ -228,12 +225,19 @@ const UpdateJobRoute = () => {
             ) : (
               <>
                 <div className="gap-5">
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <InputField
+                  <div className="grid sm:grid-cols-2 gap-5 px-0">
+                    {/* <InputField
                       label="Job Title"
                       name="title"
                       placeholder="Enter Job Title"
+                    /> */}
+                     <div >
+                    <TextareaField
+                      label="Description Title"
+                      name="description"
+                      placeholder="Enter Description"
                     />
+                  </div>
 
                     <FormField
                       control={control}
@@ -295,6 +299,7 @@ const UpdateJobRoute = () => {
                       options={statusSelect}
                     />
                   </div>
+                   
 
                   <div className="mt-4">
                     {/* <TextareaField
@@ -302,32 +307,20 @@ const UpdateJobRoute = () => {
                       name="description"
                       placeholder="Enter job description"
                     /> */}
-                    <div className="sm:col-span-2 text-text font-medium text-sm mb-4">
-                    <h1 className="mb-2">
-                            Description <span className="text-red-500 ml-1">*</span>
-                          </h1>
-                      <CustomEditorWrapper
-                        control={methods.control}
-                        name="description"
-                      />
-                    </div>
+                   <div className="sm:col-span-2 text-text font-medium text-sm mb-4 overflow-hidden">
+  <h1 className="mb-2">
+    Content <span className="text-red-500 ml-1">*</span>
+  </h1>
+  <div className="w-full overflow-x-hidden wrap-break-word">
+    <CustomEditorWrapper control={methods.control} name="content" />
+  </div>
+</div>
+
                   </div>
 
-                  <div className="mt-4">
-                    <TextareaField
-                      label="Responsibilities"
-                      name="responsibilities"
-                      placeholder="Enter responsibilities"
-                    />
-                  </div>
+                
 
-                  <div className="mt-4">
-                    <TextareaField
-                      label="Requirements"
-                      name="requirements"
-                      placeholder="Enter requirements"
-                    />
-                  </div>
+                
 
                   <Button
                     type="submit"

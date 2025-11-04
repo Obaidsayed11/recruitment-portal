@@ -81,8 +81,9 @@
   --link: oklch(44.524% 0.21368 262.48);
   /* --primary: oklch(74.289% 0.16344 159.023); */
     /* --primary: #239a55; */
-       --primary: #23ca85;
-  --accent: oklch(95.824% 0.01729 159.452);
+       --primary: #0e7081;
+  /* --accent: rgb(232, 245, 237); */
+    --accent: #98c1c9;
   --secondary: oklch(97.015% 0.00011 271.152);
   --background: oklch(100% 0.00011 271.152);
   --border: oklch(93.1% 0.00011 271.152);
@@ -182,6 +183,33 @@
 .text-fontSecondary {
   color: var(--fontSecondary);
 }
+.ck-content {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+}
+
+.ck-content img, 
+.ck-content table {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.ck-content, .rendered-content {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+}
+
+.ck-content img,
+.ck-content table,
+.rendered-content img,
+.rendered-content table {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
 
 .bg-background {
   background-color: var(--background);

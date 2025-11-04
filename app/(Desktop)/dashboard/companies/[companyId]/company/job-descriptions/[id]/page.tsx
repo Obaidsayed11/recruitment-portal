@@ -1,103 +1,3 @@
-// "use client";
-
-// import React, { useEffect, useState } from "react";
-// import { useParams } from "next/navigation";
-// import apiClient from "@/lib/axiosInterceptor";
-// import { JobDescriptionProps } from "@/types/companyInterface";
-// import { toast } from "sonner";
-// import Link from "next/link";
-
-// const JobDescriptionDetails = () => {
-//  const params = useParams() as { companyId: string; id: string };
-//  const { companyId, id: jobId } = params;
-
-
-//   const [job, setJob] = useState<JobDescriptionProps | null>(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-    
-
-//     const fetchJobDetails = async () => {
-//   setLoading(true);
-//   try {
-//     const params = new URLSearchParams();
-//     params.append("page", "1"); // default to first page
-//     params.append("limit", "10"); // or whatever you want per page
-
-//     // If API needs companyId as a query param (not in path)
-//     const response = await apiClient.get(`/job?companyId=${companyId}&${params.toString()}`);
-
-//     // Or if the API expects search or filter logic
-//     // const response = await apiClient.get(`/job/search?id=${companyId}&${params.toString()}`);
-
-//     const jobs = response.data?.jobs || [];
-//     setJob(jobs);
-
-//   } catch (error: any) {
-//     console.error(error);
-//     toast.error("Failed to fetch job details");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-//     fetchJobDetails();
-//   }, [companyId]);
-
-//   console.log(job,"jopbbbbbbbbb")
-
-//   if (loading) {
-//     return (
-//       <div className="p-10 text-center text-gray-500">
-//         Loading job details...
-//       </div>
-//     );
-//   }
-
-//   if (!job) {
-//     return (
-//       <div className="p-10 text-center text-gray-500">
-//         No job description found.
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="p-6 sm:p-10 bg-white rounded-xl shadow-sm max-w-5xl mx-auto mt-6">
-//       <Link href="/job-description" className="text-blue-600 hover:underline mb-4 inline-block">
-//         ← Back to Job List
-//       </Link>
-
-//       <h1 className="text-2xl font-semibold mb-3">{job.title || "Untitled Job"}</h1>
-//       <p className="text-gray-600 mb-2"><strong>Location:</strong> {job.location || "NA"}</p>
-//       <p className="text-gray-600 mb-2"><strong>Experience:</strong> {job.experience || "NA"}</p>
-//       <p className="text-gray-600 mb-2"><strong>Salary:</strong> {job.salaryRange || "NA"}</p>
-//       <p className="text-gray-600 mb-2"><strong>Department:</strong> {job.Department?.name || "NA"}</p>
-//       <p className="text-gray-600 mb-2"><strong>Employment Type:</strong> {job.employmentType?.split("_").join(" ") || "NA"}</p>
-//       <p className="text-gray-600 mb-2"><strong>Status:</strong> {job.status || "NA"}</p>
-//       <p className="text-gray-600 mb-2"><strong>Published:</strong> {job.published ? "Yes" : "No"}</p>
-
-//       <div className="mt-6">
-//         <h2 className="text-xl font-semibold mb-2">Description</h2>
-//         <p className="text-gray-700 whitespace-pre-line">{job.description || "No description provided."}</p>
-//       </div>
-
-//       <div className="mt-6">
-//         <h2 className="text-xl font-semibold mb-2">Responsibilities</h2>
-//         <p className="text-gray-700 whitespace-pre-line">{job.responsibilities || "No responsibilities provided."}</p>
-//       </div>
-
-//       <div className="mt-6">
-//         <h2 className="text-xl font-semibold mb-2">Requirements</h2>
-//         <p className="text-gray-700 whitespace-pre-line">{job.requirements || "No requirements provided."}</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default JobDescriptionDetails;
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -108,11 +8,12 @@ import Link from "next/link";
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import { FormProvider, useForm } from "react-hook-form";
 import Button from "@/components/Others/Button";
+import DOMPurify from "isomorphic-dompurify"; // Already imported!
 
 const JobDescriptionDetails = () => {
   const params = useParams() as { companyId: string; id: string };
   const { companyId, id: jobId } = params;
-    const methods = useForm();
+  const methods = useForm();
 
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -121,9 +22,8 @@ const JobDescriptionDetails = () => {
     const fetchJobDetails = async () => {
       setLoading(true);
       try {
-        const response = await apiClient.get(
-          `/job?companyId=${companyId}`
-        );
+        // NOTE: Removed 'limit' and 'page' as you are fetching all jobs for a company
+        const response = await apiClient.get(`/job?companyId=${companyId}`);
 
         const jobs = response.data?.jobs || [];
 
@@ -161,8 +61,49 @@ const JobDescriptionDetails = () => {
       </div>
     );
   }
+  
+  // NOTE: This stripHtml function is NOT needed when using dangerouslySetInnerHTML,
+  // as the goal is to *keep* the bold/list formatting. 
+  /*
   const stripHtml = (html: string = "") =>
-      html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    html
+      .replace(/<[^>]+>/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  */
+
+ // --- HTML Sanitization and Rendering Function ---
+const renderSafeHTML = (htmlContent: string | null | undefined, defaultMessage: string) => {
+    const content = htmlContent || defaultMessage;
+    if (content === defaultMessage) {
+        return <p className="text-gray-800">{defaultMessage}</p>;
+    }
+
+    // UPDATED CONFIGURATION:
+    const sanitizedHtml = DOMPurify.sanitize(content, { 
+        // 1. ALLOWED TAGS: Added 'a' (link) and 'span' (font style)
+        ALLOWED_TAGS: ['b', 'i', 'strong', 'em', 'ul', 'ol', 'li', 'p', 'br', 'h1', 'h2', 'h3', 'h4', 'a', 'span'],
+        
+        // 2. ALLOWED ATTRIBUTES: 
+        //    Added 'href' (for links), 'style' (for font size/color), and 'class' (for styles).
+        ALLOWED_ATTR: ['href', 'style', 'class'], 
+        
+        // NOTE: If you are using images, you must also allow 'img' tag and 'src' attribute.
+        // ALLOWED_TAGS: [..., 'img'],
+        // ALLOWED_ATTR: [..., 'src', 'alt']
+    });
+
+    return (
+        <div
+            className="text-gray-800 ck-content-display" // Add a class for specific styling
+            dangerouslySetInnerHTML={{
+                __html: sanitizedHtml,
+            }}
+        />
+    );
+};
+// -------
+  // ----------------------------------------------
 
 
   return (
@@ -179,10 +120,12 @@ const JobDescriptionDetails = () => {
       />
 
       <FormProvider {...methods}>
-        <form className="flex flex-col h-[calc(100vh-105px)] overflow-y-auto gap-5">
+        <form className="flex flex-col h-[calc(100vh-105px)] overflow-y-hidden overflow-x-hidden  gap-5">
           <section className="bg-white border border-gray-200 rounded-xl p-4 grid gap-5">
             <div className="rounded-xl flex justify-end">
-              <Link href={`/dashboard/companies/${companyId}?tab=job-descriptions`}>
+              <Link
+                href={`/dashboard/companies/${companyId}?tab=job-descriptions`}
+              >
                 <Button variant="outline" className="text-sm">
                   Back to List
                 </Button>
@@ -203,7 +146,9 @@ const JobDescriptionDetails = () => {
                 <div className="grid sm:grid-cols-2 gap-5 mt-2">
                   <div>
                     <p className="text-gray-600 font-semibold">Job Title</p>
-                    <p className="text-gray-800">{job.title || "Untitled Job"}</p>
+                    <p className="text-gray-800">
+                      {job.title || "Untitled Job"}
+                    </p>
                   </div>
 
                   <div>
@@ -229,7 +174,9 @@ const JobDescriptionDetails = () => {
                   </div>
 
                   <div>
-                    <p className="text-gray-600 font-semibold">Employment Type</p>
+                    <p className="text-gray-600 font-semibold">
+                      Employment Type
+                    </p>
                     <p className="text-gray-800">
                       {job.employmentType?.split("_").join(" ") || "NA"}
                     </p>
@@ -253,30 +200,24 @@ const JobDescriptionDetails = () => {
                   <h3 className="text-lg font-semibold mb-2 text-gray-700">
                     Description
                   </h3>
-                  <p className="text-gray-800 whitespace-pre-line">
-                    {stripHtml(job.description || "No description provided.")}
-                  </p>
+                  {/* The renderSafeHTML function now handles both the HTML rendering and attribute stripping */}
+                  {renderSafeHTML(job.description, "No description provided.")}
                 </div>
 
-                {/* Responsibilities */}
+                {/* Content/Responsibilities Section */}
                 <div className="mt-5">
-                  <h3 className="text-lg font-semibold mb-2 text-gray-700">
-                    Responsibilities
+                  <h3 className="text-lg font-semibold mb-2 text-gray-700 overflow-x-hidden">
+                    Content
                   </h3>
-                  <p className="text-gray-800 whitespace-pre-line">
-                    {job.responsibilities || "No responsibilities provided."}
-                  </p>
+                  {/* 🛑 FIX APPLIED HERE: Use the same safe HTML rendering function */}
+                 <div className="rendered-content">
+  {renderSafeHTML(job.content, "No content provided.")}
+</div>
+
                 </div>
 
                 {/* Requirements */}
-                <div className="mt-5">
-                  <h3 className="text-lg font-semibold mb-2 text-gray-700">
-                    Requirements
-                  </h3>
-                  <p className="text-gray-800 whitespace-pre-line">
-                    {job.requirements || "No requirements provided."}
-                  </p>
-                </div>
+               
               </>
             )}
           </section>
@@ -286,4 +227,3 @@ const JobDescriptionDetails = () => {
   );
 };
 export default JobDescriptionDetails;
-

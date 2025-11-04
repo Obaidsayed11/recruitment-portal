@@ -11,7 +11,7 @@ import Navbar from "@/components/Navbar/Navbar";
 import Link from "next/link";
 
 const roleRoutes: Record<string, string> = {
-  ADMIN: "/admin/dashboard",
+  ADMIN: "/dashboard",
   WAREHOUSE: "/warehouse/deliveries",
   OUTLET: "/outlet/dashboard",
   DRIVER: "/driver/dashboard",

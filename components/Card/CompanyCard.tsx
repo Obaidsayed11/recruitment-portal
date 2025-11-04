@@ -91,7 +91,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       <div
         ref={ref}
         onClick={handleRowClick}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_2.4fr_2.4fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[20px_4.8fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
           isSelected ? "bg-secondary hover:bg-amber-800 border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
         }`}
@@ -106,7 +106,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
           {/* Avatar - Always present to maintain grid structure */}
           {data?.logoUrl ? (
             <img
-              className="w-[100px] h-[50px] rounded-lg object-contain bg-white border"
+              className="w-[100px] h-[50px] rounded-lg object-contain bg-white border p-1"
               src={`${BASE_URL}${data.logoUrl || "/"}`}
               alt={data?.name?.charAt(0).toUpperCase() || "N"}
               width={100}
@@ -121,13 +121,15 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
           {/* Name */}
           <h4 className="font-medium text-text line-clamp-2">
             {data?.name || "NA"}
+             <UrlLink url={data.websiteUrl} label={data.websiteUrl} />
           </h4>
+          
         </div>
 
         {/* <span className="text-subtext line-clamp-1">{data.websiteUrl || "NA"}</span> */}
-        <div className="overflow-hidden truncate">
+        {/* <div className="overflow-hidden truncate">
           <UrlLink url={data.websiteUrl} label={data.websiteUrl} />
-        </div>
+        </div> */}
         {/* Career Page URL */}
         <div className="overflow-hidden truncate">
           <UrlLink url={data.careerPageUrl} label={data.careerPageUrl} />

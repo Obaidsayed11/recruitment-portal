@@ -10,6 +10,7 @@ import DarkStoreSvg from "../Svgs/DarkStore";
 import VendorSvg from "../Svgs/VendorSvg";
 import ClientL2Card from "./ClientL2Card";
 import { BASE_URL } from "@/config";
+import { useParams } from "next/navigation";
 
 interface CompanyData {
   company: {
@@ -35,14 +36,17 @@ interface ClientInfoSectionProps {
 const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) => {
   const { data: session } = useSession();
   const [dashboardData, setDashboardData] = useState<any>({});
+   const params = useParams() as { companyId: string};
+  const {companyId} = params;
 
   console.log("companyDataaaaaaaaaaaa",companyData)
+
 
   useEffect(() => {
     if (session) {
       const fetchData = async () => {
         try {
-          const response = await apiClient.get<any>(`/analytics`);
+          const response = await apiClient.get<any>(`/analytics/${companyId}`);
           setDashboardData(response?.data?.data || []);
         } catch (error: any) {
           console.error(error.response?.data?.message);
@@ -51,6 +55,8 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
       fetchData();
     }
   }, [session]);
+
+  console.log(dashboardData.jobs,"dasshhh")
   
 
  
@@ -67,28 +73,28 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
 
  const overViewStats = [
     {
-      
+      svg: <ReportsSvg stat />,
       label: "Job Description",
-      className: "bg-[#FEF1F3] border border-[#FFCDD4]",
-      className2: "bg-[#FF4560] h-[36px] w-[36px] grid place-content-center rounded-lg",
-      className3: "text-[#FF4560]",
-      number: company._count?.Jobs ?? "-",
+      color: "#FF4560",
+      bg: "bg-[#FEF1F3]",
+      border: "border-[#FFCDD4]",
+      number: dashboardData.jobs ?? "-",
     },
     {
-    
+      svg: <DarkStoreSvg stat />,
       label: "Application",
-      className: "bg-[#FDF2E7] border border-[#FFDDB8]",
-      className2: "bg-[#FF9C2F] h-[36px] w-[36px] grid place-content-center rounded-lg",
-      className3: "text-[#FF9C2F]",
-      number: company._count?.Applications ?? "-",
+      color: "#FF9C2F",
+      bg: "bg-[#FDF2E7]",
+      border: "border-[#FFDDB8]",
+      number: dashboardData.applications ?? "-",
     },
     {
-      
+      svg: <VendorSvg stat />,
       label: "Department",
-      className: "bg-[#F1F1F1] border border-[#A3A3A3]",
-      className2: "bg-[#888] h-[36px] w-[36px] grid place-content-center rounded-lg",
-      className3: "text-[#888]",
-      number: company._count?.Department  ?? "-",
+      color: "#888",
+      bg: "bg-[#F1F1F1]",
+      border: "border-[#A3A3A3]",
+      number: dashboardData.departments ?? "-",
     },
   ];
 
@@ -109,7 +115,7 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
           alt={company.name || "Logo"}
           width={120}
           height={60}
-         className="w-[100px] h-[50px] rounded-lg object-contain bg-white border"
+         className="w-[100px] h-[50px] rounded-lg object-contain bg-white border p-1  "
         />
       ) : (
         <div className="w-[120px] h-[60px] bg-gray-400 text-white rounded-lg flex items-center justify-center text-2xl font-bold">
@@ -158,17 +164,41 @@ const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) =>
   <div className="hidden lg:block h-auto w-[1px] bg-gray-300"></div>
 
   {/* --- Right 50%: Stats Cards --- */}
-  <div className="w-full lg:w-1/2 grid grid-cols-3 gap-4">
-    {overViewStats.map((card, index) => (
-      <div
-        key={index}
-        className={`p-3 rounded-lg border text-center ${card.className}`}
-      >
-        <div className="text-medium text-gray-500">{card.label}</div>
-        <div className={`font-semibold text-lg ${card.className3}`}>{card.number}</div>
-      </div>
-    ))}
-  </div>
+ {/* --- Right Half: Stats Cards --- */}
+        <div className="w-full lg:w-1/2 grid grid-cols-3 gap-4">
+          {overViewStats.map((card, index) => (
+            <div
+              key={index}
+              className={`rounded-xl border ${card.bg} ${card.border} p-4 flex items-center gap-3 hover:shadow-md transition-all duration-200`}
+            >
+              {/* Icon on Left */}
+              <div
+                className="flex items-center justify-center"
+                style={{
+                  backgroundColor: card.color,
+                  borderRadius: "10px",
+                  width: "36px",
+                  height: "36px",
+                  display: "grid",
+                  placeContent: "center",
+                }}
+              >
+                <div className="text-white">{card.svg}</div>
+              </div>
+
+              {/* Label & Number on Right */}
+              <div className="flex flex-col items-start">
+                <p className="text-sm text-gray-600">{card.label}</p>
+                <p
+                  className="text-lg font-semibold"
+                  style={{ color: card.color }}
+                >
+                  {card.number}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
 </div>
 
     </section>

@@ -35,8 +35,8 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
   const [isFirstDialogOpen, setIsFirstDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-   const [hasExistingImage, setHasExistingImage] = useState(false); // Track if there's an existing image
-     const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasExistingImage, setHasExistingImage] = useState(false); // Track if there's an existing image
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   console.log(data.logoUrl, "datasaSDsdSDsdSDsdSDsd");
 
@@ -53,32 +53,30 @@ const EditCompany: React.FC<UpdateCompanyProps> = ({ onUpdate, data, id }) => {
   });
 
   const { handleSubmit, reset, setValue } = methods;
-useEffect(() => {
-  if (data && isFirstDialogOpen) {
-    reset({
-      name: data.name,
-      websiteUrl: data.websiteUrl,
-      careerPageUrl: data.careerPageUrl,
-      description: data.description,
-      location: data.location,
-       logoUrl: data.logoUrl || "", // ✅ store existing logo URL in form state
-    });
+  useEffect(() => {
+    if (data && isFirstDialogOpen) {
+      reset({
+        name: data.name,
+        websiteUrl: data.websiteUrl,
+        careerPageUrl: data.careerPageUrl,
+        description: data.description,
+        location: data.location,
+        logoUrl: data.logoUrl || "", // ✅ store existing logo URL in form state
+      });
 
-    if (data.logoUrl) {
-    
-      setPreviewUrl(data.logoUrl);
-    } else {
-      setPreviewUrl(null);
-    }
+      // if (data.logoUrl) {
+      //   setPreviewUrl(data.logoUrl);
+      //   console.log(previewUrl, "sasasas");
+      // } else {
+      //   setPreviewUrl(null);
+      // }
+        setPreviewUrl(data.logoUrl || null);
     setSelectedFile(null);
-  }
-}, [data, isFirstDialogOpen, setValue]);
+    }
+  }, [data, isFirstDialogOpen, setValue]);
 
-
-console.log(previewUrl,"previewwewEWEee")
-console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
-
-
+  console.log(previewUrl, "previewwewEWEee");
+  console.log(data.logoUrl, "dataaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -90,10 +88,10 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
         return;
       }
       setSelectedFile(file);
-      console.log(selectedFile,"selectedfileleee")
+      console.log(selectedFile, "selectedfileleee");
       setPreviewUrl(URL.createObjectURL(file));
       setValue("file", file);
-       setHasExistingImage(false); // User is replacing the image
+      setHasExistingImage(false); // User is replacing the image
     }
   };
 
@@ -102,21 +100,21 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
   const onSubmit: SubmitHandler<EditCompanyFormValues> = async (data) => {
     try {
       setIsClicked(true);
-      
+
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("websiteUrl", data.websiteUrl);
       formData.append("careerPageUrl", data.careerPageUrl);
       formData.append("description", data.description);
       formData.append("location", data.location);
-    
-    if (selectedFile) {
-      // ✅ user uploaded new image
-      formData.append("file", selectedFile);
-    } else if (data?.logoUrl) {
-      // ✅ user kept existing image
-      formData.append("file", data.logoUrl);
-    }
+
+      if (selectedFile) {
+        // ✅ user uploaded new image
+        formData.append("file", selectedFile);
+      } else if (data?.logoUrl) {
+        // ✅ user kept existing image
+        formData.append("file", data.logoUrl);
+      }
 
       const response = await apiClient.put(`/company/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -127,9 +125,9 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
         (response as any).status === 201
       ) {
         toast.success(response.data.message);
-        onUpdate(response.data.updatedCompany );
+        onUpdate(response.data.updatedCompany);
         setIsFirstDialogOpen(false);
-        reset()
+        reset();
       } else {
         toast.success(response.data.message);
       }
@@ -169,7 +167,7 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
                   <input
                     id="company-file-upload"
                     type="file"
-                     accept="image/*"
+                    accept="image/*"
                     className="hidden object-contain"
                     onChange={handleFileChange}
                   />
@@ -182,11 +180,15 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
 
                 {previewUrl && (
                   <img
-                    src={`${BASE_URL}${previewUrl}`}
+                    src={
+                      previewUrl.startsWith("blob:")
+                        ? previewUrl // 🟢 Local preview
+                        : `${BASE_URL}${previewUrl}` // 🟢 Server image
+                    }
                     alt="Selected image preview"
                     width={150}
                     height={150}
-                    className="object-cover rounded-md w-full max-w-36 h-36"
+                    className="object-contain rounded-md w-full max-w-36 h-36"
                   />
                 )}
               </div>
@@ -222,25 +224,25 @@ console.log(data.logoUrl,"dataaaaaaaaaaaaaaaaaaaaaaaaaaa")
             placeholder="Your Address"
             formItemClassName="sm:col-span-2"
           /> */}
-    {/* <TextareaField
+          {/* <TextareaField
          formItemClassName="sm:col-span-2 text-fontPrimary" 
          label="Description"
                 name={"description"}
                 placeholder={"Enter Your Description"}
               /> */}
 
-                <div className="sm:col-span-2 text-text font-medium text-sm">
-                          <h1 className="mb-2">
-                            Description <span className="text-red-500 ml-1">*</span>
-                          </h1>
-                          <CustomEditorWrapper control={methods.control} name="description" />
-                        </div>
-              <TextareaField
-         formItemClassName="sm:col-span-2 text-fontPrimary" 
-         label="Address"
-                name={"location"}
-                placeholder={"Enter Your Description"}
-              />
+          <div className="sm:col-span-2 text-text font-medium text-sm">
+            <h1 className="mb-2">
+              Description <span className="text-red-500 ml-1">*</span>
+            </h1>
+            <CustomEditorWrapper control={methods.control} name="description" />
+          </div>
+          <TextareaField
+            formItemClassName="sm:col-span-2 text-fontPrimary"
+            label="Address"
+            name={"location"}
+            placeholder={"Enter Your Description"}
+          />
           <Button
             type="submit"
             disabled={isClicked || methods.formState.isSubmitting}

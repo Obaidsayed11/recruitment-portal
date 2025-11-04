@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import apiClient from "@/lib/axiosInterceptor";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,8 +30,6 @@ import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 import { parseJSON } from "date-fns";
 import { parseHtml } from "ckeditor5";
 
-
-
 // const CustomEditor = dynamic(() => import("@/components/customEditor"), {
 //   ssr: false,
 // });
@@ -39,15 +37,14 @@ const employmentOptions = ["FULL_TIME", "CONTRACT", "INTERNSHIP"] as const;
 
 const addJobSchema = z.object({
   // companyId: z.string().min(1, "Company ID is required."),
-  title: z.string().min(1, "Job Title is required."),
+
   department: z.string().min(1, "Department is required."),
   location: z.string().min(1, "Location is required."),
   experience: z.string().optional(),
   salaryRange: z.string().optional(),
   employmentType: z.enum(employmentOptions),
-  description: z.string().optional(),
-  responsibilities: z.string().optional(),
-  requirements: z.string().optional(),
+  description: z.string().min(20, "Description Should not be less than 20"),
+  content: z.string().min(50, "Content is Required"),
   // published: z.boolean().optional(),
   // status: z.string().optional(),
 });
@@ -68,15 +65,14 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
   const methods = useForm<AddJobDescriptionFormValues>({
     resolver: zodResolver(addJobSchema),
     defaultValues: {
-      title: "",
+    
       department: "",
       location: "",
       experience: "",
       salaryRange: "",
 
       description: "",
-      responsibilities: "",
-      requirements: "",
+      content: "",
     },
   });
   const { data: session } = useSession();
@@ -104,9 +100,9 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
     try {
       setIsClicked(true);
 
-    // Function to remove HTML tags from rich text fields
-    
-      const payload = { ...data,  description: data.description , companyId };
+      // Function to remove HTML tags from rich text fields
+
+      const payload = { ...data, content: data.content, companyId };
       const response = await apiClient.post(
         `/job?companyId=${companyId}`,
         payload
@@ -120,7 +116,7 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
       reset();
     } catch (error: any) {
       // toast.error(error.response?.data?.message || error.message);
-      console.log(error.response?.data?.message || error.message,"data error")
+      console.log(error.response?.data?.message || error.message, "data error");
     } finally {
       setIsClicked(false);
     }
@@ -164,17 +160,21 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col h-[calc(100vh-105px)] overflow-y-auto gap-5"
         >
-            <h2 className="text-xl font-bold text-text">New Job Details</h2>
+          <h2 className="text-xl font-bold text-text">New Job Details</h2>
           <section className="bg-white border border-gray-200 rounded-xl p-4 grid gap-5">
-            
-
             {/* <InputField label="Company ID" name="companyId" placeholder="Enter Company ID" /> */}
-            <InputField
+            {/* <InputField
               label="Job Title"
               name="title"
               placeholder="Enter Job Title"
               
               
+            /> */}
+            <TextareaField
+              // formItemClassName="sm:col-span-2"
+              label="Description Title"
+              name={"description"}
+              placeholder={"Enter Your Description"}
             />
             {/* <InputField
             label="Department"
@@ -187,10 +187,11 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
               name="department"
               render={({ field }) => (
                 <FormItem className="sm:col-span-1">
-                  <FormLabel className="text-fontPrimary">Department <span className="text-red-500 ml-1">*</span></FormLabel>
-                  
+                  <FormLabel className="text-fontPrimary">
+                    Department <span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
+
                   <FormControl>
-                    
                     <Combobox
                       placeholder="Select Department"
                       options={departments.map((dep) => ({
@@ -222,7 +223,6 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
             />
             <SelectField
               label="Employment Type"
-              
               name="employmentType"
               placeholder="Select Type"
               options={employmentOptions.map((v) => ({
@@ -252,32 +252,15 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
               placeholder={"Enter Your Description"}
             /> */}
 
-          <div className="sm:col-span-2 text-text font-medium text-sm">
-                              <h1 className="mb-2">
-                                      Description <span className="text-red-500 ml-1">*</span>
-                                    </h1>
-                                <CustomEditorWrapper
-                                  control={methods.control}
-                                  name="description"
-                                />
-                              </div>
+            <div className="sm:col-span-2 text-text font-medium text-sm">
+              <h1 className="mb-2">
+                Content <span className="text-red-500 ml-1">*</span>
+              </h1>
+              <CustomEditorWrapper control={methods.control} name="content" />
+            </div>
 
-            <TextareaField
-              formItemClassName="sm:col-span-2"
-              label="Responsibilities"
-              name={"responsibilities"}
-              placeholder={"Enter Your Description"}
-            />
+            {/* <CustomEditor control={methods.control} name="content" /> */}
 
-            <TextareaField
-              formItemClassName="sm:col-span-2"
-              label="Requirements"
-              name={"requirements"}
-              placeholder={"Enter Requirements"}
-            />
-
-                 {/* <CustomEditor control={methods.control} name="content" /> */}
-                
             <Button
               type="submit"
               className="sm:col-span-2 w-fit justify-self-end"

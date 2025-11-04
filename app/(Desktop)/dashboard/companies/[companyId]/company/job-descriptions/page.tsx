@@ -328,7 +328,10 @@ const selectedStatus =  searchParams?.get("status") || "";
           {/* User List */}
 
           {loading && page === 1 ? (
-            <Skeleton2 />
+            <Skeleton2 
+            colsNum={8}
+            gridCols="grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
+            />
           ) : description.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               No Descriptions found.

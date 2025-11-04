@@ -36,7 +36,7 @@ const UserCard = forwardRef<HTMLDivElement, UserCardProps>(
     return (
       <div
         ref={ref}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap grid-cols-[20px_250px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[20px_1.5fr_1.1fr_1fr_2fr_1fr] gap-5  transition-all ease-linear border items-center ${
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[20px_1.5fr_1.1fr_1fr_2fr_1fr] gap-5  transition-all ease-linear border items-center ${
           isSelected
             ? "bg-secondary hover:bg-secondary border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
@@ -69,7 +69,7 @@ const UserCard = forwardRef<HTMLDivElement, UserCardProps>(
         </div>
         <span className="text-subtext line-clamp-1">
           {`${
-            data.role 
+            data?.Role?.name 
             // &&
             // data.role.charAt(0).toUpperCase() + data.role.slice(1).toLowerCase()
           }` || "NA"}

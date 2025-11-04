@@ -30,9 +30,9 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
       <div
         ref={ref}
        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
-          grid-cols-[20px_120px_120px_150px]
-          lg:grid-cols-[40px_1fr_1fr_1fr]
-          xl:grid-cols-[0px_1fr_1fr]
+          grid-cols-[20px_120px_120px_120px_120px_150px]
+          lg:grid-cols-[40px_1fr_1fr_1fr_1fr]
+          xl:grid-cols-[0px_1fr_1fr_1fr_1fr]
           
           gap-10 transition-all cursor-pointer items-center text-left ${
             isSelected
@@ -45,6 +45,13 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
         <CheckBox checked={isSelected} handleCheckboxChange={handleCheckboxChange} />
           </div>
         <span className="text-subtext font-medium line-clamp-1">{data.name}</span>
+        <span className="text-subtext font-medium line-clamp-1">
+  {new Date(data.createdAt).toLocaleString()}
+</span>
+<span className="text-subtext font-medium line-clamp-1">
+  {new Date(data.updatedAt).toLocaleString()}
+</span>
+
         
    
         <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
