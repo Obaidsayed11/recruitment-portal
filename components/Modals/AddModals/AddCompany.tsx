@@ -152,7 +152,7 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
                     alt="Selected image preview"
                     width={150}
                     height={150}
-                    className="object-cover rounded-md w-full max-w-36 h-36"
+                    className="object-contain rounded-md w-full max-w-36 h-36"
                   />
                 )}
               </div>

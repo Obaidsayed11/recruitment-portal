@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google"; // Changed to Poppins
 import Provider from "./Provider";
 import { TabProvider } from "@/context/TabsContext";
-import { PermissionProvider } from "@/components/PermissionContact";
+import { PermissionProvider } from "@/components/PermissionContext";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],

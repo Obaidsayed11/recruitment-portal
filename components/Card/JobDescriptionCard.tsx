@@ -5,10 +5,13 @@
   import { toast } from "sonner";
   import CheckBox from "../Others/CheckBox";
   import Actions from "../Others/Actions";
+  import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "../PermissionContext";
 
   const JobDescriptionCard = forwardRef<HTMLDivElement, JobDescriptionCardProps>(
     ({ data, isSelected, onCardSelect, onDelete, onUpdate }, ref) => {
       const router = useRouter();
+       const { permissions } = usePermissions();
     
     const params = useParams() as { companyId: string };
     const companyId = params.companyId;
@@ -33,7 +36,7 @@
   // its is the handler for each detail whole dataa
       const handleRowClick = () => {
        
-        router.push(`/dashboard/companies/${companyId}/company/job-descriptions/${data.id}`);
+        router.push(`/companies/${companyId}/t/jobs/view-jobs/${data.id}`);
       };
       const stripHtml = (html: string = "") =>
       html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
@@ -141,6 +144,7 @@
             onDelete={handleDelete}
             data={data}
             onUpdate={onUpdate}
+            permissions={permissions}
           />
           </div>
         </div>

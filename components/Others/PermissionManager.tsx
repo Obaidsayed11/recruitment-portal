@@ -54,12 +54,17 @@ const PermissionsManager: FC<PermissionsManagerProps> = ({
 }) => {
   const [openGroupName, setOpenGroupName] = useState<string | null>(null);
 
+
+
+  console.log(allPermissions,"all permissions")
   const groupedPermissions: GroupedPermission[] = useMemo(() => {
     if (allPermissions && allPermissions.length > 0) {
       return groupPermissions(allPermissions);
     }
     return [];
   }, [allPermissions]);
+
+  console.log(groupedPermissions,"ggggggggggggggggggggggg")
 
   // --- Handlers consistently use `id` ---
   const handleMasterSelectAll = (isChecked: boolean) => {
@@ -96,7 +101,7 @@ const PermissionsManager: FC<PermissionsManagerProps> = ({
   };
 
   const isAllSelected =
-    allPermissions.length > 0 &&
+    allPermissions?.length > 0 &&
     selectedPermissions.size === allPermissions.length;
 
   const masterCheckboxRef = useRef<HTMLInputElement>(null);
@@ -128,7 +133,7 @@ const PermissionsManager: FC<PermissionsManagerProps> = ({
           Select All Permissions
         </label>
       </div>
-      {groupedPermissions.map((group) => {
+      {groupedPermissions?.map((group) => {
         const selectedInGroupCount = group.permissions.filter((p) =>
           selectedPermissions.has(p.id)
         ).length;

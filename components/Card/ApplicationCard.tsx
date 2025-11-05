@@ -6,10 +6,14 @@ import { toast } from "sonner";
 import CheckBox from "../Others/CheckBox";
 import Actions from "../Others/Actions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "../ui/dialog";
+  import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "../PermissionContext";
 
 const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
   ({ data, isSelected, onCardSelect, onDelete, onUpdate }, ref) => {
     const router = useRouter();
+     const { permissions } = usePermissions();
+        
        const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const  ApplicationStatus  = [
@@ -52,7 +56,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
     return;
   }
   
-  router.push(`/dashboard/companies/${companyId}/company/application/${data.id}`);
+  router.push(`/companies/${companyId}/company/application/view-application/${data.id}`);
 };
 
   return (
@@ -296,6 +300,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
             onDelete={handleDelete}
             data={data}
             onUpdate={onUpdate}
+              permissions={permissions}
           />
         </div>
 

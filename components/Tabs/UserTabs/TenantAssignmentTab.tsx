@@ -85,7 +85,7 @@ const ManageTenantAssignments: React.FC<ManageTenantAssignmentsProps> = () => {
     if (idFromParams) return idFromParams;
     if (uidFromParams) return uidFromParams;
 
-    if (pathname?.startsWith("/dashboard/users/create-user")) {
+    if (pathname?.startsWith("/users/create-user")) {
       // Check for 'window' to avoid SSR errors with searchParams?.get
       if (typeof window !== "undefined") {
         return searchParams?.get("userId");

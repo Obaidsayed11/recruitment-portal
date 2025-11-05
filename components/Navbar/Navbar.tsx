@@ -6,17 +6,17 @@ import Logo from "./Logo";
 import { LogOut } from "lucide-react";
 
 const roleRoutes: Record<string, string> = {
-  ADMIN: "/dashboard",
-  WAREHOUSE: "/warehouse",
-  OUTLET: "/outlet",
-  DRIVER: "/driver",
+  SYSTEM: "/dashboard",
+
 };
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const role = session?.user.role;
   // const basePath = role ? roleRoutes[role] : "/";
-  const basePath = role && roleRoutes[role] ? roleRoutes[role] : "/";
+  // const basePath = role && roleRoutes[role] ? roleRoutes[role] : "/";
+  const basePath = roleRoutes[role as keyof typeof roleRoutes] || "/dashboard";
+
 
 
   return (

@@ -8,6 +8,8 @@ import Actions from "../Others/Actions";
 import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { BASE_URL } from "@/config";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
   ({ data, isSelected, onCardSelect, onDelete, onUpdate, onClick  }, ref) => {
@@ -17,7 +19,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       event.stopPropagation(); // Prevent row click when clicking checkbox
       onCardSelect(data.id, event.target.checked);
     };
-
+ const { permissions } = usePermissions();
     const handleDelete = async () => {
       try {
         const response = await apiClient.delete(`/company/${data.id}`);
@@ -28,12 +30,16 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
       }
     };
 
-    const handleRowClick = () => {
-      if (onClick) {
-        onClick();
-      }
-    };
+ const handleRowClick = () => {
+  if (!hasPermission(permissions, "view_company")) {
+    toast.error("You do not have permission to view company details.");
+    return;
+  }
+  onClick?.();
+};
 
+
+    
     const handleActionClick = (event: React.MouseEvent) => {
       event.stopPropagation(); // Prevent row click when clicking actions
     };
@@ -90,8 +96,11 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
     return (
       <div
         ref={ref}
-        onClick={handleRowClick}
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px_100px] xl:grid-cols-[20px_4.8fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
+     
+
+          onClick={handleRowClick}
+        
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap grid-cols-[20px_200px_150px_150px_150px_100px] xl:grid-cols-[20px_4.8fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
           isSelected ? "bg-secondary hover:bg-amber-800 border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
         }`}
@@ -142,14 +151,16 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
         <span className="text-sm line-clamp-2 text-clip">
           {stripHtml(data.description || "NA")}
         </span>
-        <div onClick={handleActionClick}>
+        {<div onClick={handleActionClick}>
+
           <Actions
             id={data.id}
             onDelete={handleDelete}
             data={data}
             onUpdate={onUpdate}
+            permissions={permissions}
           />
-        </div>
+        </div>}
       </div>
     );
   }

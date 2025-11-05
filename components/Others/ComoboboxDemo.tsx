@@ -21,18 +21,13 @@ import { Option } from "@/types/interface";
 import Link from "next/link";
 
 interface ComboboxDemoProps {
-
   options: Option[];
-  value: any; // Allow null for unselected state
-  onSelect: (value: number | string) => void; // Only allow number
-  placeholder?: string; // Optional placeholder prop
-  name?: string; // Optional placeholder prop
+  value: any;
+  onSelect: (value: string) => void;
+  placeholder?: string;
+  name?: string;
   className?: string;
- 
-  disabled?: boolean; // ? Added disabled prop
-  label? : string
-  
- 
+  disabled?: boolean; // ✅ Added disabled prop
 }
 
 export function Combobox({
@@ -42,7 +37,7 @@ export function Combobox({
   className,
   name,
   placeholder = "Select value",
-  disabled = false, // ? Default to false
+  disabled = false, // ✅ Default to false
 }: ComboboxDemoProps) {
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -55,27 +50,22 @@ export function Combobox({
     );
   }, [options, searchTerm]);
 
-  console.log("value", value);
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
       <PopoverTrigger asChild className="shadow-none">
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
           aria-haspopup="listbox"
-          disabled={disabled} // ? Apply disabled state to button
+          disabled={disabled} // ✅ Apply disabled state to button
           className={`justify-between w-full overflow-hidden group bg-white relative border px-2 font-normal text-fontSecondary mt-0 ${className} h-11 ${
             disabled ? "opacity-50 cursor-not-allowed" : ""
-          }`} // ? Add visual disabled styling
+          }`} // ✅ Add visual disabled styling
         >
-          {!value || value === ""
-      ? placeholder
-      : options.find(
-          (option) =>
-            // 🐛 CRITICAL FIX: Ensure values are compared as strings
-            String(option.value) === String(value)
-        )?.label}
+          {!value
+            ? placeholder
+            : options.find((option) => option.value === value)?.label}
           <span className="w-7 bg-white absolute -right-1 h-full flex items-center">
             <ChevronsUpDown className="absolute w-6 right-2 bg-white my-auto ml-2 h-4 shrink-0 opacity-50" />
           </span>
@@ -92,44 +82,29 @@ export function Combobox({
             onWheel={(e) => e.stopPropagation()}
             className="overflow-auto max-h-[300px]"
           >
-            {filteredOptions.length > 0 ? (
-              <CommandGroup>
-                {filteredOptions.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                     value={String(option.value)} // converting to string
-                    onSelect={() => {
-                       onSelect(String(option.value)); // Convert to string before passing
-                      setOpen(false);
-                      setSearchTerm("");
-                    }}
-                  >
-                    <Check
-    className={cn(
-      "mr-2 h-4 w-4",
-      String(value) === String(option.value) ? "opacity-100" : "opacity-0"
-    )}
-  />
-                    {option.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            ) : (
-              name && (
-                <>
-                  <CommandEmpty>No {name} found.</CommandEmpty>
-                  {options.length === 0 && (
-                    <Link
-                      href={`/admin/${name}`}
-                      className="underline text-primary items-center gap-1 justify-center text-sm pb-5 flex"
-                    >
-                      <Plus size={16} />
-                      Add {name} first
-                    </Link>
-                  )}
-                </>
-              )
-            )}
+            <CommandEmpty>No {name || "options"} found.</CommandEmpty>
+            <CommandGroup>
+              {filteredOptions.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={() => {
+                    onSelect(option?.value || "");
+                    setOpen(false);
+                    setSearchTerm("");
+                  }}
+                  className={value === option.value ? "bg-secondary" : ""}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === option.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>

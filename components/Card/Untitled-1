@@ -1,0 +1,55 @@
+/home/obaid/Documents/Sovorun/Recruitment _Portal/recruitment-portal/app/
+├── (Portal)/
+│   ├── companies/
+│   │   ├── [companyId]/
+│   │   │   ├── company/
+│   │   │   │   ├── application/
+│   │   │   │   │   ├── [id]/
+│   │   │   │   │   │   ├── page.tsx
+│   │   │   │   │   │   └── update-application/
+│   │   │   │   │   │       └── page.tsx
+│   │   │   │   │   ├── create-application/
+│   │   │   │   │   │   └── page.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   │   ├── department/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── job-descriptions/
+│   │   │   │       ├── [id]/
+│   │   │   │       │   ├── page.tsx
+│   │   │   │       │   └── update-jobs/
+│   │   │   │       │       └── page.tsx
+│   │   │   │       ├── create-jobs/
+│   │   │   │       │   └── page.tsx
+│   │   │   │       └── page.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── dashboard/
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   ├── settings/
+│   │   ├── create-group/
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   └── update-group/
+│   │       └── [id]/
+│   │           └── page.tsx
+│   └── users/
+│       ├── create-user/
+│       │   └── page.tsx
+│       ├── page.tsx
+│       └── update-user/
+│           └── [uid]/
+│               └── page.tsx
+├── (auth)/
+│   ├── layout.tsx
+│   ├── otp/
+│   │   └── page.tsx
+│   └── signin/
+│       └── page.tsx
+├── Provider.tsx
+├── favicon.ico
+├── globals.css
+├── layout.tsx
+├── loading.tsx
+└── page.tsx

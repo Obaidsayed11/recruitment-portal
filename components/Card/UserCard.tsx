@@ -7,10 +7,13 @@ import CheckBox from "../Others/CheckBox";
 import Actions from "../Others/Actions";
 import Image from "next/image";
 import { BASE_URL } from "@/config";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const UserCard = forwardRef<HTMLDivElement, UserCardProps>(
   ({ data, isSelected, onCardSelect, onDelete, onUpdate }, ref) => {
     const router = useRouter();
+      const { permissions } = usePermissions();
 
     const handleCheckboxChange = (
       event: React.ChangeEvent<HTMLInputElement>
@@ -88,11 +91,13 @@ const UserCard = forwardRef<HTMLDivElement, UserCardProps>(
         <span className="text-subtext text-sm line-clamp-1">
           {(data.updatedAt && data.updatedAt.split("T")[0]) || "NA"}
         </span> */}
+        
         <Actions
           id={data.id}
           onDelete={handleDelete}
           data={data}
           onUpdate={onUpdate}
+          permissions={permissions}
         />
       </div>
     );

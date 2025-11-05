@@ -85,14 +85,21 @@ const AssignPermissionsTab = () => {
 
          // Extract all permissions from response
         // Based on your swagger, the response is directly an array
-        const allPermsData: Permission[] = Array.isArray(allPermissionsRes.data) 
-          ? allPermissionsRes.data 
-          : allPermissionsRes.data.permissions || [];
+        // const allPermsData: Permission[] = Array.isArray(allPermissionsRes.data) 
+        //   ? allPermissionsRes.data
+        //   : allPermissionsRes.data?.data?.permissions || [];
 
-        // Extract user's assigned permissions
-        const userPermsData: Permission[] = Array.isArray(userPermissionsRes.data)
-          ? userPermissionsRes.data
-          : userPermissionsRes.data.permissions || [];
+        // // Extract user's assigned permissions
+        // const userPermsData: Permission[] = Array.isArray(userPermissionsRes.data)
+        //   ? userPermissionsRes.data
+        //   :  userPermissionsRes.data?.data?.permissions || [];
+
+           // ✅ Fix: extract permissions properly from `data.permissions`
+        const allPermsData: Permission[] =
+          allPermissionsRes.data?.data?.permissions || [];
+
+        const userPermsData: Permission[] =
+          userPermissionsRes.data?.data?.permissions || [];
 
   console.log("All Permissions:", allPermsData);
         console.log("User's Assigned Permissions:", userPermsData);
