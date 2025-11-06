@@ -52,9 +52,7 @@ interface UpdateUserRouteProps {
 
 type AddUserFormValues = z.infer<typeof UserUpdateSchema>;
 
-const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
-  userId: propUserId,
-}) => {
+const UpdateUserRoute = () => {
   //   const [allRoles, setAllRoles] = useState<RoleProps[]>([]);
   const [userData, setUserData] = useState<UserProps | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -336,7 +334,7 @@ const UpdateUserRoute: React.FC<UpdateUserRouteProps> = ({
             className={`flex-1 bg-white border border-gray-200 rounded-xl p-2 sm:p-2`}
           >
             <Tabs defaultValue="permissions">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-3 mt-0">
                 <TabsTrigger value="permissions">Permissions</TabsTrigger>
                 <TabsTrigger value="groups">Groups</TabsTrigger>
                 <TabsTrigger value="tenant">Tenant Assignments</TabsTrigger>

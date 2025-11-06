@@ -6,7 +6,7 @@ const loading = () => {
     <div className="bg-white w-screen h-[calc(100vh-80px)] grid place-content-center">
       <Logo
         className="animate-pulse w-[250px]"
-        logo="/gridfill-log-new.png"
+        logo="/lanjekar-holding-logo.png"
         companyName="Recruitment-portal"
       />
     </div>

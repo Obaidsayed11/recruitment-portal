@@ -8,6 +8,8 @@ import apiClient from "@/lib/axiosInterceptor";
 import CheckBox from "../Others/CheckBox";
 import Actions from "../Others/Actions";
 import { GroupCardProps, RoleCardProps } from "@/types/settingsinterface";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
   ({ data, isSelected = false, onCardSelect, onDelete, onUpdate }, ref) => {
@@ -15,6 +17,8 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       onCardSelect(data.id, e.target.checked);
     };
+
+     const { permissions } = usePermissions();
 
     const handleDelete = async () => {
       try {
@@ -30,7 +34,7 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
       <div
         ref={ref}
         className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
-          grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px]
+          grid-cols-[5px_175px_123px_150px_150px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
           xl:grid-cols-[20px_1fr_1fr_1fr_1fr] text-start
           
@@ -48,7 +52,7 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
         <span className="text-subtext text-sm line-clamp-1">{data.description?.split("T")[0] || "NA"}</span>
            {/* <span className="text-subtext font-medium line-clamp-1">{data.roleType}</span> */}
         
-        <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
+        <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate}  permissions={permissions}/>
       </div>
     );
   }

@@ -21,10 +21,10 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="grid gap-3 content-start relative h-screen p-3 my-auto bg-[#FAFAFA] ">
-      <Link href={basePath} className="pb-2 border-b pt-5 flex flex-col gap-2">
+      <Link href={basePath} className="pb-2 border-b pt-5 flex flex-col gap-2 bg-black">
         <Logo
-          className="justify-self-start w-full h-[60px]"
-          logo={"/gridfill-log-new.png"}
+          className="justify-self-start w-full h-[60px] "
+          logo={"/lanjekar-holding-logo.png"}
           companyName="Recruitement-Portal"
         />
       

@@ -32,6 +32,7 @@ import Button from "@/components/Others/Button";
 import { Plus } from "lucide-react";
 import { hasPermission } from "@/lib/hasPermission";
 import { usePermissions } from "@/components/PermissionContext";
+import BulkAddModal from "../Others/BulkAddModal";
 const headersOptions = [
   { value: "Job Title" },
   { value: "Experience/Salary" },
@@ -263,6 +264,18 @@ const selectedStatus =  searchParams?.get("status") || "";
         router.push(`/companies/${companyId}?tab=job-description`);
       }
     }, [permissions, router])
+
+
+    // bulk data 
+    
+        const handleBulkUpload = (newBulkData: any[]) => {
+        if (newBulkData && newBulkData.length > 0) {
+          setDescription((prevData) => [...newBulkData, ...prevData]);
+          toast.success(`${newBulkData.length} new departments added successfully!`);
+        } else {
+          toast.error("Bulk upload failed or returned no new data.");
+        }
+      };
   
 
   return (
@@ -312,9 +325,14 @@ const selectedStatus =  searchParams?.get("status") || "";
             serverSearchPlaceholder="Search all Job Description..."
           />
 
-          {/* <div className="w-full sm:w-auto"> */}
-          {/* <AddJobDescription onAdd={handleAddDescription} /> */}
-          {/* </div> */}
+       {/* Bulk Upload Modal */}
+           {hasPermission(permissions, "import_job") && (
+              <BulkAddModal
+                onUploadComplete={handleBulkUpload}
+                downloadFileUrl={"/sample_jobs.xlsx"}
+                uploadType={"job"}
+              />
+            )}
 
 
             { hasPermission(permissions, "add_job") && (<Button

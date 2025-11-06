@@ -1,7 +1,7 @@
 import apiClient from "@/lib/axiosInterceptor";
 import { ApplicationCardProps } from "@/types/companyInterface";
 import { useParams, useRouter } from "next/navigation";
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { toast } from "sonner";
 import CheckBox from "../Others/CheckBox";
 import Actions from "../Others/Actions";
@@ -44,20 +44,22 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
       }
     };
 
-     // its is the handler for each detail whole dataa
-     const handleRowClick = (e: React.MouseEvent) => {
-  // Don't navigate if clicking on interactive elements
-  const target = e.target as HTMLElement;
-  if (
-    target.closest('button') || 
-    target.closest('a') || 
-    target.closest('[role="checkbox"]')
-  ) {
-    return;
-  }
-  
-  router.push(`/companies/${companyId}/company/application/view-application/${data.id}`);
-};
+ // ✅ FIX: Move router.push INSIDE the handler
+    const handleRowClick = (e: React.MouseEvent) => {
+      // Don't navigate if clicking on interactive elements
+      const target = e.target as HTMLElement;
+      if (
+        target.closest('button') || 
+        target.closest('a') || 
+        target.closest('[role="checkbox"]') ||
+        target.closest('[role="dialog"]')
+      ) {
+        return;
+      }
+      
+      // ✅ Now this only runs when row is clicked, not on render
+      router.push(`/companies/${companyId}/t/applications/view-application/${data.id}`);
+    };
 
   return (
       <div
@@ -143,7 +145,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
         onClick={(e: any) => e.stopPropagation()} // prevent dialog click bubbling
       >
         <DialogHeader>
-          <DialogTitle>{data.candidateName}'s Resume</DialogTitle>
+          <DialogTitle>{data.candidateName}&apos;s Resume</DialogTitle>
         </DialogHeader>
 
         <iframe

@@ -90,9 +90,9 @@ const UpdateGroupsRoute = () => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const res = await apiClient.get(`/permissions?data=all`);
+        const res = await apiClient.get(`/permissions`);
         if (res.status !== 200) throw new Error("Failed to fetch permissions");
-        setAllPermissions(res.data.permissions);
+        setAllPermissions(res.data.data.permissions);
       } catch (err: any) {
         toast.error("Failed to load permissions.");
         setAllPermissions([]);
@@ -114,7 +114,7 @@ const UpdateGroupsRoute = () => {
   };
 
   const selectedPermissionObjects = useMemo<Permission[]>(() => {
-    return allPermissions.filter((p) => selectedPermissions.has(p.id));
+    return allPermissions?.filter((p) => selectedPermissions.has(p.id));
   }, [allPermissions, selectedPermissions]);
 
   const onSubmit: SubmitHandler<CreateGroupInput> = async (data) => {
@@ -149,7 +149,7 @@ const UpdateGroupsRoute = () => {
   const links = [
     {
       label: `Groups`,
-      href: `/admin/system-settings?tabs=Groups`,
+      href: `/settings?tabs=Groups`,
     },
     { label: "Update Groups" },
   ];
@@ -187,7 +187,7 @@ const UpdateGroupsRoute = () => {
                 </p>
               )}
               <div className="max-h-96 overflow-y-auto space-y-2">
-                {selectedPermissionObjects.length > 0 ? (
+                {selectedPermissionObjects?.length > 0 ? (
                   selectedPermissionObjects.map((permission) => (
                     <div
                       key={permission.id}

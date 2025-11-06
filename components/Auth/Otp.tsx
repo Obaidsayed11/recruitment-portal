@@ -142,7 +142,7 @@ function Otp({ dispatch }: DispatchType) {
           <IoIosArrowBack />
         </p>
         <Logo
-          logo={"/gridfill-log-new.png"}
+          logo={"/lanjekar-holding-logo.png"}
           companyName={"Recruitement-Portal"}
           className="w-[150px] h-[100px]"
         />

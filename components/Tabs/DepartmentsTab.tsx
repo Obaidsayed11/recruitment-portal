@@ -25,6 +25,7 @@ import DepartmentCard from "@/components/Card/DepartmentCard";
 import { DepartmentListProps, DepartmentProps } from "@/types/companyInterface";
 import { hasPermission } from "@/lib/hasPermission";
 import { usePermissions } from "@/components/PermissionContext";
+import BulkAddModal from "../Others/BulkAddModal";
 
 
 const headersOptions = [
@@ -185,9 +186,23 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
   };
  useEffect(() => {
     if (permissions && !hasPermission(permissions, "list_department")) {
-      router.push("/");
+      router.push("/dashboard");
+      
     }
   }, [permissions, router])
+
+
+  // bulk data 
+  
+      const handleBulkUpload = (newBulkData: any[]) => {
+      if (newBulkData && newBulkData.length > 0) {
+        setDepartments((prevData) => [...newBulkData, ...prevData]);
+        toast.success(`${newBulkData.length} new Departments added successfully!`);
+      } else {
+        toast.error("Bulk upload failed or returned no new data.");
+      }
+    };
+  
 
   return (
     <>
@@ -225,6 +240,17 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
             }
             serverSearchPlaceholder="Search all Departments..."
           />
+
+
+          {/* Bulk Upload Modal */}
+           {hasPermission(permissions, "import_department") && (
+              <BulkAddModal
+                onUploadComplete={handleBulkUpload}
+                downloadFileUrl={"/sample_departments.xlsx"}
+                uploadType={"department"}
+              />
+            )}
+
           
             { hasPermission(permissions, "add_department") && (<AddDepartment onAdd={handleAddDepartments}/>)}
         </div>

@@ -56,7 +56,7 @@ export default function RootLayout({
                     >
                       <Logo
                         className="justify-self-start w-full h-[90px]"
-                        logo={"/gridfill-log-new.png"}
+                        logo={"/lanjekar-holding-logo.png"}
                         companyName="Recruitment-Portal"
                       />
                       <p className="text-text text-center text-sm font-medium">

@@ -31,7 +31,7 @@ const permissionMap: Record<string, string> = {
   // 📄 APPLICATION MODULE
   // ============================
   "^/companies/[a-zA-Z0-9-]+/t/applications$": "list_application",
-  "^/companies/[a-zA-Z0-9-]+/t/applications/create-application$": "add_application",
+  // "^/companies/[a-zA-Z0-9-]+/t/applications/create-application/": "add_application",
   "^/companies/[a-zA-Z0-9-]+/t/applications/update-application/[a-zA-Z0-9-]+$": "edit_application",
   "^/companies/[a-zA-Z0-9-]+/t/applications/view-application/[a-zA-Z0-9-]+$": "view_application",
 
@@ -46,9 +46,9 @@ const permissionMap: Record<string, string> = {
   // ============================
   // ⚙️ SETTINGS / GROUPS / ROLES
   // ============================
-  "^/settings$": "list_group",
+  "^/settings$": "list_group_permission",
   "^/settings/create-group$": "add_group",
-  "^/settings/update-group/[a-zA-Z0-9-]+$": "edit_group_permission",
+  "^/settings/update-group/[a-zA-Z0-9-]+$": "edit_group",
   "^/settings/roles$": "list_role",
   "^/settings/roles/create-role$": "add_role",
   "^/settings/roles/update-role/[a-zA-Z0-9-]+$": "edit_role",

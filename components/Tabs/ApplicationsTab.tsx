@@ -30,6 +30,7 @@
   import { Label } from "recharts";
   import { hasPermission } from "@/lib/hasPermission";
   import { usePermissions } from "@/components/PermissionContext";
+import BulkAddModal from "../Others/BulkAddModal";
   
 
   const headersOptions = [
@@ -222,11 +223,47 @@
       );
     };
 
-     useEffect(() => {
-        if (permissions && !hasPermission(permissions, "list_application")) {
-          router.push(`/companies/${companyId}?tab=application`);
+// useEffect(() => {
+//   console.log("Current pathname:", window.location.pathname);
+//   console.log("Permissions:", permissions);
+  
+//   if (!permissions || (Array.isArray(permissions) && permissions.length === 0)) {
+//     console.log("Permissions not loaded yet");
+//     return;
+//   }
+
+//   const canListApplications = hasPermission(permissions, "list_application");
+//   console.log("✅ list_application permission:", canListApplications);
+//   console.log("✅ Permission type:", typeof canListApplications);
+
+//   if (!canListApplications) {
+//     console.log("❌ Redirecting - no permission");
+//     toast.error("You don't have permission to view Applications");
+//     router.push(`/dashboard`);
+//   } else {
+//     console.log("✅ Access granted");
+//   }
+// }, [permissions, router, companyId]);
+
+
+ useEffect(() => {
+      if (permissions && !hasPermission(permissions, "list_application")) {
+        router.push(`/companies/${companyId}?tab=application`);
+      }
+    }, [permissions, router])
+
+
+    // bulk data 
+    
+        const handleBulkUpload = (newBulkData: any[]) => {
+        if (newBulkData && newBulkData.length > 0) {
+          setApplications((prevData) => [...newBulkData, ...prevData]);
+          toast.success(`${newBulkData.length} new Applications added successfully!`);
+        } else {
+          toast.error("Bulk upload failed or returned no new data.");
         }
-      }, [permissions, router])
+      };
+
     return (
       <>
         {/* <DynamicBreadcrumb links={[{ label: "Applications" }]} /> */}
@@ -266,18 +303,23 @@
               serverSearchPlaceholder="Search all Application..."
             />
 
-            {/* <div className="w-full sm:w-auto"> */}
-            {/* <AddApplication onAdd={handleAddApplication} /> */}
-            {/* </div> */}
+          {/* Bulk Upload Modal */}
+           {hasPermission(permissions, "import_application") && (
+              <BulkAddModal
+                onUploadComplete={handleBulkUpload}
+                downloadFileUrl={"/sample_application.xlsx"}
+                uploadType={"application"}
+              />
+            )}
 
 
-              { hasPermission(permissions, "add_application") && (<Button
+             <Button
               onClick={handleCreateUser}
               className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
               icon={<Plus />}
             >
               Add Application
-            </Button>)}
+            </Button>
 
             
           </div>

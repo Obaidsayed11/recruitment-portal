@@ -164,7 +164,7 @@ const GroupsTab = () => {
     setSelectedCards(isChecked ? allCards : []);
   const handleCardSelect = (cardId: string, isChecked: boolean) =>
     setSelectedCards((prev) =>
-      isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
+      isChecked ? [...prev, cardId] : prev?.filter((id) => id !== cardId)
     );
   const handleDelete = (id: string) =>
     setGroups((prev) => prev.filter((data) => data.id !== id));
@@ -197,11 +197,11 @@ const GroupsTab = () => {
     }
   };
 
-  // useEffect(() => {
-  //     if (permissions && !hasPermission(permissions, "groups")) {
-  //       router.push(`/settings/create-group`);
-  //     }
-  //   }, [permissions, router])
+  useEffect(() => {
+      if (permissions && !hasPermission(permissions, "list_group_permission")) {
+        router.push(`/settings?tab=groups`);
+      }
+    }, [permissions, router])
 
 
 const handleCreateUser = () => {
@@ -275,7 +275,7 @@ const handleCreateUser = () => {
         {/* Header */}
         <Header
           checkBox={true}
-          className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+          className1="w-max xl:w-full grid sticky top-0 grid-cols-[30px_200px_150px_150px_140px] xl:grid-cols-[40px_1.5fr_1.5fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={

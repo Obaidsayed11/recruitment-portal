@@ -29,6 +29,9 @@ import dynamic from "next/dynamic";
 import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 import { parseJSON } from "date-fns";
 import { parseHtml } from "ckeditor5";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
+
 
 // const CustomEditor = dynamic(() => import("@/components/customEditor"), {
 //   ssr: false,
@@ -51,10 +54,11 @@ const addJobSchema = z.object({
 
 type AddJobDescriptionFormValues = z.infer<typeof addJobSchema>;
 
-const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
+const CreateJobRoute = () => {
   const router = useRouter();
   const params = useParams() as { companyId: string };
   const companyId = params.companyId;
+  const { permissions } = usePermissions();
 
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +115,7 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
       toast.success(response.data.message || "Job added successfully!");
       router.push(`/companies/${companyId}?tab=job-descriptions`);
 
-      onAdd(response.data.job);
+      // onAdd(response.data.job);
       setIsOpen(false);
       reset();
     } catch (error: any) {
@@ -258,13 +262,17 @@ const CreateJobRoute: React.FC<AddJobModalProps> = ({ onAdd }) => {
 
             {/* <CustomEditor control={methods.control} name="content" /> */}
 
-            <Button
+            {hasPermission(permissions, "add_job") && (
+                         <Button
               type="submit"
               className="sm:col-span-2 w-fit justify-self-end"
               disabled={isClicked}
             >
               {isClicked ? "Adding..." : "Add Job"}
             </Button>
+                        )}
+
+            
           </section>
         </form>
       </FormProvider>

@@ -4,10 +4,12 @@ import React, { forwardRef } from "react";
 import { toast } from "sonner";
 import CheckBox from "../Others/CheckBox";
 import Actions from "../Others/Actions";
+  import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "../PermissionContext";;
 
 const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
   ({ data, isSelected = false, onCardSelect, onDelete, onUpdate }, ref) => {
-
+ const { permissions } = usePermissions();
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       onCardSelect(data.id, event.target.checked);
     };
@@ -62,7 +64,7 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
 
         
         {/* Actions */}
-        <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
+        <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} permissions={permissions} />
       </div>
     );
   }

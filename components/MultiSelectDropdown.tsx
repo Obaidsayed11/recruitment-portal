@@ -6,7 +6,8 @@ import { Check, ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Button } from "./ui/button";
-import { Checkbox
+import CheckBox from "./Others/CheckBox";
+
 
 type Option = {
   value: string;
@@ -75,7 +76,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                 >
                   {/* Checkbox for visual confirmation */}
                   <div className="flex items-center space-x-2">
-                    <Checkbox
+                    <CheckBox
                       checked={isSelected}
                       // Checkbox state is managed by the CommandItem onSelect
                       onCheckedChange={() => handleSelect(option.value)} 

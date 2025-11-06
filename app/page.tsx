@@ -4,7 +4,7 @@ const HomeRoute = () => {
   return (
     <div className="grid place-content-center h-screen">
       <img
-        src="/gridfill-log-new.png"
+        src="/lanjekar-holding-logo.png"
         alt="Recruitement Portal - One Stop Solution for CMS"
         width={400}
         height={300}

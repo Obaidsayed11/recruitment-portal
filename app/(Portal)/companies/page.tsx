@@ -21,6 +21,8 @@ import CompanyCard from "@/components/Card/CompanyCard";
 import { hasPermission } from "@/lib/hasPermission";
 import { usePermissions } from "@/components/PermissionContext";
 
+import BulkAddModal from "@/components/Others/BulkAddModal";
+
 const headersOptions = [
   { value: "company" },
 
@@ -30,7 +32,9 @@ const headersOptions = [
   { value: "Actions" },
 ];
 
-const CompanyRoute = () => {
+const CompanyRoute = ({
+ 
+}) => {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -46,7 +50,7 @@ const CompanyRoute = () => {
   const [serverSearchQuery, setServerSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(serverSearchQuery, 500);
   const selectedRole = searchParams?.get("role") || "";
-
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const allCards = useMemo(() => allCompanies.map((c) => c.id), [allCompanies]);
 
   const observer = useRef<IntersectionObserver | null>(null);
@@ -146,7 +150,7 @@ const CompanyRoute = () => {
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
   };
-
+ 
   const handleDeleteSelected = async () => {
     if (selectedCards.length > 0) {
       try {
@@ -178,6 +182,18 @@ const CompanyRoute = () => {
     }
   }, [permissions, router]);
 
+
+// bulk data 
+
+    const handleBulkUpload = (newBulkData: any[]) => {
+    if (newBulkData && newBulkData.length > 0) {
+      setAllCompanies((prevData) => [...newBulkData, ...prevData]);
+      toast.success(`${newBulkData.length} new companies added successfully!`);
+    } else {
+      toast.error("Bulk upload failed or returned no new data.");
+    }
+  };
+
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Companies" }]} />
@@ -208,14 +224,30 @@ const CompanyRoute = () => {
             }
             serverSearchPlaceholder="Search companies..."
           />
-          {hasPermission(permissions, "add_company") && (
-            <AddCompany onAdd={handleAdd} />
-          )}
+          {/* <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsBulkModalOpen(true)}
+              className="bg-primary text-white px-3 py-2 rounded-lg hover:bg-primary/90 transition"
+            >
+              Bulk Upload
+            </button>
+          </div> */}
+
+          {/* Bulk Upload Modal */}
+           {hasPermission(permissions, "import_company") && (
+              <BulkAddModal
+                onUploadComplete={handleBulkUpload}
+                downloadFileUrl={"/sample_companies.xlsx"}
+                uploadType={"company"}
+              />
+            )}
+
+          <AddCompany onAdd={handleAdd} />
         </div>
-        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]  md:w-max">
           <Header
             checkBox={true}
-            className1="w-max xl:w-full grid sticky top-0 grid-cols-[40px_220px_170px_170px_160px_100px] xl:grid-cols-[40px_1.9fr_1fr_1fr_1fr_1fr] sm:gap-0"
+            className1="w-max xl:w-full grid sticky top-0 grid-cols-[40px_220px_170px_170px_160px_100px]  md:grid-cols-[50px_200px_165px_130px_140px_100px] xl:grid-cols-[40px_1.9fr_1fr_1fr_1fr_1fr] sm:gap-0"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={

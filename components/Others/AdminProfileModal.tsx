@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import UpdatePassword from "./UpdatePassword";
+// import UpdatePassword from "./UpdatePassword";
 import { AdminProfileProps } from "@/types/interface";
 import ImagePreview, { ImagePreviewHandle } from "./ImagePreview";
 import Button from "./Button";
@@ -218,10 +218,10 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
           </Form>
         </DialogContent>
       </Dialog>
-      <UpdatePassword
+      {/* <UpdatePassword
         open={isSecondDialogOpen}
         onOpenChange={setIsSecondDialogOpen}
-      />
+      /> */}
     </>
   );
 };

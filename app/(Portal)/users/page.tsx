@@ -24,6 +24,7 @@ import Button from "@/components/Others/Button";
 import { Plus } from "lucide-react";
 import { hasPermission } from "@/lib/hasPermission";
 import { usePermissions } from "@/components/PermissionContext";
+import BulkAddModal from "@/components/Others/BulkAddModal";
 
 const headersOptions = [
   { value: "Full Name" },
@@ -337,10 +338,21 @@ const UserRoute = () => {
     }
   }, [permissions, router])
 
+
+  // bulk data
+  const handleBulkUpload = (newBulkData: any[]) => {
+      if (newBulkData && newBulkData.length > 0) {
+        setAllUsers((prevData) => [...newBulkData, ...prevData]);
+        toast.success(`${newBulkData.length} new Users added successfully!`);
+      } else {
+        toast.error("Bulk upload failed or returned no new data.");
+      }
+    };
+
   return (
     <>
       <DynamicBreadcrumb links={[{ label: "Users" }]} />
-      <section className="bg-white  sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-105px)] flex flex-col">
+      <section className="bg-white  sm:rounded-xl p-3 sm:p-5 max-h-[calc(100vh-105px)]  flex flex-col">
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center 
         justify-between gap-3 sm:gap-4 pb-5"
@@ -371,6 +383,16 @@ const UserRoute = () => {
             serverSearchPlaceholder="Search all users..."
           />
 
+
+          {/* Bulk Upload Modal */}
+           {hasPermission(permissions, "import_user") && (
+              <BulkAddModal
+                onUploadComplete={handleBulkUpload}
+                downloadFileUrl={"/sample_users.xlsx"}
+                uploadType={"user"}
+              />
+            )}
+
          { hasPermission(permissions, "add_user") && (<Button
             onClick={handleCreateUser}
             className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
@@ -379,10 +401,10 @@ const UserRoute = () => {
             Create User
           </Button>)}
         </div>
-        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
+        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)] md:w-max">
           <Header
             checkBox={true}
-            className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_150px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
+            className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_100px]  md:grid-cols-[50px_200px_150px_150px_200px_120px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr] border gap-5 sm:gap-0"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={

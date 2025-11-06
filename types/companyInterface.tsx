@@ -13,6 +13,8 @@ export interface CompanyProps {
             Jobs: number
             Applications: number
         }
+        onUploadComplete: (data: any[]) => void;
+  downloadFileUrl: string;
 }
 
 export interface CompanyListProps {

@@ -8,9 +8,13 @@ import apiClient from "@/lib/axiosInterceptor";
 import CheckBox from "../Others/CheckBox";
 import Actions from "../Others/Actions";
 import { GroupCardProps } from "@/types/settingsinterface";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
   ({ data, isSelected = false, onCardSelect, onDelete, onUpdate }, ref) => {
+
+     const { permissions } = usePermissions();
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       onCardSelect(data.id, e.target.checked);
@@ -30,9 +34,9 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
       <div
         ref={ref}
        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
-          grid-cols-[20px_120px_120px_120px_120px_150px]
+          grid-cols-[10px_180px_145px_150px_120px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr]
-          xl:grid-cols-[0px_1fr_1fr_1fr_1fr]
+          xl:grid-cols-[5px_1.4fr_1.4fr_1fr_1fr]
           
           gap-10 transition-all cursor-pointer items-center text-left ${
             isSelected
@@ -54,7 +58,7 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
 
         
    
-        <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate} />
+        <Actions id={data.id} onDelete={handleDelete} data={data} onUpdate={onUpdate}   permissions={permissions} />
       </div>
     );
   }

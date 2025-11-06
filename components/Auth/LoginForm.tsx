@@ -109,7 +109,7 @@ function LoginForm() {
     <div className="bg-white grid gap-5 rounded-3xl p-5 sm:min-w-[450px] sm:p-8">
       <div className="grid justify-center gap-2">
         <Logo
-          logo={"/gridfill-log-new.png"}
+          logo={"/lanjekar-holding-logo.png"}
           companyName={"Recruitement-Portal"}
           className="w-[150px] h-[100px]"
         />

@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import apiClient from "@/lib/axiosInterceptor";
@@ -27,6 +27,8 @@ import { GroupListProps, GroupProps, RoleListProps, RoleProps } from "@/types/se
 import AddGroup from "@/components/Modals/AddModals/AddGroups";
 import RolesCard from "@/components/Card/RolesCard";
 import AddRoles from "@/components/Modals/AddModals/AddRoles";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const headersOptions = [
   {value: "Role Name"},
@@ -80,7 +82,8 @@ const RolesTab = () => {
     [loading, hasMore]
   );
 
-
+  const router = useRouter();
+  const { permissions } = usePermissions();
 
   
 
@@ -221,6 +224,12 @@ useEffect(()=> {
   fetchRoles()
 },[session])
 
+ useEffect(() => {
+    if (permissions && !hasPermission(permissions, "list_companies")) {
+      router.push("/settings?tab=roles");
+    }
+  }, [permissions, router]);
+
 
   const uniqueRoles = filterRoles.map((role) => ({
     label: `${role.name}`,
@@ -277,7 +286,7 @@ useEffect(()=> {
         {/* Header */}
         <Header
           checkBox={true}
-         className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+         className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={

@@ -100,7 +100,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
 
           onClick={handleRowClick}
         
-        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap grid-cols-[20px_200px_150px_150px_150px_100px] xl:grid-cols-[20px_4.8fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
+        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid text-nowrap grid-cols-[20px_200px_150px_150px_150px_100px] md:grid-cols-[5px_200px_150px_110px_140px_80px] xl:grid-cols-[20px_4.8fr_2.4fr_2.4fr_2.5fr_2.5fr] gap-5 items-center cursor-pointer transition-all text-left${
           isSelected ? "bg-secondary hover:bg-amber-800 border-border rounded-xl"
             : "hover:border hover:border-border hover:bg-secondary border border-white hover:rounded-xl"
         }`}
