@@ -76,13 +76,20 @@ export default withAuth(
     const token = req.nextauth.token;
     const { pathname, origin } = req.nextUrl;
 
-    // --- 1️⃣ Redirect Logic ---
+      const publicRoutes = ["/signin", "/forgotpassword", "/forgot-password", "/otp", "/reset-password"];
+
     if (!token) {
+      // Allow unauthenticated access to public routes
+      if (publicRoutes.includes(pathname)) {
+        return NextResponse.next();
+      }
+
+      // Redirect unauthenticated users elsewhere
       return NextResponse.redirect(new URL("/signin", origin));
     }
 
-    // Redirect authenticated users away from login-related pages
-    if (pathname === "/" || pathname === "/signin" || pathname === "/otp") {
+     // --- 2️⃣ Redirect authenticated users away from auth pages ---
+    if (["/", "/signin", "/otp", "/forgotpassword", "/forgot-password", "/reset-password"].includes(pathname)) {
       return NextResponse.redirect(new URL("/dashboard", origin));
     }
 
@@ -120,8 +127,14 @@ export default withAuth(
     return NextResponse.next();
   },
   {
-    callbacks: {
-      authorized: ({ token }) => !!token,
+     callbacks: {
+      // ✅ Override default NextAuth behaviour
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
+        const publicRoutes = ["/signin", "/forgotpassword", "/forgot-password", "/otp", "/reset-password"];
+        if (publicRoutes.includes(pathname)) return true; // allow public pages
+        return !!token; // otherwise, must be authenticated
+      },
     },
     pages: {
       signIn: "/signin",

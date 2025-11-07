@@ -36,6 +36,7 @@ const RolesCard = forwardRef<HTMLDivElement, RoleCardProps>(
         className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
           grid-cols-[5px_175px_123px_150px_150px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
+          md:grid-cols-[8px_104px_80px_250px_60px]
           xl:grid-cols-[20px_1fr_1fr_1fr_1fr] text-start
           
           gap-10 transition-all cursor-pointer items-center  ${

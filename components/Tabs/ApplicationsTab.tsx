@@ -275,7 +275,7 @@ import BulkAddModal from "../Others/BulkAddModal";
           {/* --- Header Section --- */}
           <div
             className="flex flex-col sm:flex-row items-start sm:items-center 
-          justify-between gap-3 sm:gap-4 pb-5"
+          xl:justify-between gap-3  sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap"
           >
             <Operations
               filterProps={{
@@ -330,7 +330,7 @@ import BulkAddModal from "../Others/BulkAddModal";
             {/* --- Table Header --- */}
             <Header
               checkBox={true}
-              className1="w-full xl:w-full grid sticky top-0 xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+              className1="w-max xl:w-full grid sticky top-0 xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]  md:grid-cols-[40px_190px_190px_120px_120px_145px_80px_140px]  border gap-5 sm:gap-0 text-left"
               headersall={headersOptions}
               handleSelectAll={handleSelectAll}
               isAllSelected={

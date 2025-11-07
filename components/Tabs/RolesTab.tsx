@@ -248,7 +248,7 @@ useEffect(()=> {
       {/* Top Operations Bar */}
       <div
         className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5"
+        xl:justify-between gap-3 sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap"
       >
         <Operations
           filterProps={{
@@ -286,7 +286,7 @@ useEffect(()=> {
         {/* Header */}
         <Header
           checkBox={true}
-         className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+         className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px] md:grid-cols-[40px_150px_120px_300px_60px] xl:grid-cols-[60px_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
           headersall={headersOptions}
           handleSelectAll={handleSelectAll}
           isAllSelected={

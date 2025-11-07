@@ -429,13 +429,18 @@ const UserRoute = () => {
                 isLastElement && searchQuery === "" ? lastUserElementRef : null;
               return (
                 <div ref={ref} key={user.id}>
-                  <UserCard
+
+                  {hasPermission(permissions, "list_users") && (
+             <UserCard
                     data={user}
                     isSelected={selectedCards.includes(user.id)}
                     onCardSelect={handleCardSelect}
                     onDelete={handleDelete}
                     onUpdate={handleUpdate}
                   />
+            )}
+
+                 
                 </div>
               );
             })

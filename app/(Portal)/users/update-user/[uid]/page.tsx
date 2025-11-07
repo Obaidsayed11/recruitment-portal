@@ -29,8 +29,6 @@ import ManageTenantAssignments from "@/components/Tabs/UserTabs/TenantAssignment
 import { useRoles } from "@/hooks/useRoles";
 // import ManageTenantAssignments from "@/components/Tabs/TenantAssignmentTab";
 
-
-
 // Schema that properly handles optional email
 const UserUpdateSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -44,7 +42,7 @@ const UserUpdateSchema = z.object({
       }
     ),
   phone: z.string().min(10, "Phone must be valid"),
-  role: z.string()
+  role: z.string(),
 });
 interface UpdateUserRouteProps {
   userId?: string;
@@ -61,7 +59,8 @@ const UpdateUserRoute = () => {
   const pathname = usePathname(); // 2. Get the current URL path
   const searchParams = useSearchParams();
   const params = useParams();
-   const { roles, loading, error, refetch } = useRoles();
+  const { roles, loading, error, refetch } = useRoles();
+  console.log(roles, "rrrrrrr");
   const userId = useMemo(() => {
     // Get both potential IDs from the URL parameters
     const idFromParams = params?.id as string;
@@ -97,7 +96,7 @@ const UpdateUserRoute = () => {
       fullName: "",
       phone: "",
       email: "", // Changed from "" to undefined
-      role: ""
+      role: "",
     },
   });
 
@@ -126,26 +125,26 @@ const UpdateUserRoute = () => {
               fullName: fetchedUser.fullName || fetchedUser.full_name || "",
               email: fetchedUser.email || "",
               phone: fetchedUser.phone || fetchedUser.phoneNumber || "",
-               role: fetchedUser.Role?.name || "", // ✅ use id for Combobox value
+              role: fetchedUser.Role?.id || "", // ✅ use id for Combobox value
             });
           } else {
             toast.error("User data not found in response");
           }
         } catch (error: any) {
           toast.error("Failed to fetch user data.");
-         } finally {
+        } finally {
           setIsLoading(false);
         }
       };
       fetchUserData();
-    }else if (userId && userData) {
+    } else if (userId && userData) {
       // If we already have userData (from registration), just use it
       console.log("Using cached user data:", userData);
       reset({
         fullName: userData.fullName || "",
         email: userData.email || "",
         phone: userData.phone || "",
-        role: userData.Role?.name || "", // ✅ again use id // Use role's string property
+        role: userData.Role?.id || "", // ✅ again use id // Use role's string property
       });
     } else {
       // Reset form when no userId (creating new user)
@@ -223,12 +222,13 @@ const UpdateUserRoute = () => {
       console.log("JSON.stringify:", JSON.stringify(payload, null, 2));
 
       const response = await apiClient.put(`/user/${userId}`, payload);
-      if (response.status === 201 && response.data.user) {
+ 
+        
         toast.success(response.data.message || "User updated successfully!");
         if (response.data.user) {
           setUserData(response.data.user);
         }
-      }
+    
     } catch (error: any) {
       toast.error(error.response?.data?.message || "An error occurred.");
     }
@@ -296,32 +296,31 @@ const UpdateUserRoute = () => {
                   </FormItem>
                 )}
               /> */}
-                 <FormField
-                              control={control}
-                              name="role"
-                              render={({ field }) => (
-                                <FormItem className="sm:col-span-1">
-                                  <FormLabel className="text-fontPrimary">Roles</FormLabel>
-                                  <FormControl>
-                                    <Combobox
-                                    className="mt-2"
-                                      placeholder="Select Role"
-                                  
-                                      options={roles.map((dep) => ({
-                                        value: dep.id,
-                                        label: dep.name.split("_").join(" "),
-                                      }))}
-                                      value={field.value}
-                                      onSelect={field.onChange}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+              <FormField
+                control={control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-1">
+                    <FormLabel className="text-fontPrimary">Roles</FormLabel>
+                    <FormControl>
+                      <Combobox
+                        className="mt-2"
+                        placeholder="Select Role"
+                        options={roles.map((dep) => ({
+                          value: dep.id,
+                          label: dep.name.split("_").join(" "),
+                        }))}
+                        value={field.value}
+                        onSelect={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || loading}
                 className="w-fit justify-self-end col-span-2"
               >
                 {isSubmitting ? "Updating..." : "Update user"}

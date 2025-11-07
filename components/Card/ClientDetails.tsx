@@ -100,107 +100,117 @@
 
 
 
-    return (
-      <section className="w-full">
-        {/* --- Top Info Section --- */}
-      {/* --- Top Info Section --- */}
-  <div className="border bg-white rounded-lg p-4 mb-6 flex flex-col lg:flex-row items-center lg:items-stretch gap-4">
-    {/* --- Left 50%: Company Info --- */}
-    <div className="flex flex-col lg:flex-row md:flex-row  items-center w-full lg:w-1/2 gap-6">
-      {/* --- Logo & Name --- */}
-      <div className="flex items-center gap-3 w-full lg:w-[50%]">
-        {company.logoUrl ? (
-          <img
-            src={`${BASE_URL}${company.logoUrl || "/"}`}
-            alt={company.name || "Logo"}
-            className="w-[100px] h-[50px] rounded-lg object-contain bg-white border p-1"
-          />
-        ) : (
-          <div className="w-[120px] h-[60px] bg-gray-400 text-white rounded-lg flex items-center justify-center text-2xl font-bold">
-            {company.name?.charAt(0).toUpperCase() || "N"}
+  return (
+  <section className="w-full">
+    {/* --- Top Info Section --- */}
+    <div className="border bg-white rounded-lg p-4 mb-6 flex flex-col lg:flex-row items-center lg:items-stretch gap-4">
+      {/* --- Left 50%: Company Info --- */}
+      <div className="flex flex-col lg:flex-row md:flex-row items-center w-full lg:w-1/2 gap-6">
+        {/* --- Logo & Name --- */}
+        <div className="flex items-center gap-3 w-full lg:w-[50%]">
+          {company.logoUrl ? (
+            <img
+              src={`${BASE_URL}${company.logoUrl || "/"}`}
+              alt={company.name || "Logo"}
+              className="w-[100px] h-[50px] rounded-lg object-contain bg-white border p-1"
+            />
+          ) : (
+            <div className="w-[120px] h-[60px] bg-gray-400 text-white rounded-lg flex items-center justify-center text-2xl font-bold">
+              {company.name?.charAt(0).toUpperCase() || "N"}
+            </div>
+          )}
+          <div className="flex flex-col">
+            <h3 className="font-semibold text-gray-800 text-lg">
+              {company.name || "Company Name"}
+            </h3>
+            {company.websiteUrl && (
+              <a
+                href={company.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+              >
+                {company.websiteUrl.replace(/^(https?:\/\/)?(www\.)?/, "")}
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            )}
           </div>
-        )}
-        <div className="flex flex-col">
-          <h3 className="font-semibold text-gray-800 text-lg">{company.name || "Company Name"}</h3>
-          {company.websiteUrl && (
+        </div>
+
+        {/* --- Vertical Divider --- */}
+        <div className="hidden lg:block w-[1px] bg-gray-300 self-stretch mx-4"></div>
+
+        {/* --- Location & Career Page --- */}
+        <div className="flex flex-col items-center sm:items-start mt-2 w-full text-center sm:text-left">
+          <p className="text-gray-700 text-sm mb-1">
+            <strong>Location:</strong>{" "}
+            <span className="break-all">{company.location || "Not available"}</span>
+          </p>
+
+          {company.careerPageUrl && (
             <a
-              href={company.websiteUrl}
+              href={company.careerPageUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+              className="text-sm text-blue-600 hover:underline flex items-center gap-1 flex-wrap justify-center sm:justify-start break-all"
             >
-              {company.websiteUrl.replace(/^(https?:\/\/)?(www\.)?/, "")}
-              <ExternalLink className="w-3 h-3" />
+              {company.careerPageUrl}
+              <ExternalLink className="w-3 h-3 shrink-0" />
             </a>
           )}
         </div>
       </div>
 
-      {/* --- Vertical Divider --- */}
-      <div className="hidden lg:block w-[1px] bg-gray-300 self-stretch mx-4 "></div>
+      {/* --- Vertical Divider between Left and Right halves --- */}
+      <div className="hidden lg:block w-[1px] bg-gray-300 self-stretch"></div>
 
-      {/* --- Location & Career Page --- */}
-      <div className="flex flex-col  items-center sm:items-start  mt-2 w-full text-center sm:text-left">
-  <p className="text-gray-700 text-sm mb-1">
-    <strong>Location:</strong>{" "}
-    <span className="break-all">{company.location || "Not available"}</span>
-  </p>
-
-  {company.careerPageUrl && (
-    <a
-      href={company.careerPageUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-sm text-blue-600 hover:underline flex items-center gap-1 flex-wrap justify-center sm:justify-start break-all"
-    >
-      {company.careerPageUrl}
-      <ExternalLink className="w-3 h-3 shrink-0" />
-    </a>
-  )}
-</div>
-
-    </div>
-
-    {/* --- Vertical Divider between Left and Right halves --- */}
-    <div className="hidden lg:block w-[1px] bg-gray-300 self-stretch"></div>
-
-    {/* --- Right 50%: Stats Cards --- */}
-    <div className="w-full lg:w-1/2 grid grid-cols-3 gap-4">
-      {overViewStats.map((card, index) => (
-        <div
-          key={index}
-          className={`rounded-xl border ${card.bg} ${card.border} p-4 flex items-center gap-3 hover:shadow-md transition-all duration-200`}
-        >
-          {/* Icon on Left */}
+      {/* --- Right 50%: Stats Cards --- */}
+      <div
+        className="
+          w-full 
+          grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 
+          gap-4
+          px-2 sm:px-3 md:px-6
+          lg:w-full
+        "
+      >
+        {overViewStats.map((card, index) => (
           <div
-            className="flex items-center justify-center"
-            style={{
-              backgroundColor: card.color,
-              borderRadius: "10px",
-              width: "36px",
-              height: "36px",
-              display: "grid",
-              placeContent: "center",
-            }}
+            key={index}
+            className={`rounded-xl border ${card.bg} ${card.border} p-3 sm:p-4 flex items-center gap-3 hover:shadow-md transition-all duration-200`}
           >
-            <div className="text-white">{card.svg}</div>
-          </div>
+            {/* Icon on Left */}
+            <div
+              className="flex items-center justify-center"
+              style={{
+                backgroundColor: card.color,
+                borderRadius: "10px",
+                width: "36px",
+                height: "36px",
+                display: "grid",
+                placeContent: "center",
+              }}
+            >
+              <div className="text-white">{card.svg}</div>
+            </div>
 
-          {/* Label & Number on Right */}
-          <div className="flex flex-col items-start">
-            <p className="text-sm text-gray-600">{card.label}</p>
-            <p className="text-lg font-semibold" style={{ color: card.color }}>
-              {card.number}
-            </p>
+            {/* Label & Number on Right */}
+            <div className="flex flex-col items-start">
+              <p className="text-sm text-gray-600">{card.label}</p>
+              <p
+                className="text-lg font-semibold"
+                style={{ color: card.color }}
+              >
+                {card.number}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  </div>
+  </section>
+);
 
-
-      </section>
-    );
   };
 
   export default ClientInfoSection;

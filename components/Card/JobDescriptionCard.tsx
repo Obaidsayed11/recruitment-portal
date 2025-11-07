@@ -47,7 +47,9 @@ import { usePermissions } from "../PermissionContext";
           ref={ref}
           onClick={handleRowClick} // this is the click handlerr
           className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
-          grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px]
+          grid-cols-[20px_120px_120px_150px_150px_150px_150px_100px]
+
+          md:grid-cols-[10px_150px_160px_115px_130px_110px_80px_40px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
           xl:grid-cols-[0px_0.9fr_0.9fr_0.9fr_0.9fr_0.9fr_1fr_1fr]
           
@@ -67,7 +69,7 @@ import { usePermissions } from "../PermissionContext";
           </div>
 
           {/* Job Title (2nd column) */}
-          <span className="text-subtext font-medium line-clamp-1 text-left truncate overflow-hidden">
+          <span className="text-subtext font-medium line-clamp-1 text-left truncate overflow-hidden xl:truncate lg:truncate ">
             {data.description || "NA"}
             <span className="text-sm line-clamp-6 text-left">
             {data.location || "NA"}

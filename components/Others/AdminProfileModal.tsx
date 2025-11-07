@@ -20,6 +20,7 @@ import { AdminProfileProps } from "@/types/interface";
 import ImagePreview, { ImagePreviewHandle } from "./ImagePreview";
 import Button from "./Button";
 import { useSession } from "next-auth/react";
+import UpdatePassword from "./UpdatePassword";
 
 const formSchema = z.object({
   fullName: z
@@ -153,7 +154,7 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter your full name" />
+                      <Input {...field} placeholder="Enter your full name" disabled />
                     </FormControl>
                     <FormMessage>{errors.fullName?.message}</FormMessage>
                   </FormItem>
@@ -218,10 +219,10 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
           </Form>
         </DialogContent>
       </Dialog>
-      {/* <UpdatePassword
+      <UpdatePassword
         open={isSecondDialogOpen}
         onOpenChange={setIsSecondDialogOpen}
-      /> */}
+      />
     </>
   );
 };

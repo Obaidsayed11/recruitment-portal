@@ -67,6 +67,7 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
          onClick={handleRowClick} // this is the click handlerr
          className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
           grid-cols-[20px_120px_120px_150px_150px_150px_150px_150px]
+          md:grid-cols-[10px_135px_150px_80px_90px_100px_80px_20px] 
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]
           xl:grid-cols-[0px_0.9fr_0.9fr_0.9fr_0.9fr_0.9fr_1fr_1fr]
           
@@ -86,8 +87,8 @@ const ApplicationCard = forwardRef<HTMLDivElement, ApplicationCardProps>(
         </div>
 
         {/* Candidate Name */}
-        <div className="text-left">
-          <span className="text-subtext font-medium line-clamp-1">
+        <div className="text-left overflow-hidden truncate md:truncate w-28">
+          <span className="text-subtext font-medium line-clamp-1 truncate ">
             {data.candidateName || "NA"}
           </span>
         </div>

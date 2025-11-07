@@ -59,9 +59,7 @@ export default function RootLayout({
                         logo={"/lanjekar-holding-logo.png"}
                         companyName="Recruitment-Portal"
                       />
-                      <p className="text-text text-center text-sm font-medium">
-                        LAST MILE{" "}
-                      </p>
+                     
                     </Link>
                     <div className="h-[calc(100vh-150px)] content-start  overflow-auto  pl-2">
                       <div className="w-[95%]">

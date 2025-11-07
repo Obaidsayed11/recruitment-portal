@@ -24,24 +24,19 @@ import {
 import { Combobox } from "@/components/Others/ComoboboxDemo";
 import CustomEditorWrapper from "@/components/CustomEditorWrapper";
 
-const employmentOptions = [
-  "FULL_TIME",
-  "CONTRACT",
-  "INTERNSHIP",
-] as const;
+const employmentOptions = ["FULL_TIME", "CONTRACT", "INTERNSHIP"] as const;
 
 const statusOptions = ["ACTIVE", "CLOSED", "DRAFT"] as const;
 
 const EditJobSchema = z.object({
-
   departmentId: z.string().min(1, "Department is required."),
   location: z.string().min(1, "Location is required."),
   experience: z.string().optional(),
   salaryRange: z.string().optional(),
   employmentType: z.enum(employmentOptions),
-  description: z.string().min(20, "Description Is required"),
+  description: z.string().min(5, "Description Is required"),
   content: z.string().min(50, "Content is Required"),
- 
+
   status: z.enum(statusOptions),
 });
 
@@ -65,14 +60,13 @@ const UpdateJobRoute = () => {
   const methods = useForm<EditJobDescriptionFormValues>({
     resolver: zodResolver(EditJobSchema),
     defaultValues: {
-     
       departmentId: "",
       location: "",
       experience: "",
       salaryRange: "",
       employmentType: "FULL_TIME",
       description: "",
-     content: "",
+      content: "",
       status: "ACTIVE",
     },
   });
@@ -128,7 +122,7 @@ const UpdateJobRoute = () => {
             employmentType: (fetchedJob.employmentType ||
               "FULL_TIME") as (typeof employmentOptions)[number],
             description: fetchedJob.description || "",
-            content : fetchedJob.content || "",
+            content: fetchedJob.content || "",
             status: (fetchedJob.status ||
               "ACTIVE") as (typeof statusOptions)[number],
           };
@@ -156,10 +150,8 @@ const UpdateJobRoute = () => {
       console.log("Submitting form data:", formData);
       setIsSubmitting(true);
       // Function to remove HTML tags from rich text fields
-      
 
       const payload = {
-       
         departmentId: formData.departmentId,
         location: formData.location,
         experience: formData.experience,
@@ -168,7 +160,6 @@ const UpdateJobRoute = () => {
         description: formData.description,
         content: formData.content,
         status: formData.status,
-       
       };
 
       console.log("Sending PUT request to:", `/job/${jobId}`);
@@ -207,7 +198,10 @@ const UpdateJobRoute = () => {
     <>
       <DynamicBreadcrumb
         links={[
-           { label: "Jobs", href: `/companies/${companyId}?tab=job-description` },
+          {
+            label: "Jobs",
+            href: `/companies/${companyId}?tab=job-description`,
+          },
           { label: "Edit Job" },
         ]}
       />
@@ -215,7 +209,7 @@ const UpdateJobRoute = () => {
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-         className="flex flex-col h-[calc(100vh-105px)] overflow-y-auto overflow-x-hidden gap-5"
+          className="flex flex-col h-[calc(100vh-105px)] overflow-y-auto overflow-x-hidden gap-5"
         >
           <section className="bg-white border border-gray-200 rounded-xl p-4 grid gap-5">
             <h2 className="text-xl font-bold text-text">Edit Job Details</h2>
@@ -231,13 +225,13 @@ const UpdateJobRoute = () => {
                       name="title"
                       placeholder="Enter Job Title"
                     /> */}
-                     <div >
-                    <TextareaField
-                      label="Description Title"
-                      name="description"
-                      placeholder="Enter Description"
-                    />
-                  </div>
+                    <div>
+                      <TextareaField
+                        label="Description Title"
+                        name="description"
+                        placeholder="Enter Description"
+                      />
+                    </div>
 
                     <FormField
                       control={control}
@@ -299,7 +293,6 @@ const UpdateJobRoute = () => {
                       options={statusSelect}
                     />
                   </div>
-                   
 
                   <div className="mt-4">
                     {/* <TextareaField
@@ -307,20 +300,18 @@ const UpdateJobRoute = () => {
                       name="description"
                       placeholder="Enter job description"
                     /> */}
-                   <div className="sm:col-span-2 text-text font-medium text-sm mb-4 overflow-hidden">
-  <h1 className="mb-2">
-    Content <span className="text-red-500 ml-1">*</span>
-  </h1>
-  <div className="w-full overflow-x-hidden wrap-break-word">
-    <CustomEditorWrapper control={methods.control} name="content" />
-  </div>
-</div>
-
+                    <div className="sm:col-span-2 text-text font-medium text-sm mb-4 overflow-hidden">
+                      <h1 className="mb-2">
+                        Content <span className="text-red-500 ml-1">*</span>
+                      </h1>
+                      <div className="w-full overflow-x-hidden wrap-break-word">
+                        <CustomEditorWrapper
+                          control={methods.control}
+                          name="content"
+                        />
+                      </div>
+                    </div>
                   </div>
-
-                
-
-                
 
                   <Button
                     type="submit"

@@ -48,7 +48,7 @@ export interface ButtonProps {
 }
 
 export interface LoginData {
-  phone: string;
+  email: string;
   oldPassword: string;
   password: string;
   cPassword: string;

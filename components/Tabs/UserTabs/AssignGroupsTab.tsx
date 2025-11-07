@@ -51,7 +51,7 @@
   
       // Priority 3: If no ID is in the URL, check if the path is for user management
       // and fall back to localStorage (for the create-then-assign flow).
-      if (pathname?.endsWith("dashboard/users/create-user")) {
+      if (pathname?.endsWith("/users/create-user")) {
         if (typeof window !== "undefined") {
           return searchParams?.get("userId");
         }

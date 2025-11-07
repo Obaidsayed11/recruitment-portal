@@ -15,7 +15,7 @@ interface MyToken {
   accessToken: string;
   refreshToken: string;
   accessTokenExpires: number;
-  companyId: string | null
+  companyId: string | null;
   error?: string;
 }
 
@@ -54,19 +54,34 @@ export default NextAuth({
       async authorize(credentials) {
         const { email, password } = credentials as Credentials;
 
-        const response = await apiClient.post("/auth/login", { email, password });
-        const user = response.data.user;
+        try {
+          const response = await apiClient.post("/auth/login", {
+            email,
+            password,
+          });
 
-        if (!user) return null;
+          const user = response.data.user;
 
-        return {
-          id: user.id,
-          fullName: user.fullName,
-          accessToken: user.token,
-          refreshToken: user.refreshToken,
-          role: user.role,
-          companyId: user.companyId
-        } as any;
+          if (!user) return null;
+
+          return {
+            id: user.id,
+            fullName: user.fullName,
+            accessToken: user.token,
+            refreshToken: user.refreshToken,
+            role: user.role,
+            companyId: user.companyId,
+          } as any;
+        } catch (error: any) {
+          const message =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "Login failed. Please try again.";
+
+          // Throw custom error — NextAuth will send this as res.error to your frontend
+          throw new Error(message);
+        }
       },
     }),
   ],
@@ -101,13 +116,13 @@ export default NextAuth({
         role: (token as MyToken).role,
         accessToken: (token as MyToken).accessToken,
         refreshToken: (token as MyToken).refreshToken,
-        companyId: (token as MyToken).companyId
+        companyId: (token as MyToken).companyId,
       };
       return session;
     },
   },
 
   session: { strategy: "jwt" },
-  pages: { signIn: "/signin" },
+  pages: { signIn: "/signin", signOut: "/signin", },
   debug: true,
 });

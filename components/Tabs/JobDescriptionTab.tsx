@@ -34,7 +34,7 @@ import { hasPermission } from "@/lib/hasPermission";
 import { usePermissions } from "@/components/PermissionContext";
 import BulkAddModal from "../Others/BulkAddModal";
 const headersOptions = [
-  { value: "Job Title" },
+  { value: "Job Description" },
   { value: "Experience/Salary" },
   { value: "Department" },
   { value: "Employment Type" },
@@ -53,9 +53,8 @@ const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
   const searchParams = useSearchParams();
   console.log(session, "sesdsion");
 
-    const router = useRouter();
-    const { permissions } = usePermissions();
-  
+  const router = useRouter();
+  const { permissions } = usePermissions();
 
   // const companyId = session?.user?.companyId || null
   //  const { companyId } = useParams();
@@ -72,10 +71,10 @@ const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
   const [searchQuery, setSearchQuery] = useState(""); // For client-side filtering
   const [serverSearchQuery, setServerSearchQuery] = useState(""); // For server-side search
   const debouncedSearchQuery = useDebounce(serverSearchQuery, 500);
-//  const selectedFilters = searchParams?.getAll("name") || [];
-const selectedDepartment =  searchParams?.get("name") || "";
-const selectedEmployment =  searchParams?.get("employmentType") || "";
-const selectedStatus =  searchParams?.get("status") || "";
+  //  const selectedFilters = searchParams?.getAll("name") || [];
+  const selectedDepartment = searchParams?.get("department") || "";
+  const selectedEmployment = searchParams?.get("employmentType") || "";
+  const selectedStatus = searchParams?.get("status") || "";
   const [departments, setDepartments] = useState<
     { id: string; name: string }[]
   >([]);
@@ -97,7 +96,7 @@ const selectedStatus =  searchParams?.get("status") || "";
         }
       });
       if (node) observer.current.observe(node);
-    },  
+    },
     [loading, hasMore]
   );
 
@@ -142,17 +141,16 @@ const selectedStatus =  searchParams?.get("status") || "";
 
           if (selectedDepartment && selectedDepartment !== "All") {
             params.append("name", selectedDepartment);
-          } 
+          }
           if (selectedEmployment && selectedEmployment !== "All") {
             params.append("employmentType", selectedEmployment);
-          } 
+          }
           if (selectedStatus && selectedStatus !== "All") {
             params.append("status", selectedStatus);
-          } 
-            response = await apiClient.get<JobDescriptionListProps>(
-              `/job?companyId=${companyId}&${params.toString()}`)
-          
-           
+          }
+          response = await apiClient.get<JobDescriptionListProps>(
+            `/job?companyId=${companyId}&${params.toString()}`
+          );
         }
 
         const newDescription = response.data.jobs || [];
@@ -173,7 +171,15 @@ const selectedStatus =  searchParams?.get("status") || "";
 
     fetchData();
     // This dependency array is now correct. It runs when the page or query changes, but will not loop on its own state updates.
-  }, [session, companyId, page, debouncedSearchQuery,  selectedDepartment, selectedEmployment, selectedStatus]);
+  }, [
+    session,
+    companyId,
+    page,
+    debouncedSearchQuery,
+    selectedDepartment,
+    selectedEmployment,
+    selectedStatus,
+  ]);
   // --- Event Handlers ---
   const handleSelectAll = (isChecked: boolean) =>
     setSelectedCards(isChecked ? allCards : []);
@@ -215,10 +221,7 @@ const selectedStatus =  searchParams?.get("status") || "";
   };
 
   const handleCreateUser = () => {
-   
-    router.push(
-      `/companies/${companyId}/t/jobs/create-jobs`
-    );
+    router.push(`/companies/${companyId}/t/jobs/create-jobs`);
   };
 
   useEffect(() => {
@@ -258,25 +261,24 @@ const selectedStatus =  searchParams?.get("status") || "";
     { label: "DRAFT", value: "DRAFT" },
   ];
 
+  useEffect(() => {
+    if (permissions && !hasPermission(permissions, "list_jobs")) {
+      router.push(`/companies/${companyId}?tab=job-description`);
+    }
+  }, [permissions, router]);
 
-   useEffect(() => {
-      if (permissions && !hasPermission(permissions, "list_jobs")) {
-        router.push(`/companies/${companyId}?tab=job-description`);
-      }
-    }, [permissions, router])
+  // bulk data
 
-
-    // bulk data 
-    
-        const handleBulkUpload = (newBulkData: any[]) => {
-        if (newBulkData && newBulkData.length > 0) {
-          setDescription((prevData) => [...newBulkData, ...prevData]);
-          toast.success(`${newBulkData.length} new departments added successfully!`);
-        } else {
-          toast.error("Bulk upload failed or returned no new data.");
-        }
-      };
-  
+  const handleBulkUpload = (newBulkData: any[]) => {
+    if (newBulkData && newBulkData.length > 0) {
+      setDescription((prevData) => [...newBulkData, ...prevData]);
+      toast.success(
+        `${newBulkData.length} new departments added successfully!`
+      );
+    } else {
+      toast.error("Bulk upload failed or returned no new data.");
+    }
+  };
 
   return (
     <>
@@ -284,19 +286,19 @@ const selectedStatus =  searchParams?.get("status") || "";
 
       <section
         className="bg-white sm:rounded-xl 
-        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-308px)] w-full"
+        p-3 sm:p-5 flex flex-col max-h-[calc(100vh-308px)] w-full "
       >
         {/* Top Operations Bar */}
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center 
-          justify-between gap-3 sm:gap-4 pb-5 "
+          xl:justify-between gap-3 sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap"
         >
           <Operations
             filterProps={{
               filter: true,
               filters: [
                 {
-                  queryKey: "name",
+                  queryKey: "department",
                   options: uniqueDescrip,
                 },
                 {
@@ -325,25 +327,24 @@ const selectedStatus =  searchParams?.get("status") || "";
             serverSearchPlaceholder="Search all Job Description..."
           />
 
-       {/* Bulk Upload Modal */}
-           {hasPermission(permissions, "import_job") && (
-              <BulkAddModal
-                onUploadComplete={handleBulkUpload}
-                downloadFileUrl={"/sample_jobs.xlsx"}
-                uploadType={"job"}
-              />
-            )}
+          {/* Bulk Upload Modal */}
+          {hasPermission(permissions, "import_job") && (
+            <BulkAddModal
+              onUploadComplete={handleBulkUpload}
+              downloadFileUrl={"/sample_jobs.xlsx"}
+              uploadType={"job"}
+            />
+          )}
 
-
-            { hasPermission(permissions, "add_job") && (<Button
-            onClick={handleCreateUser}
-            className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
-            icon={<Plus />}
-          >
-            Add Job Description
-          </Button>)}
-
-          
+          {hasPermission(permissions, "add_job") && (
+            <Button
+              onClick={handleCreateUser}
+              className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
+              icon={<Plus />}
+            >
+              Add Job Description
+            </Button>
+          )}
         </div>
 
         {/* Scrollable User List */}
@@ -351,7 +352,7 @@ const selectedStatus =  searchParams?.get("status") || "";
           {/* Header */}
           <Header
             checkBox={true}
-            className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+            className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] md:grid-cols-[40px_200px_200px_150px_180px_148px_80px_100px]  xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
             headersall={headersOptions}
             handleSelectAll={handleSelectAll}
             isAllSelected={
@@ -362,9 +363,9 @@ const selectedStatus =  searchParams?.get("status") || "";
           {/* User List */}
 
           {loading && page === 1 ? (
-            <Skeleton2 
-            colsNum={8}
-            gridCols="grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
+            <Skeleton2
+              colsNum={8}
+              gridCols="grid-cols-[20px_200px_150px_150px_150px_250px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]"
             />
           ) : description.length === 0 ? (
             <div className="text-center py-10 text-gray-500">

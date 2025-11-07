@@ -198,7 +198,7 @@ const CompanyRoute = ({
     <>
       <DynamicBreadcrumb links={[{ label: "Companies" }]} />
       <section className="bg-white sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-110px)] flex flex-col">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center  xl:justify-between gap-3 sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap">
           <Operations
             // filterProps={{
             //   filter: true,
@@ -244,7 +244,7 @@ const CompanyRoute = ({
 
           <AddCompany onAdd={handleAdd} />
         </div>
-        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]  md:w-max">
+        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header
             checkBox={true}
             className1="w-max xl:w-full grid sticky top-0 grid-cols-[40px_220px_170px_170px_160px_100px]  md:grid-cols-[50px_200px_165px_130px_140px_100px] xl:grid-cols-[40px_1.9fr_1fr_1fr_1fr_1fr] sm:gap-0"

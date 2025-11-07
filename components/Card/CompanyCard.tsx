@@ -86,7 +86,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
           title={formattedUrl} // Built-in browser tooltip
         >
           <span className="line-clamp-1">{label || formattedUrl}</span>
-          <ExternalLink className="h-3 w-3 opacity-0 group-hover/link:opacity-100 transition-opacity flex-shrink-0" />
+          <ExternalLink className="h-3 w-3 opacity-0 group-hover/link:opacity-100 transition-opacity shrink-0" />
         </a>
       );
     };
@@ -128,7 +128,7 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
           )}
 
           {/* Name */}
-          <h4 className="font-medium text-text line-clamp-2">
+          <h4 className="font-medium text-text line-clamp-6">
             {data?.name || "NA"}
              <UrlLink url={data.websiteUrl} label={data.websiteUrl} />
           </h4>

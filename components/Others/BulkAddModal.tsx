@@ -39,9 +39,9 @@ const BulkAddModal: React.FC<BulkAddModalProps> = ({
   return (
     <Dialog open={isBulkModalOpen} onOpenChange={setIsBulkModalOpen}>
       <DialogTrigger asChild>
-        <button className="text-white bg-primary cursor-pointer text-nowrap py-2 px-4 text-base  justify-center transform transition-all duration-300 ease-in-out flex h-full items-center gap-3 rounded-full">
-          <Plus size={24} /> Bulk Add
-        </button>
+        <Button className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full">
+          <Plus size={30} /> Bulk Add
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-[calc(100vw-20px)] sm:w-full rounded-xl p-4 pt-10">
         <BulkAddStaff

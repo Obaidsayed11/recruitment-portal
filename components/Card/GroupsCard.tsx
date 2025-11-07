@@ -35,6 +35,7 @@ const GroupCard = forwardRef<HTMLDivElement, GroupCardProps>(
         ref={ref}
        className={`bg-background p-2 group w-max xl:w-full my-1 border-t border-t-[#F5F5F5] border-b border-b-[#F5F5F5] grid 
           grid-cols-[10px_180px_145px_150px_120px]
+          md:grid-cols-[10px_145px_110px_119px_110px]
           lg:grid-cols-[40px_1fr_1fr_1fr_1fr]
           xl:grid-cols-[5px_1.4fr_1.4fr_1fr_1fr]
           

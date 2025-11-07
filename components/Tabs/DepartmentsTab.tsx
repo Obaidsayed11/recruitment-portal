@@ -29,7 +29,7 @@ import BulkAddModal from "../Others/BulkAddModal";
 
 
 const headersOptions = [
-  { value: "name" },
+  { value: "Name" },
   { value: "Description" },
   {value: "Actions"}
   
@@ -186,7 +186,7 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
   };
  useEffect(() => {
     if (permissions && !hasPermission(permissions, "list_department")) {
-      router.push("/dashboard");
+      router.push(`/companies/${companyId}?tab=department`);
       
     }
   }, [permissions, router])
@@ -213,18 +213,10 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
       >
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5"
+        xl:justify-between gap-3 sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap" 
         >
           <Operations
-            // filterProps={{
-            //   filter: true,
-            //   filters: [
-            //     {
-            //       queryKey: "role",
-            //       options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
-            //     },
-            //   ],
-            // }}
+         
             checkBox
             isAllSelected={
               allCards.length > 0 && selectedCards.length === allCards.length
@@ -258,9 +250,9 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
           {/* Header */}
           <Header
             checkBox={true}
-           className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr] border gap-5 sm:gap-0 text-left"
+           className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px] md:grid-cols-[40px_200px_300px_150px] xl:grid-cols-[40px_0.9fr_1fr_0.9fr] border gap-5 sm:gap-0 text-left"
    
-            headersall={headersOptions}
+            headersall={headersOptions} 
             handleSelectAll={handleSelectAll}
             isAllSelected={
               allCards.length > 0 && selectedCards.length === allCards.length

@@ -261,7 +261,7 @@ const handleCreateUser = () => {
             className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
             icon={<Plus />}
           >
-            Add Job Description
+            Add Groups
           </Button>)}
 
 
@@ -288,7 +288,7 @@ const handleCreateUser = () => {
           {loading && page === 1 ? (
             <Skeleton2 
             colsNum={5}
-            gridCols="grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr]"
+            gridCols="grid-cols-[20px_200px_150px_150px_150px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr]  md:grid-cols-[20px_180px_145px_150px_110px]"
             />
           ) : groups.length === 0 ? (
             <div className="text-center py-10 text-gray-500">

@@ -18,18 +18,20 @@ import useFcmToken from "@/hooks/useFCMToken";
 import Logo from "../Navbar/Logo";
 import Button from "../Others/Button";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
+import { AiOutlineEye } from "react-icons/ai";
+import { RxEyeClosed } from "react-icons/rx";
+import Link from "next/link";
 
-
-const formSchema = z.object({
-  email: z.string().email("Invalid email address"),
-    password: z.string()
-    .min(5)
-    .max(15),
-},
-{
-      message: "Enter a valid email address password",
-    });
-
+const formSchema = z.object(
+  {
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(5).max(15),
+  },
+  {
+    message: "Enter a valid email address password",
+  }
+);
 
 export type ActionType = { type: "SUBMIT" } | { type: "BACK" };
 type FormInputs = z.infer<typeof formSchema>;
@@ -44,12 +46,12 @@ function LoginForm() {
   const form = useForm<FormInputs>({
     resolver: zodResolver(formSchema),
   });
-  
 
   const { fcmToken } = useFcmToken();
   const [token, setToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [viewPassword, setViewPassword] = useState(false);
 
   useEffect(() => {
     if (fcmToken) {
@@ -65,16 +67,16 @@ function LoginForm() {
 
     try {
       console.log("Attempting NextAuth signIn...");
-      
+
       // 🚨 CRITICAL FIX: Use signIn() instead of manual apiClient.post()
       const result = await signIn("credentials", {
         // 1. Credentials required by your authorize function
         email: data.email,
         password: data.password,
         token,
-        
+
         // 2. Do not redirect on success, let the client-side handle it after checking the result
-        redirect: false, 
+        redirect: false,
       });
 
       console.log("SignIn Result:", result);
@@ -82,18 +84,21 @@ function LoginForm() {
       if (result?.error) {
         // NextAuth will handle errors from your authorize function
         setError(result.error);
+        toast.error(result?.error);
       } else if (result?.ok) {
         // If login is successful, NextAuth has set the cookie.
         // The middleware will handle the final redirect to /admin/dashboard or /dashboard.
         console.log("Login successful! Redirecting via router.push");
-        router.push("/dashboard"); 
+        toast.success("Login successful! ");
+        router.push("/dashboard");
       } else {
-         // Should not typically happen if redirect: false
-         setError("Login process failed to complete.");
+        // Should not typically happen if redirect: false
+        setError("Login process failed to complete.");
+        toast.error("Login process failed to complete.");
       }
-
     } catch (error: any) {
       setError("An unexpected error occurred during login.");
+      toast.error(error || "An unexpected error occurred during login.");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -105,6 +110,10 @@ function LoginForm() {
   //   router.replace("/", undefined); // Removes query params without a page reload
   // };
 
+  const viewPasswordHandler = () => {
+    setViewPassword((prev) => !prev);
+  };
+
   return (
     <div className="bg-white grid gap-5 rounded-3xl p-5 sm:min-w-[450px] sm:p-8">
       <div className="grid justify-center gap-2">
@@ -113,7 +122,6 @@ function LoginForm() {
           companyName={"Recruitement-Portal"}
           className="w-[150px] h-[100px]"
         />
-       
       </div>
 
       <Form {...form}>
@@ -143,15 +151,29 @@ function LoginForm() {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder="Enter Your Pasword"
-                    maxLength={10}
-                  />
+                  <div className="relative">
+                    <Input
+                      {...field}
+                      type={viewPassword ? "text" : "password"}
+                      placeholder="Enter Your Password"
+                      maxLength={10}
+                      className="pr-10"
+                    />
+                    {viewPassword ? (
+                      <AiOutlineEye
+                        onClick={viewPasswordHandler}
+                        className="cursor-pointer text-secondary-foreground/40 text-2xl absolute right-3 top-1/2 -translate-y-1/2"
+                      />
+                    ) : (
+                      <RxEyeClosed
+                        onClick={viewPasswordHandler}
+                        className="cursor-pointer text-secondary-foreground/40 text-2xl absolute right-3 top-1/2 -translate-y-1/2"
+                      />
+                    )}
+                  </div>
                 </FormControl>
                 <FormMessage>
-                  {form.formState.errors.email?.message}
+                  {form.formState.errors.password?.message}
                 </FormMessage>
               </FormItem>
             )}
@@ -161,15 +183,24 @@ function LoginForm() {
             <div className="text-red-500 text-xs text-center">{error}</div>
           )}
 
+          <Link
+            href="/forgot-password"
+            prefetch={false}
+            className="text-blue-700 text-center hover:underline cursor-pointer"
+          >
+            Forgot Password?
+          </Link>
+
           <Button
             className="bg-primary  px-4 py-2 text-white disabled:bg-primary/80"
             type="submit"
-            disabled={isLoading || form.formState.isSubmitting} // Ensure button is disabled
+            disabled={isLoading || form.formState.isSubmitting}
           >
             {isLoading ? "Please wait..." : "Login"}
           </Button>
         </form>
       </Form>
+
       <CopyRight />
     </div>
   );
