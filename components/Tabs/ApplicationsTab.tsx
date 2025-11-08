@@ -330,7 +330,7 @@ import BulkAddModal from "../Others/BulkAddModal";
             {/* --- Table Header --- */}
             <Header
               checkBox={true}
-              className1="w-max xl:w-full grid sticky top-0 xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]  md:grid-cols-[40px_190px_190px_120px_120px_145px_80px_140px]  border gap-5 sm:gap-0 text-left"
+              className1="w-max xl:w-full grid sticky top-0 grid-cols-[40px_190px_190px_120px_120px_145px_80px_140px] xl:grid-cols-[40px_1fr_1fr_1fr_1fr_1fr_1fr_1fr]  md:grid-cols-[40px_190px_190px_120px_120px_145px_80px_140px]  border gap-5 sm:gap-0 text-left"
               headersall={headersOptions}
               handleSelectAll={handleSelectAll}
               isAllSelected={

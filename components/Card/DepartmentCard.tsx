@@ -39,7 +39,7 @@ const DepartmentCard = forwardRef<HTMLDivElement, DepartmentCardProps>(
           grid-cols-[20px_120px_120px_150px]
           md:grid-cols-[5px_155px_260px_150px]
           lg:grid-cols-[40px_1fr_1fr_1fr]
-         xl:grid-cols-[0px_0.9fr_1fr_1fr] 
+         xl:grid-cols-[0px_0.2fr_1fr_0.2fr]
           
           gap-10 transition-all cursor-pointer items-center text-left ${
             isSelected

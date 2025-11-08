@@ -250,7 +250,7 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
           {/* Header */}
           <Header
             checkBox={true}
-           className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px] md:grid-cols-[40px_200px_300px_150px] xl:grid-cols-[40px_0.9fr_1fr_0.9fr] border gap-5 sm:gap-0 text-left"
+           className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px] md:grid-cols-[40px_200px_300px_150px] xl:grid-cols-[40px_0.3fr_1fr_0.2fr] border gap-5 sm:gap-0 text-left"
    
             headersall={headersOptions} 
             handleSelectAll={handleSelectAll}
