@@ -29,6 +29,7 @@ const companySchema = z.object({
   description: z.string().min(1, "Description is required."),
   location: z.string(),
   file: z.any().optional(),
+   code: z.string(),
 });
 
 type AddCompanyFormValues = z.infer<typeof companySchema>;
@@ -80,6 +81,7 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
       formData.append("careerPageUrl", data.careerPageUrl);
       formData.append("description", data.description);
       formData.append("location", data.location);
+         formData.append("code", data.code);
       console.log(typeof data.description, "typeeeeeeeeeeee");
       console.log(typeof data.location, "typeeeeeeeeeeee");
       if (selectedFile) formData.append("file", selectedFile);
@@ -163,6 +165,12 @@ const AddCompany: React.FC<AddProps> = ({ onAdd }) => {
             label="Name"
             name="name"
             placeholder="Enter company name"
+            formItemClassName="sm:col-span-2"
+          />
+            <InputField
+            label="Company code"
+            name="code"
+            placeholder="Enter company code"
             formItemClassName="sm:col-span-2"
           />
           <InputField

@@ -2,7 +2,7 @@
 // dotenv.config()
 
 // export const BACKEND_URL = process.env.BACKEND_URL ;
-export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+export const BACKEND_URL = process.env.BACKEND_URL;
 export const BASE_URL = process.env.BASE_URL;
 export const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
 

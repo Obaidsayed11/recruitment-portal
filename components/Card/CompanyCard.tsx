@@ -90,8 +90,8 @@ const CompanyCard = forwardRef<HTMLDivElement, CompanyCardProps>(
         </a>
       );
     };
-    console.log(data);
-    console.log(`${BASE_URL}${data.logoUrl}`, "baseeeeeeeeeeeeee");
+    console.log(data, );
+    console.log(`http://192.168.0.133:5000${data.logoUrl}`, "baseeeeeeeeeeeeee");
 
     return (
       <div

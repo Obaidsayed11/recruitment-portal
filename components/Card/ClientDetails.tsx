@@ -119,8 +119,8 @@
               {company.name?.charAt(0).toUpperCase() || "N"}
             </div>
           )}
-          <div className="flex flex-col">
-            <h3 className="font-semibold text-gray-800 text-lg">
+          <div className="flex flex-col xl:w-50">
+            <h3 className="font-semibold text-gray-800 text-lg truncate w-44">
               {company.name || "Company Name"}
             </h3>
             {company.websiteUrl && (
@@ -172,6 +172,7 @@
           gap-4
           px-2 sm:px-3 md:px-6
           lg:w-full
+          xl:mx-0
         "
       >
         {overViewStats.map((card, index) => (

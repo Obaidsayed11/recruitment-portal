@@ -1,4 +1,4 @@
-  "use client";
+"use client";
 
 import apiClient from "@/lib/axiosInterceptor";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,7 +69,7 @@ const CreateJobRoute = () => {
   const methods = useForm<AddJobDescriptionFormValues>({
     resolver: zodResolver(addJobSchema),
     defaultValues: {
-    
+
       department: "",
       location: "",
       experience: "",
@@ -99,14 +99,22 @@ const CreateJobRoute = () => {
   //   }
   //   return null;
   // }, [params?.id, params?.uid, pathname, searchParams]);
+  const generateSlug = (text: string) => {
+  return text
+    .toLowerCase() // convert to lowercase
+    .trim() // remove spaces around
+    .replace(/[^a-z0-9\s-]/g, "") // remove special characters
+    .replace(/\s+/g, "-"); // replace spaces with dashes
+};
+
 
   const onSubmit: SubmitHandler<AddJobDescriptionFormValues> = async (data) => {
     try {
       setIsClicked(true);
-
+  const slug = generateSlug(data.description);
       // Function to remove HTML tags from rich text fields
 
-      const payload = { ...data, content: data.content, companyId };
+      const payload = { ...data, content: data.content, companyId ,  slug };
       const response = await apiClient.post(
         `/job?companyId=${companyId}`,
         payload
@@ -151,7 +159,7 @@ const CreateJobRoute = () => {
     <>
       <DynamicBreadcrumb
         links={[
-           { label: "Jobs", href: `/companies/${companyId}?tab=job-description` },
+          { label: "Jobs", href: `/companies/${companyId}?tab=job-description` },
           { label: "Create Job Description" },
         ]}
       />
@@ -231,27 +239,7 @@ const CreateJobRoute = () => {
                 value: v,
               }))}
             />
-            {/* <InputField
-            label="Description"
-            name="description"
-            placeholder="Job Description"
-          />
-          <InputField
-            label="Responsibilities"
-            name="responsibilities"
-            placeholder="Responsibilities"
-          />
-          <InputField
-            label="Requirements"
-            name="requirements"
-            placeholder="Requirements"
-          /> */}
-            {/* <TextareaField
-              formItemClassName="sm:col-span-2"
-              label="Description"
-              name={"description"}
-              placeholder={"Enter Your Description"}
-            /> */}
+
 
             <div className="sm:col-span-2 text-text font-medium text-sm">
               <h1 className="mb-2">
@@ -263,16 +251,16 @@ const CreateJobRoute = () => {
             {/* <CustomEditor control={methods.control} name="content" /> */}
 
             {hasPermission(permissions, "add_job") && (
-                         <Button
-              type="submit"
-              className="sm:col-span-2 w-fit justify-self-end"
-              disabled={isClicked}
-            >
-              {isClicked ? "Adding..." : "Add Job"}
-            </Button>
-                        )}
+              <Button
+                type="submit"
+                className="sm:col-span-2 w-fit justify-self-end"
+                disabled={isClicked}
+              >
+                {isClicked ? "Adding..." : "Add Job"}
+              </Button>
+            )}
 
-            
+
           </section>
         </form>
       </FormProvider>
