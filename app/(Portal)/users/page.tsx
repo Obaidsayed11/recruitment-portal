@@ -353,10 +353,7 @@ const UserRoute = () => {
     <>
       <DynamicBreadcrumb links={[{ label: "Users" }]} />
       <section className="bg-white  sm:rounded-xl p-3 sm:p-5 max-h-[calc(100vh-105px)]  flex flex-col">
-        <div
-          className="flex flex-col sm:flex-row items-start sm:items-center 
-        justify-between gap-3 sm:gap-4 pb-5"
-        >
+         <div className="flex flex-col sm:flex-row items-start sm:items-center  xl:justify-between gap-3 sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap">
           <Operations
             filterProps={{
               filter: true,
@@ -401,7 +398,7 @@ const UserRoute = () => {
             Create User
           </Button>)}
         </div>
-        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)] md:w-max">
+        <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header
             checkBox={true}
             className1="w-max xl:w-full grid sticky top-0 grid-cols-[20px_250px_150px_150px_250px_100px]  md:grid-cols-[50px_200px_150px_150px_200px_120px] xl:grid-cols-[40px_1.5fr_1.2fr_1fr_2fr_1fr] border gap-5 sm:gap-0"

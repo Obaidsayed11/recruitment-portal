@@ -36,8 +36,9 @@ const headersOptions = [
 ];
 type Props = {
   companyId: string;
+   onRefreshAnalytics?: () => void;
 };
-const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
+const DepartmentsTab: React.FC<Props> = ({ companyId ,onRefreshAnalytics }) => {
   // --- Core Hooks ---
   const { data: session } = useSession();
   const searchParams = useSearchParams();
@@ -124,6 +125,7 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
           );
         }
         console.log(response);
+      
         const newDepartment = response.data.departments || [];
 
         // If it's the first page, we are starting a new list.
@@ -154,13 +156,21 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
     setSelectedCards((prev) =>
       isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
     );
-  const handleDelete = (id: string) =>
-    setDepartments((prev) => prev.filter((data) => data.id !== id));
-  const handleAddDepartments = (newData: DepartmentProps) => {
-    if (newData) setDepartments((prev) => [newData, ...prev]);
-  };
+ const handleDelete = (id: string) => {
+  setDepartments((prev) => prev.filter((data) => data.id !== id));
+  onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
+};
+
+const handleAddDepartments = (newData: DepartmentProps) => {
+  if (newData) {
+    setDepartments((prev) => [newData, ...prev]);
+    onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
+  }
+};
+
   const handleUpdate = (updatedData: DepartmentProps) => {
     if (updatedData)
+       
       setDepartments((prev) =>
         prev.map((data) => (data.id === updatedData.id ? updatedData : data))
       );
@@ -176,6 +186,7 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
           prevData.filter((data) => !selectedCards.includes(data.id))
         );
         setSelectedCards([]);
+         onRefreshAnalytics?.(); // ✅ Trigger refresh after bulk delete
       } catch (error: any) {
         toast.error(
           error.response?.data?.message || "Failed to delete selected locations"
@@ -188,20 +199,54 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
     if (permissions && !hasPermission(permissions, "list_department")) {
       router.push(`/companies/${companyId}?tab=department`);
       
+      
     }
   }, [permissions, router])
 
 
   // bulk data 
   
-      const handleBulkUpload = (newBulkData: any[]) => {
-      if (newBulkData && newBulkData.length > 0) {
-        setDepartments((prevData) => [...newBulkData, ...prevData]);
-        toast.success(`${newBulkData.length} new Departments added successfully!`);
-      } else {
-        toast.error("Bulk upload failed or returned no new data.");
-      }
-    };
+    //   const handleBulkUpload = (newBulkData: any[]) => {
+    //   if (newBulkData && newBulkData.length > 0 ) {
+    //     setDepartments((prevData) => [...newBulkData, ...prevData]);
+    //     toast.success(`${newBulkData.length} new Departments added successfully!`);
+    //   } else {
+    //     toast.error("Bulk upload failed or returned no new data.");
+    //   }
+    // };
+
+    const handleBulkUpload = (response: any) => {
+  // Backend response shape example:
+  // { message, createdCount, skippedCount, skippedDepartments }
+
+  if (!response) {
+    toast.error("Bulk upload failed. Please try again.");
+    return;
+  }
+
+  const { createdCount = 0, skippedCount = 0, message } = response;
+
+  if (createdCount > 0) {
+    toast.success(`${createdCount} new departments added successfully!`);
+  }
+
+  if (skippedCount > 0) {
+    toast.warning(
+      `${skippedCount} departments were skipped (possibly duplicates).`
+    );
+  }
+
+  if (createdCount === 0 && skippedCount === 0) {
+    toast.error("No departments were added or skipped — something went wrong.");
+  }
+
+  // Update the list only if new departments were created
+  if (response.newDepartments && response.newDepartments.length > 0) {
+    setDepartments((prevData) => [...response.newDepartments, ...prevData]);
+     onRefreshAnalytics?.(); // ✅ Trigger refresh after bulk upload
+  }
+};
+
   
 
   return (
@@ -250,7 +295,7 @@ const DepartmentsTab: React.FC<Props> = ({ companyId }) => {
           {/* Header */}
           <Header
             checkBox={true}
-           className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px] md:grid-cols-[40px_200px_300px_150px] xl:grid-cols-[40px_0.3fr_1fr_0.2fr] border gap-5 sm:gap-0 text-left"
+           className1="w-full xl:w-full grid sticky top-0 grid-cols-[20px_200px_150px_150px] md:grid-cols-[40px_200px_300px_150px] xl:grid-cols-[48px_0.6fr_1.2fr_0.4fr] border gap-5 sm:gap-0 text-left"
    
             headersall={headersOptions} 
             handleSelectAll={handleSelectAll}

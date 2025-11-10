@@ -27,6 +27,8 @@ import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ManageTenantAssignments from "@/components/Tabs/UserTabs/TenantAssignmentTab";
 import { useRoles } from "@/hooks/useRoles";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 // import ManageTenantAssignments from "@/components/Tabs/TenantAssignmentTab";
 
 // Schema that properly handles optional email
@@ -60,6 +62,7 @@ const UpdateUserRoute = () => {
   const searchParams = useSearchParams();
   const params = useParams();
   const { roles, loading, error, refetch } = useRoles();
+  const { permissions } = usePermissions();
   console.log(roles, "rrrrrrr");
   const userId = useMemo(() => {
     // Get both potential IDs from the URL parameters
@@ -222,13 +225,11 @@ const UpdateUserRoute = () => {
       console.log("JSON.stringify:", JSON.stringify(payload, null, 2));
 
       const response = await apiClient.put(`/user/${userId}`, payload);
- 
-        
-        toast.success(response.data.message || "User updated successfully!");
-        if (response.data.user) {
-          setUserData(response.data.user);
-        }
-    
+
+      toast.success(response.data.message || "User updated successfully!");
+      if (response.data.user) {
+        setUserData(response.data.user);
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "An error occurred.");
     }
@@ -296,6 +297,8 @@ const UpdateUserRoute = () => {
                   </FormItem>
                 )}
               /> */}
+
+               {hasPermission(permissions, "assign_user_role") && (
               <FormField
                 control={control}
                 name="role"
@@ -318,6 +321,7 @@ const UpdateUserRoute = () => {
                   </FormItem>
                 )}
               />
+               )}
               <Button
                 type="submit"
                 disabled={isSubmitting || loading}
@@ -339,10 +343,28 @@ const UpdateUserRoute = () => {
                 <TabsTrigger value="tenant">Tenant Assignments</TabsTrigger>
               </TabsList>
               <TabsContent value="permissions" className="">
-                <AssignPermissionsTab />
+                {permissions ? (
+                  hasPermission(permissions, "edit_user_permission") && (
+                    <AssignPermissionsTab />
+                  )
+                ) : (
+                  <p>You Don't have permissions to Edit User Permissions</p>
+                )}
               </TabsContent>
               <TabsContent value="groups" className="">
-                <AssignGroupsTab />
+
+                {permissions ? (
+                      hasPermission(permissions, "view_user_group") && (
+                        <AssignGroupsTab />
+                      )
+                    ) : (
+                      <p>
+                        You Don't have permissions to Assign Groups
+                      </p>
+                    )}
+                
+                
+                
               </TabsContent>
               {/* <TabsContent value="assignments" className="">
                 <ManageAssignments />

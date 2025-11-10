@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/form";
 import { Combobox } from "@/components/Others/ComoboboxDemo";
 import { useRoles } from "@/hooks/useRoles";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const UserCreateSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -58,6 +60,7 @@ const CreateUserRoute = () => {
   const params = useParams();
   const pathname = usePathname(); // 2. Get the current URL path
   const searchParams = useSearchParams();
+  const {permissions} = usePermissions()
 
   const { roles, loading, error, refetch } = useRoles();
 
@@ -253,7 +256,9 @@ const CreateUserRoute = () => {
                       name="email"
                       placeholder="Enter email"
                     />
-                    <FormField
+
+                     {hasPermission(permissions, "assign_user_role") && (
+                <FormField
                       control={control}
                       name="roleId"
                       render={({ field }) => (
@@ -277,6 +282,9 @@ const CreateUserRoute = () => {
                         </FormItem>
                       )}
                     />
+            )}
+
+                 
                   </div>
 
                   <Button

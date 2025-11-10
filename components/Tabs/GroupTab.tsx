@@ -198,7 +198,7 @@ const GroupsTab = () => {
   };
 
   useEffect(() => {
-      if (permissions && !hasPermission(permissions, "list_group_permission")) {
+      if (permissions && !hasPermission(permissions, "list_group")) {
         router.push(`/settings?tab=groups`);
       }
     }, [permissions, router])

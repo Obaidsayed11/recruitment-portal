@@ -8,6 +8,7 @@ export interface Permission {
   codename: string;
   name: string;
   id: string;
+
 }
 
 export interface GroupPermission {

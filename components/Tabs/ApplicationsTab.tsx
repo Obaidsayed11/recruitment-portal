@@ -54,9 +54,10 @@ import BulkAddModal from "../Others/BulkAddModal";
 
   type Props = {
     companyId: string;
+       onRefreshAnalytics?: () => void;
   };
 
-  const ApplicationsTab: React.FC<Props> = ({ companyId }) => {
+  const ApplicationsTab: React.FC<Props> = ({ companyId ,onRefreshAnalytics }) => {
     // --- Core Hooks ---
     const { data: session } = useSession();
     console.log(session, "swessio");
@@ -178,7 +179,11 @@ import BulkAddModal from "../Others/BulkAddModal";
         isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
       );
     const handleDelete = (id: string) =>
-      setApplications((prev) => prev.filter((data) => data.id !== id));
+      {
+        
+        setApplications((prev) => prev.filter((data) => data.id !== id));
+          onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
+      }
     const handleAddApplication = (newApplication: ApplicationProps) => {
       if (newApplication) setApplications((prev) => [newApplication, ...prev]);
     };
@@ -199,6 +204,7 @@ import BulkAddModal from "../Others/BulkAddModal";
             prevData.filter((data) => !selectedCards.includes(data.id))
           );
           setSelectedCards([]);
+            onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
         } catch (error: any) {
           toast.error(
             error.response?.data?.message || "Failed to delete selected locations"
@@ -218,6 +224,7 @@ import BulkAddModal from "../Others/BulkAddModal";
     ];
 
     const handleCreateUser = () => {
+        onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
       router.push(
         `/companies/${companyId}/t/applications/create-application`
       );
@@ -258,6 +265,7 @@ import BulkAddModal from "../Others/BulkAddModal";
         const handleBulkUpload = (newBulkData: any[]) => {
         if (newBulkData && newBulkData.length > 0) {
           setApplications((prevData) => [...newBulkData, ...prevData]);
+            onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
           toast.success(`${newBulkData.length} new Applications added successfully!`);
         } else {
           toast.error("Bulk upload failed or returned no new data.");
@@ -313,13 +321,18 @@ import BulkAddModal from "../Others/BulkAddModal";
             )}
 
 
-             <Button
+ {hasPermission(permissions, "add_application") && (
+               <Button
               onClick={handleCreateUser}
               className="bg-primary text-white px-4 py-2 rounded-lg md:rounded-full"
               icon={<Plus />}
             >
               Add Application
             </Button>
+            )}
+
+
+           
 
             
           </div>

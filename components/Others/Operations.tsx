@@ -239,17 +239,20 @@ const Operations: React.FC<OperationsProps> = ({
     router.replace(`?${params.toString()}`);
   };
   const handleResetFilters = () => {
-    const preservedKeys = ["tabs", "a", "b", "c", "d"];
+    const preservedKeys = ["tabs", "a", "b", "c" ];
     const newParams = new URLSearchParams();
     preservedKeys.forEach((key) => {
       const value = searchParams?.get(key);
+        console.log(key ,"new params")
       if (value) {
         newParams.set(key, value);
+          
       }
     });
 
     // 4. Update the URL with only the preserved parameters.
     router.replace(`?${newParams.toString()}`);
+
   };
   const hasActiveFilters = filterProps?.filters.some((filter) =>
     searchParams?.has(filter.queryKey)

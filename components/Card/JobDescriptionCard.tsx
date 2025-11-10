@@ -28,6 +28,7 @@ import { usePermissions } from "../PermissionContext";
             `/job/${data.id}`
           );
           toast.success(response.data.message);
+          
           onDelete(data.id);
         } catch (error: any) {
           toast.error(error.message);
@@ -37,6 +38,7 @@ import { usePermissions } from "../PermissionContext";
       const handleRowClick = () => {
        
         router.push(`/companies/${companyId}/t/jobs/view-jobs/${data.id}`);
+          toast.error("You do not have permission to view single job description.");
       };
       const stripHtml = (html: string = "") =>
       html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();

@@ -31,9 +31,10 @@
 
   interface ClientInfoSectionProps {
     companyData: CompanyData | null;
+     refreshTrigger?: number; // 👈 new prop
   }
 
-  const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData }) => {
+  const ClientInfoSection: React.FC<ClientInfoSectionProps> = ({ companyData , refreshTrigger = 0}) => {
     const { data: session } = useSession();
     const [dashboardData, setDashboardData] = useState<any>({});
     const params = useParams() as { companyId: string};
@@ -54,7 +55,7 @@
         };
         fetchData();
       }
-    }, [session]);
+    }, [session, companyId, refreshTrigger]);
 
     console.log(dashboardData.jobs,"dasshhh")
     
@@ -70,6 +71,8 @@
 
     const { company } = companyData;
     console.log(company,"companyyyyyyyyyyyyyyyyyyyyyy")
+
+    
 
   const overViewStats = [
       {
@@ -138,10 +141,10 @@
         </div>
 
         {/* --- Vertical Divider --- */}
-        <div className="hidden lg:block w-[1px] bg-gray-300 self-stretch mx-4"></div>
+        <div className="hidden lg:block w-[1px] bg-gray-300 self-stretch mx-6"></div>
 
         {/* --- Location & Career Page --- */}
-        <div className="flex flex-col items-center sm:items-start mt-2 w-full text-center sm:text-left">
+        <div className="flex flex-col items-center sm:items-start mt-2 w-full text-center sm:text-left truncate">
           <p className="text-gray-700 text-sm mb-1">
             <strong>Location:</strong>{" "}
             <span className="break-all">{company.location || "Not available"}</span>

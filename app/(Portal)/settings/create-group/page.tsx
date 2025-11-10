@@ -3,7 +3,9 @@ import InputField from "@/components/Form_Fields/InputField";
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Button from "@/components/Others/Button";
 import PermissionsManager from "@/components/Others/PermissionManager";
+import { usePermissions } from "@/components/PermissionContext";
 import apiClient from "@/lib/axiosInterceptor";
+import { hasPermission } from "@/lib/hasPermission";
 import { Permission } from "@/types/UserTabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
@@ -31,11 +33,12 @@ const CreateGroupsRoute = () => {
     new Set()
   );
   const router = useRouter();
+  const { permissions } = usePermissions();
 
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-          const res = await apiClient.get(`/permissions`);
+        const res = await apiClient.get(`/permissions`);
         if (res.status !== 200) throw new Error("Failed to fetch permissions");
         setAllPermissions(res.data?.data?.permissions);
       } catch (err: any) {
@@ -87,7 +90,7 @@ const CreateGroupsRoute = () => {
     }
   };
 
-  console.log("allPermissions", allPermissions)
+  console.log("allPermissions", allPermissions);
 
   return (
     <>
@@ -111,6 +114,13 @@ const CreateGroupsRoute = () => {
               />
             </div>
             {/* **FIXED**: Pass the fetched permissions list down as a prop */}
+            {hasPermission(permissions, "add_group") && (
+              <PermissionsManager
+                allPermissions={allPermissions}
+                selectedPermissions={selectedPermissions}
+                onSelectionChange={setSelectedPermissions}
+              />
+            )}
             <PermissionsManager
               allPermissions={allPermissions}
               selectedPermissions={selectedPermissions}
@@ -135,13 +145,15 @@ const CreateGroupsRoute = () => {
                       className="flex justify-between items-center bg-gray-100 p-2 rounded"
                     >
                       <span className="text-sm">{permission.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemovePermission(permission.id)}
-                        className="text-gray-500 hover:text-red-600"
-                      >
-                        <X size={16} />
-                      </button>
+                      {hasPermission(permissions, "delete_group_permission") && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePermission(permission.id)}
+                          className="text-gray-500 hover:text-red-600"
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
                     </div>
                   ))
                 ) : (

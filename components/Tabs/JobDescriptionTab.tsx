@@ -45,9 +45,10 @@ const headersOptions = [
 
 type Props = {
   companyId?: string | null;
+   onRefreshAnalytics?: () => void;
 };
 
-const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
+const JobDescriptionTab: React.FC<Props> = ({ companyId,onRefreshAnalytics }) => {
   // --- Core Hooks ---
   const { data: session } = useSession();
   const searchParams = useSearchParams();
@@ -187,8 +188,11 @@ const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
     setSelectedCards((prev) =>
       isChecked ? [...prev, cardId] : prev.filter((id) => id !== cardId)
     );
-  const handleDelete = (id: string) =>
+  const handleDelete = (id: string) => 
+  {
     setDescription((prev) => prev.filter((data) => data.id !== id));
+  onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
+  }
   const handleAddDescription = (newData: JobDescriptionProps) => {
     if (newData) setDescription((prev) => [newData, ...prev]);
   };
@@ -211,6 +215,7 @@ const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
           prevData.filter((data) => !selectedCards.includes(data.id))
         );
         setSelectedCards([]);
+          onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
       } catch (error: any) {
         toast.error(
           error.response?.data?.message || "Failed to delete selected locations"
@@ -221,7 +226,10 @@ const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
   };
 
   const handleCreateUser = () => {
+    
     router.push(`/companies/${companyId}/t/jobs/create-jobs`);
+      onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
+   
   };
 
   useEffect(() => {
@@ -272,6 +280,7 @@ const JobDescriptionTab: React.FC<Props> = ({ companyId }) => {
   const handleBulkUpload = (newBulkData: any[]) => {
     if (newBulkData && newBulkData.length > 0) {
       setDescription((prevData) => [...newBulkData, ...prevData]);
+        onRefreshAnalytics?.(); // ✅ Trigger analytics refresh
       toast.success(
         `${newBulkData.length} new departments added successfully!`
       );

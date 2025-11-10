@@ -24,7 +24,7 @@ import { usePermissions } from "@/components/PermissionContext";
 import BulkAddModal from "@/components/Others/BulkAddModal";
 
 const headersOptions = [
-  { value: "company" },
+  { value: "Company" },
 
   { value: "Career Page" },
   { value: "Address" },
@@ -179,6 +179,7 @@ const CompanyRoute = ({
   useEffect(() => {
     if (permissions && !hasPermission(permissions, "list_companies")) {
       router.push("/companies");
+       toast.error("You do not have permission to view company list.");
     }
   }, [permissions, router]);
 
@@ -200,21 +201,14 @@ const CompanyRoute = ({
       <section className="bg-white sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-110px)] flex flex-col">
         <div className="flex flex-col sm:flex-row items-start sm:items-center  xl:justify-between gap-3 sm:gap-4 pb-5 sm:flex-wrap lg:flex-nowrap">
           <Operations
-            // filterProps={{
-            //   filter: true,
-            //   filters: [
-            //     {
-            //       queryKey: "role",
-            //       options: ["DRIVER", "OUTLET", "WAREHOUSE", "DISPATCHER"],
-            //     },
-            //   ],
-            // }}
+           
             checkBox
             isAllSelected={
               allCards.length > 0 && selectedCards.length === allCards.length
             }
             selectedCount={selectedCards.length}
             handleSelectAll={handleSelectAll}
+            
             onDeleteSelected={handleDeleteSelected}
             searchQuery={searchQuery}
             handleSearchQueryChange={(e) => setSearchQuery(e.target.value)}
@@ -242,7 +236,11 @@ const CompanyRoute = ({
               />
             )}
 
-          <AddCompany onAdd={handleAdd} />
+              {hasPermission(permissions, "add_company") && (
+              <AddCompany onAdd={handleAdd} />
+            )}
+
+         
         </div>
         <div className="overflow-auto h-[calc(100vh-210px)] 2xl:w-full w-[calc(100vw-30px)] sm:w-[calc(100vw-82px)]">
           <Header

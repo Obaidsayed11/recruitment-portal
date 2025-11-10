@@ -10,6 +10,8 @@ import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
 import Button from "@/components/Others/Button";
 import { Pencil, Trash2, Save, X } from "lucide-react";
 import DOMPurify from "isomorphic-dompurify";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 interface Note {
   id: string;
@@ -34,6 +36,7 @@ const ApplicationDetails = () => {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const methods = useForm();
+  const { permissions } = usePermissions();
 
   useEffect(() => {
     const fetchApplicationDetails = async () => {
@@ -111,7 +114,7 @@ const ApplicationDetails = () => {
     setEditedNoteText(note?.note);
     fetchNotes();
   };
-  
+
   const handleCancelEdit = () => {
     setEditingNoteId(null);
     setEditedNoteText("");
@@ -358,108 +361,146 @@ const ApplicationDetails = () => {
                 </section>
 
                 {/* Notes Section */}
-             <section className="bg-white border border-gray-200 rounded-xl p-4">
-  <h3 className="text-lg font-semibold mb-4 text-gray-700">Notes</h3>
+                {/* Notes Section */}
+                <section className="bg-white border border-gray-200 rounded-xl p-4">
+                  <h3 className="text-lg font-semibold mb-4 text-gray-700">
+                    Notes
+                  </h3>
 
-  {/* Add Note Input */}
-  <div className="flex gap-2 mb-4">
-    <input
-      type="text"
-      value={newNote}
-      onChange={(e) => setNewNote(e.target.value)}
-      placeholder="Add a new note..."
-      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      onKeyPress={(e) => {
-        if (e.key === "Enter") handleAddNote();
-      }}
-    />
-    <Button
-      type="button"
-      onClick={handleAddNote}
-      disabled={isAddingNote || !newNote.trim()}
-      className="text-sm"
-    >
-      {isAddingNote ? "Adding..." : "Submit"}
-    </Button>
-  </div>
+                  {/* Add Note Input — visible only if user has add permission */}
+                  {hasPermission(permissions, "add_application_note") && (
+                    <div className="flex gap-2 mb-4">
+                      <input
+                        type="text"
+                        value={newNote}
+                        onChange={(e) => setNewNote(e.target.value)}
+                        placeholder="Add a new note..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") handleAddNote();
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleAddNote}
+                        disabled={isAddingNote || !newNote.trim()}
+                        className="text-sm"
+                      >
+                        {isAddingNote ? "Adding..." : "Submit"}
+                      </Button>
+                    </div>
+                  )}
 
-  {/* Notes List */}
-  <div
-    className={`space-y-3 ${
-      notes.length > 2 ? "max-h-30 overflow-y-scroll pr-1 " : ""
-    }`}
-  >
-    {notes.length === 0 ? (
-      <p className="text-sm text-gray-600 text-center py-4">
-        No notes added yet.
-      </p>
-    ) : (
-      notes.map((note) => (
-        <div
-          key={note.id}
-          className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200"
-        >
-          {editingNoteId === note.id ? (
-            <>
-              <input
-                type="text"
-                value={editedNoteText}
-                onChange={(e) => setEditedNoteText(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                onClick={() => handleUpdateNote(note.id)}
-                disabled={isUpdating}
-                className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                title="Save"
-              >
-                <Save className="w-4 h-4" />
-              </button>
-              <button
-                onClick={handleCancelEdit}
-                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Cancel"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="flex-1">
-                <p className="text-sm text-gray-800">{note.note}</p>
-                {/* {note.User?.fullName && (
-                  <p className="text-xs text-gray-500 mt-1">
-                   
-                  </p>
-                )} */}
-                {note.createdAt && (
-                  <p className="text-xs text-gray-500 mt-1">
-                   <span className="mr-2">Created By: {note.User?.fullName}</span>  <span>{new Date(note.createdAt).toLocaleString() } </span>
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => handleEditNote(note)}
-                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                title="Edit"
-              >
-                <Pencil className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => handleDeleteNote(note.id)}
-                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Delete"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
-          )}
-        </div>
-      ))
-    )}
-  </div>
-</section>
+                  {/* Notes List — visible only if user has list permission */}
+                  {hasPermission(permissions, "list_application_note") ? (
+                    <div
+                      className={`space-y-3 ${
+                        notes.length > 2 ? "max-h-40 overflow-y-auto pr-1" : ""
+                      }`}
+                    >
+                      {notes.length === 0 ? (
+                        <p className="text-sm text-gray-600 text-center py-4">
+                          No notes added yet.
+                        </p>
+                      ) : (
+                        notes.map((note) => (
+                          <div
+                            key={note.id}
+                            className="flex items-start justify-between gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-sm transition-all"
+                          >
+                            {editingNoteId === note.id ? (
+                              hasPermission(
+                                permissions,
+                                "edit_application_note"
+                              ) && (
+                                <div className="flex flex-1 items-center gap-2">
+                                  <input
+                                    type="text"
+                                    value={editedNoteText}
+                                    onChange={(e) =>
+                                      setEditedNoteText(e.target.value)
+                                    }
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Edit note..."
+                                  />
+                                  <button
+                                    onClick={() => handleUpdateNote(note.id)}
+                                    disabled={isUpdating}
+                                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                    title="Save"
+                                  >
+                                    <Save className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEdit}
+                                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                    title="Cancel"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              )
+                            ) : (
+                              <>
+                                <div className="flex-1">
+                                  <p className="text-sm text-gray-800 leading-relaxed">
+                                    {note.note}
+                                  </p>
+                                  {note.createdAt && (
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      <span className="mr-2 font-medium">
+                                        Created By:
+                                      </span>
+                                      {note.User?.fullName || "Unknown"} •{" "}
+                                      <span>
+                                        {new Date(
+                                          note.createdAt
+                                        ).toLocaleString()}
+                                      </span>
+                                    </p>
+                                  )}
+                                </div>
 
+                                {/* Action buttons with respective permissions */}
+                                <div className="flex items-center gap-1">
+                                  {hasPermission(
+                                    permissions,
+                                    "edit_application_note"
+                                  ) && (
+                                    <button
+                                      onClick={() => handleEditNote(note)}
+                                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                      title="Edit"
+                                    >
+                                      <Pencil className="w-4 h-4" />
+                                    </button>
+                                  )}
+
+                                  {hasPermission(
+                                    permissions,
+                                    "delete_application_note"
+                                  ) && (
+                                    <button
+                                      onClick={() => handleDeleteNote(note.id)}
+                                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 text-center py-3">
+                      You don’t have permission to view notes.
+                    </p>
+                  )}
+                </section>
               </div>
             </div>
           )}

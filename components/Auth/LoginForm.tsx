@@ -183,13 +183,7 @@ function LoginForm() {
             <div className="text-red-500 text-xs text-center">{error}</div>
           )}
 
-          <Link
-            href="/forgot-password"
-            prefetch={false}
-            className="text-blue-700 text-center hover:underline cursor-pointer"
-          >
-            Forgot Password?
-          </Link>
+         
 
           <Button
             className="bg-primary  px-4 py-2 text-white disabled:bg-primary/80"
@@ -198,6 +192,13 @@ function LoginForm() {
           >
             {isLoading ? "Please wait..." : "Login"}
           </Button>
+           <Link
+            href="/forgot-password"
+            prefetch={false}
+            className="text-blue-700 text-center hover:underline cursor-pointer"
+          >
+            Forgot Password?
+          </Link>
         </form>
       </Form>
 

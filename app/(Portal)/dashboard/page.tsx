@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -40,9 +39,9 @@ const AdminDashboardRoute = () => {
   const { data: session } = useSession();
   const [dashboardData, setDashboardData] = useState<Global | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-    const { permissions } = usePermissions();
+  const { permissions } = usePermissions();
   // State for the data required for the form (Company/Client list)
-    const router = useRouter();
+  const router = useRouter();
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const methods = useForm({
     defaultValues: {
@@ -271,127 +270,128 @@ const AdminDashboardRoute = () => {
     }
   };
 
+  useEffect(() => {
+    if (permissions && !hasPermission(permissions, "list_dashboard")) {
+      router.push("/dashboard");
+    }
+  }, [permissions, router]);
+  return (
+    <>
+      <DynamicBreadcrumb links={[{ label: "Dashboard" }]} />
+      <section className="bg-white border border-[#E8E8E8] sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-80px)] sm:h-[calc(100vh-90px)] lg:h-[calc(100vh-105px)] flex flex-col">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <h2 className="text-base sm:text-lg font-semibold text-text mb-3 sm:mb-4">
+            Overall Stats
+          </h2>
 
-      useEffect(() => {
-      if (permissions && !hasPermission(permissions, "list_dashboard")) {
-        router.push("/dashboard");
-      }
-    }, [permissions, router])
-return (
-  <>
-    <DynamicBreadcrumb links={[{ label: "Dashboard" }]} />
-    <section className="bg-white border border-[#E8E8E8] sm:rounded-xl p-3 sm:p-5 h-[calc(100vh-80px)] sm:h-[calc(100vh-90px)] lg:h-[calc(100vh-105px)] flex flex-col">
-      {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto">
-        <h2 className="text-base sm:text-lg font-semibold text-text mb-3 sm:mb-4">
-          Overall Stats
-        </h2>
-
-        {/* Stats Cards - Responsive Grid */}
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-6 sm:mb-8">
-          {overViewStats.map((card, index) => (
-            <ClientL2Card
-              key={index}
-              svg={card.svg}
-              label={card.label}
-              number={card.number}
-              className={card.className}
-              className2={card.className2}
-              className3={card.className3}
-            />
-          ))}
-        </div>
-
-        {/* Download Reports Section */}
-        <FormProvider {...methods}>
-          <div className="border-t border-gray-200 pt-4 sm:pt-5 pb-4">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">
-              Download Reports
-            </h3>
-
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm space-y-4">
-              {/* Company Selector - Full Width on Mobile */}
-              <div className="w-full">
-                <FormField
-                  control={control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Companies
-                      </FormLabel>
-                      <FormControl>
-                        <Combobox
-                          placeholder="Select Companies"
-                          className="w-full"
-                          options={[
-                            { value: "", label: "All Companies" },
-                            ...companies.map((c) => ({
-                              value: c.id,
-                              label: c.name,
-                            })),
-                          ]}
-                          value={field.value}
-                          onSelect={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Date Range - Stack on Mobile, Side by Side on Larger */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <DateInputField
-                  name="fromDate"
-                  label="From Date"
-                  placeholder="Start date"
-                  className="w-full"
-                  formLabelClassName="text-sm font-medium text-gray-700"
-                />
-                <DateInputField
-                  name="toDate"
-                  label="To Date"
-                  placeholder="End date"
-                  className="w-full"
-                  formLabelClassName="text-sm font-medium text-gray-700"
-                />
-              </div>
-
-              {/* Download Button - Full Width on Mobile */}
-              {hasPermission(permissions, "view_global_report") && (
-                <Button
-                  type="button"
-                  onClick={handleDownload}
-                  className="bg-[#00CFA6] text-white hover:bg-[#00b894] px-5 py-2.5 rounded-lg shadow-md transition-all w-full sm:w-auto sm:ml-auto flex items-center justify-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  Download Report
-                </Button>
-              )}
-            </div>
+          {/* Stats Cards - Responsive Grid */}
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-6 sm:mb-8">
+            {hasPermission(permissions, "view_global_analytics") && (
+              <>
+                {overViewStats.map((card, index) => (
+                  <ClientL2Card
+                    key={index}
+                    svg={card.svg}
+                    label={card.label}
+                    number={card.number}
+                    className={card.className}
+                    className2={card.className2}
+                    className3={card.className3}
+                  />
+                ))}
+              </>
+            )}
           </div>
-        </FormProvider>
-      </div>
-    </section>
-  </>
-);
 
+          {/* Download Reports Section */}
+          <FormProvider {...methods}>
+            <div className="border-t border-gray-200 pt-4 sm:pt-5 pb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">
+                Download Reports
+              </h3>
 
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm space-y-4">
+                {/* Company Selector - Full Width on Mobile */}
+                <div className="w-full">
+                  <FormField
+                    control={control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-gray-700">
+                          Companies
+                        </FormLabel>
+                        <FormControl>
+                          <Combobox
+                            placeholder="Select Companies"
+                            className="w-full"
+                            options={[
+                              { value: "", label: "All Companies" },
+                              ...companies.map((c) => ({
+                                value: c.id,
+                                label: c.name,
+                              })),
+                            ]}
+                            value={field.value}
+                            onSelect={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Date Range - Stack on Mobile, Side by Side on Larger */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <DateInputField
+                    name="fromDate"
+                    label="From Date"
+                    placeholder="Start date"
+                    className="w-full"
+                    formLabelClassName="text-sm font-medium text-gray-700"
+                  />
+                  <DateInputField
+                    name="toDate"
+                    label="To Date"
+                    placeholder="End date"
+                    className="w-full"
+                    formLabelClassName="text-sm font-medium text-gray-700"
+                  />
+                </div>
+
+                {/* Download Button - Full Width on Mobile */}
+                {hasPermission(permissions, "view_global_report") && (
+                  <Button
+                    type="button"
+                    onClick={handleDownload}
+                    className="bg-[#00CFA6] text-white hover:bg-[#00b894] px-5 py-2.5 rounded-lg shadow-md transition-all w-full sm:w-auto sm:ml-auto flex items-center justify-center gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    Download Report
+                  </Button>
+                )}
+              </div>
+            </div>
+          </FormProvider>
+        </div>
+      </section>
+    </>
+  );
 };
 
 export default AdminDashboardRoute;

@@ -225,7 +225,7 @@ useEffect(()=> {
 },[session])
 
  useEffect(() => {
-    if (permissions && !hasPermission(permissions, "list_companies")) {
+    if (permissions && !hasPermission(permissions, "list_role")) {
       router.push("/settings?tab=roles");
     }
   }, [permissions, router]);

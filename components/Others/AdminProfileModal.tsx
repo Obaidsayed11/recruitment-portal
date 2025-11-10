@@ -119,7 +119,7 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
               onSubmit={handleSubmit(onSubmit)}
               className="space-y-3 max-h-[calc(100vh-300px)] gap-x-5 overflow-auto p-5 grid sm:grid-cols-2"
             >
-              <div className="flex flex-col gap-[10px] sm:col-span-2">
+              {/* <div className="flex flex-col gap-[10px] sm:col-span-2">
                 <p className="text-fontSecondary text-[14px]">
                   Profile Picture
                 </p>
@@ -146,7 +146,7 @@ const AdminProfileModal: React.FC<AdminProfileProps> = ({
                     onChange={handleImageChange}
                   />
                 </div>
-              </div>
+              </div> */}
               <FormField
                 control={form.control}
                 name="fullName"

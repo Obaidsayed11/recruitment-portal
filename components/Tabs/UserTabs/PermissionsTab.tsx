@@ -1,6 +1,6 @@
 "use client";
 import apiClient from "@/lib/axiosInterceptor";
-import { Permission } from "@/types/UserTabs"
+import { Permission } from "@/types/UserTabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import Button from "@/components/Others/Button";
 import PermissionsManager from "@/components/Others/PermissionManager";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const assignPermissionsSchema = z.object({
   permissionIds: z
@@ -32,6 +34,7 @@ const AssignPermissionsTab = () => {
 
   const params = useParams();
   const pathname = usePathname(); // 2. Get the current URL path
+  const { permissions } = usePermissions();
 
   const userId = useMemo(() => {
     // Get both potential IDs from the URL parameters
@@ -47,7 +50,6 @@ const AssignPermissionsTab = () => {
     if (uidFromParams) {
       return uidFromParams;
     }
-    
 
     // Priority 3: If no ID is in the URL, check if the path is for user management
     // and fall back to localStorage (for the create-then-assign flow).
@@ -61,7 +63,7 @@ const AssignPermissionsTab = () => {
     return null;
   }, [params?.id, params?.uid, pathname, userIdData, searchParams]); // Add params.uid to the dependency array
 
-   console.log(userId,"userIdddddddddddddd")
+  console.log(userId, "userIdddddddddddddd");
 
   const methods = useForm<AssignPermissionsInput>({
     resolver: zodResolver(assignPermissionsSchema),
@@ -83,9 +85,9 @@ const AssignPermissionsTab = () => {
           apiClient.get(`/user-permissions/${userId}`),
         ]);
 
-         // Extract all permissions from response
+        // Extract all permissions from response
         // Based on your swagger, the response is directly an array
-        // const allPermsData: Permission[] = Array.isArray(allPermissionsRes.data) 
+        // const allPermsData: Permission[] = Array.isArray(allPermissionsRes.data)
         //   ? allPermissionsRes.data
         //   : allPermissionsRes.data?.data?.permissions || [];
 
@@ -94,26 +96,26 @@ const AssignPermissionsTab = () => {
         //   ? userPermissionsRes.data
         //   :  userPermissionsRes.data?.data?.permissions || [];
 
-           // ✅ Fix: extract permissions properly from `data.permissions`
+        // ✅ Fix: extract permissions properly from `data.permissions`
         const allPermsData: Permission[] =
           allPermissionsRes.data?.data?.permissions || [];
 
         const userPermsData: Permission[] =
           userPermissionsRes.data?.data?.permissions || [];
 
-  console.log("All Permissions:", allPermsData);
+        console.log("All Permissions:", allPermsData);
         console.log("User's Assigned Permissions:", userPermsData);
 
         setAllPermissions(allPermsData);
-        console.log(allPermissions,"dguydgyi")
+        console.log(allPermissions, "dguydgyi");
         // const initialSelectedIds = new Set(
         //   userPermsData.map((p: Permission) => p.id)
         // );
         // setSelectedPermissions(initialSelectedIds);
-        const initialSelectedIds = new Set(userPermsData.map((p: Permission) => p.id));
+        const initialSelectedIds = new Set(
+          userPermsData.map((p: Permission) => p.id)
+        );
         setSelectedPermissions(initialSelectedIds);
-
-
       } catch (err: any) {
         toast.error("Failed to load initial permission data.");
         setAllPermissions([]);
@@ -121,7 +123,7 @@ const AssignPermissionsTab = () => {
     };
     fetchInitialData();
   }, [userId]);
-// Update form value whenever selected permissions change
+  // Update form value whenever selected permissions change
   useEffect(() => {
     setValue("permissionIds", Array.from(selectedPermissions));
     trigger("permissionIds");
@@ -143,13 +145,10 @@ const AssignPermissionsTab = () => {
       return;
     }
     try {
-       // PUT request to update user permissions
-      const response = await apiClient.put(
-        `/user-permissions/${userId}`,
-        {
-          permissionIds: data.permissionIds
-        }
-      );
+      // PUT request to update user permissions
+      const response = await apiClient.put(`/user-permissions/${userId}`, {
+        permissionIds: data.permissionIds,
+      });
       if (response.status === 200 || response.status === 201) {
         setUserIdData(true);
 
@@ -176,11 +175,13 @@ const AssignPermissionsTab = () => {
         }}
         className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:h-[400px] overflow-auto p-2 items-start"
       >
-        <PermissionsManager
-          allPermissions={allPermissions}
-          selectedPermissions={selectedPermissions}
-          onSelectionChange={setSelectedPermissions}
-        />
+        {hasPermission(permissions, "list_user_permission") && (
+          <PermissionsManager
+            allPermissions={allPermissions}
+            selectedPermissions={selectedPermissions}
+            onSelectionChange={setSelectedPermissions}
+          />
+        )}
         <div className="lg:col-span-1   sticky top-0 ">
           <div className="p-3 border rounded-lg bg-white sticky top-4 max-h-[400px] overflow-auto">
             <h3 className="text-base text-text font-medium mb-4 border-b pb-2">
@@ -199,13 +200,16 @@ const AssignPermissionsTab = () => {
                     className="flex justify-between items-center bg-gray-100 p-2 rounded"
                   >
                     <span className="text-sm">{permission.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePermission(permission.id)}
-                      className="text-gray-500 hover:text-red-600"
-                    >
-                      <X size={16} />
-                    </button>
+
+                    {hasPermission(permissions, "delete_user_groups") && (
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePermission(permission.id)}
+                        className="text-gray-500 hover:text-red-600"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
                   </div>
                 ))
               ) : (

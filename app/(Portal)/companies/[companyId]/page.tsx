@@ -1,18 +1,25 @@
 "use client";
-import { useSession } from 'next-auth/react';
-import { useParams, useRouter, useSearchParams, usePathname } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useSession } from "next-auth/react";
+import {
+  useParams,
+  useRouter,
+  useSearchParams,
+  usePathname,
+} from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import apiClient from "@/lib/axiosInterceptor";
 import DynamicBreadcrumb from "@/components/Navbar/BreadCrumb";
-import { Card } from '@/components/ui/card';
-import Tabs from '@/components/Others/Tabs';
-import { useTabContext } from '@/context/TabsContext';
-import { CompanyListProps } from '@/types/companyInterface';
-import ClientInfoSection from '@/components/Card/ClientDetails';
-import JobDescriptionTab from '@/components/Tabs/JobDescriptionTab';
-import ApplicationsTab from '@/components/Tabs/ApplicationsTab';
-import DepartmentsTab from '@/components/Tabs/DepartmentsTab';
+import { Card } from "@/components/ui/card";
+import Tabs from "@/components/Others/Tabs";
+import { useTabContext } from "@/context/TabsContext";
+import { CompanyListProps } from "@/types/companyInterface";
+import ClientInfoSection from "@/components/Card/ClientDetails";
+import JobDescriptionTab from "@/components/Tabs/JobDescriptionTab";
+import ApplicationsTab from "@/components/Tabs/ApplicationsTab";
+import DepartmentsTab from "@/components/Tabs/DepartmentsTab";
+import { hasPermission } from "@/lib/hasPermission";
+import { usePermissions } from "@/components/PermissionContext";
 
 const CompanyDetailPage = () => {
   const { activeTab, setActiveTab } = useTabContext();
@@ -22,11 +29,14 @@ const CompanyDetailPage = () => {
   const params = useParams() as { companyId: string };
   const companyId = params.companyId;
   const { data: session } = useSession();
-  
+
   const tabs = ["job-description", "application", "department"];
-  
+
   const [company, setCompany] = useState<CompanyListProps | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshAnalytics, setRefreshAnalytics] = useState(0);
+
+  const {permissions } = usePermissions()
 
   // Sync activeTab with URL and ensure valid tab is set
   useEffect(() => {
@@ -43,22 +53,22 @@ const CompanyDetailPage = () => {
   }, [searchParams, router, setActiveTab]);
 
   // Fetch company details
-  useEffect(() => {
+  const fetchCompanyDetails = async () => {
     if (!session || !companyId) return;
-
-    const fetchCompanyDetails = async () => {
-      setLoading(true);
-      try {
-        const response = await apiClient.get<CompanyListProps>(`/company/${companyId}`);
-        setCompany(response.data);
-      } catch (error: any) {
-        console.error("Failed to fetch company details:", error);
-        toast.error("Failed to load company details");
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    setLoading(true);
+    try {
+      const response = await apiClient.get<CompanyListProps>(
+        `/company/${companyId}`
+      );
+      setCompany(response.data);
+    } catch (error: any) {
+      console.error("Failed to fetch company details:", error);
+      toast.error("Failed to load company details");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchCompanyDetails();
   }, [companyId, session]);
 
@@ -73,16 +83,19 @@ const CompanyDetailPage = () => {
   const tabButtons = [
     { label: "Job description", value: "job-description" },
     { label: "Application", value: "application" },
-    { label: "Department", value: "department" }
+    { label: "Department", value: "department" },
   ];
+  const handleRefreshAnalytics = () => setRefreshAnalytics(prev => prev + 1);
 
   if (loading) {
     return (
       <>
-        <DynamicBreadcrumb links={[
-          { label: "Companies", href: "/companies" },
-          { label: "Loading..." }
-        ]} />
+        <DynamicBreadcrumb
+          links={[
+            { label: "Companies", href: "/companies" },
+            { label: "Loading..." },
+          ]}
+        />
         <div className="flex items-center justify-center h-[calc(100vh-110px)]">
           <p className="text-gray-500">Loading company details...</p>
         </div>
@@ -93,10 +106,12 @@ const CompanyDetailPage = () => {
   if (!company) {
     return (
       <>
-        <DynamicBreadcrumb links={[
-          { label: "Companies", href: "/companies" },
-          { label: "Not Found" }
-        ]} />
+        <DynamicBreadcrumb
+          links={[
+            { label: "Companies", href: "/companies" },
+            { label: "Not Found" },
+          ]}
+        />
         <div className="flex items-center justify-center h-[calc(100vh-110px)]">
           <p className="text-red-500">Company not found</p>
         </div>
@@ -104,14 +119,14 @@ const CompanyDetailPage = () => {
     );
   }
 
-
-
   return (
     <>
-      <DynamicBreadcrumb links={[
-        { label: "Companies", href: "/companies" },
-        { label: company.name || "Company Details" }
-      ]} />
+      <DynamicBreadcrumb
+        links={[
+          { label: "Companies", href: "/companies" },
+          { label: company.name || "Company Details" },
+        ]}
+      />
 
       <div className="grid  gap-5 col-span-1 lg:col-span-2 rounded-xl h-[calc(100vh-110px)]">
         <div className="flex flex-col w-full">
@@ -130,8 +145,10 @@ const CompanyDetailPage = () => {
               <p className="text-sm text-gray-600 mt-2">{company.location}</p>
             )}
           </Card> */}
-          <ClientInfoSection companyData={company} />
+          {hasPermission(permissions, "view_analytics") && (
+            <ClientInfoSection companyData={company} refreshTrigger={refreshAnalytics} />
 
+          )}
 
           {/* Tabs */}
           <Tabs
@@ -143,9 +160,15 @@ const CompanyDetailPage = () => {
 
           {/* Tab Content */}
           <div className="w-full text-center flex justify-start rounded-lg">
-            {activeTab === "job-description" && <JobDescriptionTab companyId={companyId} />}
-            {activeTab === "application" && <ApplicationsTab companyId={companyId} />}
-            {activeTab === "department" && <DepartmentsTab companyId={companyId} />}
+            {activeTab === "job-description" && (
+              <JobDescriptionTab companyId={companyId} onRefreshAnalytics={handleRefreshAnalytics} />
+            )}
+            {activeTab === "application" && (
+              <ApplicationsTab companyId={companyId} onRefreshAnalytics={handleRefreshAnalytics} />
+            )}
+            {activeTab === "department" && (
+              <DepartmentsTab companyId={companyId} onRefreshAnalytics={handleRefreshAnalytics}/>
+            )}
           </div>
         </div>
       </div>

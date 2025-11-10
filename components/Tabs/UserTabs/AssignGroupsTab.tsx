@@ -3,12 +3,15 @@
   import { GroupProps } from "@/types/UserTabs";
   import { zodResolver } from "@hookform/resolvers/zod";
   import { X } from "lucide-react";
-  import { useParams, usePathname, useSearchParams } from "next/navigation";
+  import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
   import React, { useState, useEffect, useMemo } from "react";
   import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
   import { toast } from "sonner";
   import { z } from "zod";
   import Button from "@/components/Others/Button";
+  import { hasPermission } from "@/lib/hasPermission";
+  import { usePermissions } from "@/components/PermissionContext";
+  
 
   const assignGroupsSchema = z.object({
     groupIds: z
@@ -28,6 +31,8 @@
       const [userIdData, setUserIdData] = useState(false);
     const [isLoadingGroups, setIsLoadingGroups] = useState(false);
     const searchParams = useSearchParams();
+      const router = useRouter();
+      const { permissions } = usePermissions();
 
     const params = useParams();
     const pathname = usePathname(); // 2. Get the current URL path
@@ -145,6 +150,13 @@
 
       fetchInitialData();
     }, [userId]);
+
+
+      useEffect(() => {
+        if (permissions && !hasPermission(permissions, "list_jobs")) {
+          router.push(`/users/update-user/${userId}`);
+        }
+      }, [permissions, router]);
 
     // Sync the Set state with react-hook-form state for validation
     useEffect(() => {
@@ -280,6 +292,7 @@
                     className="flex justify-between items-center bg-gray-100 p-2 rounded"
                   >
                     <span className="text-sm">{group.name}</span>
+                    
                     <button
                       type="button"
                       onClick={() => handleRemoveGroup(group.id)}
